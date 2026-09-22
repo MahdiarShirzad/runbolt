@@ -116,7 +116,7 @@ function MiniSpark() {
   );
 }
 
-type Feature = {
+export type Feature = {
   icon: ReactNode;
   title: string;
   description: string;
@@ -167,7 +167,7 @@ const features: Feature[] = [
   },
 ];
 
-function FeatureCard({ feature }: { feature: Feature }) {
+export function FeatureCard({ feature }: { feature: Feature }) {
   return (
     <article
       className={`group flex flex-col rounded-xl border border-line bg-surface/60 p-5 transition-colors duration-200 hover:border-[#33406a] hover:bg-surface ${feature.span}`}

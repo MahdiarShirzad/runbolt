@@ -1,7 +1,23 @@
 import { Reveal } from "./Reveal";
 import { ArrowRightIcon, BookIcon } from "./icons";
 
-export function CTASection() {
+type CTASectionProps = {
+  headline?: string;
+  sub?: string;
+  primaryLabel?: string;
+  secondaryLabel?: string;
+  primaryHref?: string;
+  secondaryHref?: string;
+};
+
+export function CTASection({
+  headline = "Ready to automate your next workflow?",
+  sub = "Spin up your first workflow in minutes. No credit card, no sales call — just you and a terminal.",
+  primaryLabel = "Start Building",
+  secondaryLabel = "Read Documentation",
+  primaryHref = "#top",
+  secondaryHref = "#developers",
+}: CTASectionProps) {
   return (
     <section id="cta" className="relative overflow-hidden py-28 sm:py-36" aria-labelledby="cta-heading">
       {/* Glow field */}
@@ -15,18 +31,17 @@ export function CTASection() {
           id="cta-heading"
           className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl"
         >
-          Ready to automate your next workflow?
+          {headline}
         </h2>
         <p className="mx-auto mt-5 max-w-md text-pretty leading-relaxed text-muted">
-          Spin up your first workflow in minutes. No credit card, no sales call —
-          just you and a terminal.
+          {sub}
         </p>
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <a
-            href="#top"
+            href={primaryHref}
             className="group inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-white shadow-[0_2px_24px_rgba(59,130,246,0.45)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_2px_32px_rgba(59,130,246,0.6)] sm:w-auto"
           >
-            Start Building
+            {primaryLabel}
             <ArrowRightIcon
               width={15}
               height={15}
@@ -34,11 +49,11 @@ export function CTASection() {
             />
           </a>
           <a
-            href="#developers"
+            href={secondaryHref}
             className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-line bg-surface/60 px-6 text-sm font-medium text-fg backdrop-blur transition-colors duration-200 hover:border-[#3a466b] hover:bg-hover sm:w-auto"
           >
             <BookIcon width={15} height={15} className="text-muted" />
-            Read Documentation
+            {secondaryLabel}
           </a>
         </div>
       </Reveal>

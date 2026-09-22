@@ -155,6 +155,66 @@ export function DbIcon(props: IconProps) {
   );
 }
 
+export function ShuffleIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M3 6.5h3.5c5 0 6 11 11 11H21M3 17.5h3.5c2 0 3.2-1.6 4.2-3.5M21 6.5h-3.5c-2 0-3.2 1.6-4.2 3.5" />
+      <path d="m18 3.5 3 3-3 3M18 14.5l3 3-3 3" />
+    </svg>
+  );
+}
+
+export function ClockIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" />
+    </svg>
+  );
+}
+
+export function QueueIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M4 6h16M4 12h16M4 18h10" />
+      <path d="M18.5 16.5v5M16 19h5" />
+    </svg>
+  );
+}
+
+export function CopyIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <rect x="9" y="9" width="11.5" height="11.5" rx="2" />
+      <path d="M5.5 14.5H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 2 2v.5" />
+    </svg>
+  );
+}
+
+export function PlusIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+export function MinusIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M5 12h14" />
+    </svg>
+  );
+}
+
+export function RetryIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M20 12a8 8 0 1 1-2.5-5.8M20 3.5V7h-3.5" />
+    </svg>
+  );
+}
+
 export function WebhookIcon(props: IconProps) {
   return (
     <svg {...base(props)}>

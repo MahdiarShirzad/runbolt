@@ -1,14 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BoltIcon, CloseIcon, MenuIcon } from "./icons";
 
 const links = [
-  { label: "Product", href: "#product" },
-  { label: "Features", href: "#features" },
-  { label: "Developers", href: "#developers" },
-  { label: "Documentation", href: "#developers" },
-  { label: "Pricing", href: "#cta" },
+  { label: "Product", href: "/" },
+  { label: "Features", href: "/features" },
+  { label: "Developers", href: "/#developers" },
+  { label: "Documentation", href: "/#developers" },
+  { label: "Pricing", href: "/#cta" },
 ];
 
 export function Navbar() {
@@ -34,7 +35,7 @@ export function Navbar() {
         aria-label="Main"
         className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8"
       >
-        <a href="#top" className="flex items-center gap-2.5 rounded-md">
+        <a href="/" className="flex items-center gap-2.5 rounded-md">
           <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-primary to-highlight text-white shadow-[0_0_18px_rgba(59,130,246,0.35)]">
             <BoltIcon width={14} height={14} />
           </span>
@@ -44,12 +45,12 @@ export function Navbar() {
         <ul className="hidden items-center gap-1 md:flex">
           {links.map((link) => (
             <li key={link.label}>
-              <a
+              <Link
                 href={link.href}
                 className="rounded-md px-3 py-2 text-[13.5px] text-muted transition-colors duration-200 hover:bg-hover hover:text-fg"
               >
                 {link.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
@@ -89,13 +90,13 @@ export function Navbar() {
           <ul className="space-y-1 px-5 py-4">
             {links.map((link) => (
               <li key={link.label}>
-                <a
+                <Link
                   href={link.href}
                   onClick={() => setOpen(false)}
                   className="block rounded-md px-3 py-2.5 text-sm text-muted transition-colors hover:bg-hover hover:text-fg"
                 >
                   {link.label}
-                </a>
+                </Link>
               </li>
             ))}
             <li className="flex gap-3 pt-3">

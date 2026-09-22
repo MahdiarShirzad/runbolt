@@ -19,7 +19,7 @@ export type TokenRole =
 
 export type Token = [text: string, role?: TokenRole] | string;
 
-const roleClass: Record<TokenRole, string> = {
+export const roleClass: Record<TokenRole, string> = {
   txt: "text-[#C9D2E3]",
   key: "text-highlight",
   str: "text-ok",

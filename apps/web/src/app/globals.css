@@ -144,6 +144,27 @@ body {
   animation: gradient-pan 14s ease-in-out infinite;
 }
 
+/* Execution comet traveling down a vertical pipeline rail */
+@keyframes rail-flow {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+.rail-pulse {
+  animation: rail-flow 2.8s linear infinite;
+}
+
 /* Spinner for running steps */
 @keyframes spin {
   to {
@@ -167,10 +188,12 @@ body {
   .pulse-primary,
   .blink,
   .gradient-pan,
+  .rail-pulse,
   .spin {
     animation: none;
   }
-  .edge-flow {
+  .edge-flow,
+  .rail-pulse {
     opacity: 0.9;
   }
 }

@@ -4,13 +4,14 @@ const columns: { title: string; links: string[] }[] = [
   { title: "Product", links: ["Workflow Builder", "Background Workers", "Observability", "Pricing"] },
   { title: "Developers", links: ["Documentation", "API Reference", "CLI", "Changelog"] },
   { title: "Company", links: ["About", "Blog", "Careers", "Contact"] },
+  { title: "Legal", links: ["Privacy", "Terms", "Security", "DPA"] },
 ];
 
 export function Footer() {
   return (
     <footer className="border-t border-line/70 bg-surface/30">
       <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.5fr_repeat(4,1fr)]">
           <div>
             <a href="#top" className="flex items-center gap-2.5 rounded-md">
               <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-primary to-highlight text-white">

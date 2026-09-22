@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Reveal } from "./Reveal";
-import { CheckIcon, DbIcon, FilterIcon, GlobeIcon, WebhookIcon, WorkerIcon } from "./icons";
+import { CheckIcon, DbIcon, FilterIcon, GlobeIcon, ShuffleIcon, WebhookIcon, WorkerIcon } from "./icons";
 
 type Status = "success" | "running" | "skipped";
 
@@ -28,7 +28,7 @@ const nodes: GraphNode[] = [
   { id: "hook_in", label: "Webhook", sub: "trigger · /hooks/orders", kind: "webhook", icon: <WebhookIcon width={14} height={14} />, x: 95, y: 240, status: "success" },
   { id: "check_order", label: "Condition", sub: "premium === true", kind: "condition", icon: <FilterIcon width={14} height={14} />, x: 295, y: 240, status: "success" },
   { id: "charge_api", label: "HTTP Request", sub: "POST stripe.com/v1", kind: "http", icon: <GlobeIcon width={14} height={14} />, x: 505, y: 130, status: "success" },
-  { id: "enrich", label: "Transform", sub: "shape response", kind: "transform", icon: <WorkerIcon width={14} height={14} />, x: 505, y: 350, status: "skipped" },
+  { id: "enrich", label: "Transform", sub: "shape response", kind: "transform", icon: <ShuffleIcon width={14} height={14} />, x: 505, y: 350, status: "skipped" },
   { id: "persist", label: "Database", sub: "orders · upsert", kind: "db", icon: <DbIcon width={14} height={14} />, x: 720, y: 130, status: "success" },
   { id: "fulfill", label: "Worker", sub: "queue: fulfillment", kind: "worker", icon: <WorkerIcon width={14} height={14} />, x: 925, y: 240, status: "running" },
 ];
@@ -40,6 +40,7 @@ const edges = [
   { d: "M505 130 H720", delay: "1.2s" },
   { d: "M720 130 C800 130 850 240 925 240", delay: "1.8s" },
   { d: "M505 350 C650 350 790 240 925 240", delay: "1.8s", dim: true },
+  { d: "M925 240 H1035", delay: "2.4s" },
 ];
 
 function StatusBadge({ status }: { status: Status }) {
@@ -72,7 +73,7 @@ function NodeCard({ node, pulse }: { node: GraphNode; pulse?: boolean }) {
     <div
       className={`flex items-center gap-2.5 rounded-lg border bg-surface/95 px-3 py-2.5 backdrop-blur-sm ${
         pulse ? "border-primary/60 pulse-primary" : ""
-      } ${skipped ? "border-dashed border-line opacity-55" : "border-line"}`}
+      } ${skipped ? "border-dashed border-line opacity-65" : "border-line"}`}
     >
       <span className={kindColor[node.kind]}>{node.icon}</span>
       <span className="leading-tight">
@@ -127,14 +128,14 @@ function DesktopGraph() {
 
       {/* Branch labels */}
       <span
-        className="absolute -translate-x-1/2 rounded border border-line bg-active px-1.5 py-0.5 font-mono text-[10px] text-muted"
-        style={{ left: "36%", top: "30%" }}
+        className="absolute -translate-x-1/2 -translate-y-1/2 rounded border border-line bg-active px-1.5 py-0.5 font-mono text-[10px] text-muted"
+        style={{ left: "35.7%", top: "36.5%" }}
       >
         true
       </span>
       <span
-        className="absolute -translate-x-1/2 rounded border border-line bg-active px-1.5 py-0.5 font-mono text-[10px] text-muted"
-        style={{ left: "36%", top: "68.5%" }}
+        className="absolute -translate-x-1/2 -translate-y-1/2 rounded border border-line bg-active px-1.5 py-0.5 font-mono text-[10px] text-muted"
+        style={{ left: "35.7%", top: "61.5%" }}
       >
         false
       </span>
@@ -152,7 +153,7 @@ function DesktopGraph() {
       {/* Terminal state */}
       <div
         className="absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-ok/40 bg-ok/10 px-3.5 py-1.5 text-xs font-medium text-ok shadow-[0_0_24px_rgba(34,197,94,0.25)]"
-        style={{ left: "100%", top: "50%" }}
+        style={{ left: "94%", top: "50%" }}
       >
         <CheckIcon width={13} height={13} />
         Success

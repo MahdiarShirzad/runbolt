@@ -85,12 +85,12 @@ const edges = [
 ];
 
 const logs: [string, string, string, string][] = [
-  ["12:04:31.208", "INFO", "text-info", "webhook.received  POST /hooks/orders (18ms)"],
-  ["12:04:31.231", "INFO", "text-info", "condition.eval   premium_customer === true"],
-  ["12:04:31.402", "INFO", "text-info", "http.request     stripe/charges → 200 (171ms)"],
-  ["12:04:31.517", " OK ", "text-ok", "db.insert        orders · 1 row written (94ms)"],
-  ["12:04:31.602", "INFO", "text-info", "worker.enqueue   fulfillment.job #48213"],
-  ["12:04:31.603", "RUN ", "text-primary", "worker.running   fulfillment.job #48213 …"],
+  ["12:04:31", "INFO", "text-info", "webhook.received POST /hooks/orders (18ms)"],
+  ["12:04:31", "INFO", "text-info", "condition.eval premium === true"],
+  ["12:04:31", "INFO", "text-info", "http.request stripe/charges → 200 (171ms)"],
+  ["12:04:31", " OK ", "text-ok", "db.insert orders · 1 row (94ms)"],
+  ["12:04:31", "INFO", "text-info", "worker.enqueue fulfillment.job #48213"],
+  ["12:04:31", "RUN ", "text-primary", "worker.running fulfillment.job #48213 …"],
 ];
 
 /* Tracing waterfall: [label, left %, width %, color, running?] */
@@ -251,7 +251,7 @@ export function BuilderMock() {
             <p className="border-b border-line/60 px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-muted/70">
               Execution log
             </p>
-            <div className="scroll-slim flex-1 overflow-y-auto p-3 font-mono text-[10.5px] leading-5">
+            <div className="scroll-slim flex-1 overflow-y-auto overflow-x-auto p-3 font-mono text-[10.5px] leading-5">
               {logs.map(([time, level, levelColor, msg], i) => (
                 <p key={i} className="whitespace-pre">
                   <span className="text-muted/60">{time}</span>{" "}
@@ -260,7 +260,7 @@ export function BuilderMock() {
                 </p>
               ))}
               <p className="whitespace-pre">
-                <span className="text-muted/60">12:04:31.604</span>{" "}
+                <span className="text-muted/60">12:04:31</span>{" "}
                 <span className="text-highlight">▍</span>
               </p>
             </div>
