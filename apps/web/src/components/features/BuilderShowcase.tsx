@@ -104,7 +104,7 @@ function ShowcaseCanvas() {
               <PlusIcon width={12} height={12} />
             </span>
           </span>
-          <span className="rounded-md bg-primary px-2.5 py-1 text-[11px] font-medium text-white">
+          <span className="rounded-md bg-primary px-2.5 py-1 text-[11px] font-medium text-button-text">
             Deploy
           </span>
         </div>

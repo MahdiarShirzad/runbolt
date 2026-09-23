@@ -78,7 +78,7 @@ export function PrimaryButton({
       type="submit"
       onClick={onClick}
       disabled={loading || disabled}
-      className={`inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary text-sm font-medium text-white shadow-[0_1px_12px_rgba(59,130,246,0.35)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_2px_18px_rgba(59,130,246,0.5)] active:bg-active ${
+      className={`inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary text-sm font-medium text-button-text shadow-[0_1px_12px_rgba(59,130,246,0.35)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_2px_18px_rgba(59,130,246,0.5)] active:bg-active ${
         full ? "w-full" : ""
       } ${(loading || disabled) && "cursor-not-allowed opacity-60"}`}
     >

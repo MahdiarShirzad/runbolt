@@ -59,7 +59,7 @@ export function RegisterForm() {
         </AuthBanner>
         <Link
           href="/verify-email"
-          className="inline-flex h-10 w-full items-center justify-center rounded-md bg-primary text-sm font-medium text-white shadow-[0_1px_12px_rgba(59,130,246,0.35)] transition-all duration-200 hover:bg-[#2f76ef]"
+          className="inline-flex h-10 w-full items-center justify-center rounded-md bg-primary text-sm font-medium text-button-text shadow-[0_1px_12px_rgba(59,130,246,0.35)] transition-all duration-200 hover:bg-[#2f76ef]"
         >
           Open verification page
         </Link>

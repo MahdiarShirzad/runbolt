@@ -105,7 +105,7 @@ function PricingCard({ plan }: { plan: Plan }) {
         href="#cta"
         className={`mt-6 inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium transition-colors duration-200 ${
           plan.highlighted
-            ? "bg-primary text-white shadow-[0_2px_16px_rgba(59,130,246,0.4)] hover:bg-[#2f76ef]"
+            ? "bg-primary text-button-text shadow-[0_2px_16px_rgba(59,130,246,0.4)] hover:bg-[#2f76ef]"
             : "border border-line bg-raised text-fg hover:border-[#3a466b] hover:bg-hover"
         }`}
       >

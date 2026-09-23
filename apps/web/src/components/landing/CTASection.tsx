@@ -40,7 +40,7 @@ export function CTASection({
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             href={primaryHref}
-            className="group inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-white shadow-[0_2px_24px_rgba(59,130,246,0.45)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_2px_32px_rgba(59,130,246,0.6)] sm:w-auto"
+            className="group inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-button-text shadow-[0_2px_24px_rgba(59,130,246,0.45)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_2px_32px_rgba(59,130,246,0.6)] sm:w-auto"
           >
             {primaryLabel}
             <ArrowRightIcon

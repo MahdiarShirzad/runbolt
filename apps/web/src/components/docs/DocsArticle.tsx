@@ -142,7 +142,7 @@ function UiPanel({ variant }: { variant: "builder" | "run" }) {
             runbolt<span className="text-line">/</span>
             <span className="text-fg">order-fulfillment</span>
           </p>
-          <span className="ml-auto rounded bg-primary px-2 py-0.5 text-[10px] font-medium text-white">
+          <span className="ml-auto rounded bg-primary px-2 py-0.5 text-[10px] font-medium text-button-text">
             Deploy
           </span>
         </div>

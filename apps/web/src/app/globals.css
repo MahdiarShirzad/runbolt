@@ -1,6 +1,26 @@
 @import "tailwindcss";
 
 @theme {
+  /* Typography */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
+
+  /* Runbolt brand palette */
+  --color-brand-bg: #0b0f17;
+  --color-brand-primary: #3b82f6;
+  --color-brand-surface: #111726;
+  --color-brand-accent: #8b7cf6;
+  --color-brand-highlight: #4cc9f0;
+
+  /* Neutral scale */
+  --color-neutral-bg: #0b0f17;
+  --color-neutral-surface-1: #111726;
+  --color-neutral-surface-2: #182034;
+  --color-neutral-border: #26304a;
+  --color-neutral-text-secondary: #8b96ad;
+  --color-neutral-text-primary: #e7ebf3;
+
+  /* Primary palette aliases (existing component tokens) */
   --color-ink: #0b0f17;
   --color-surface: #111726;
   --color-raised: #182034;
@@ -10,38 +30,170 @@
   --color-highlight: #4cc9f0;
   --color-fg: #e7ebf3;
   --color-muted: #8b96ad;
-  --color-code: #0d1220;
-  --color-input: #111726;
-  --color-hover: #182034;
-  --color-active: #1e2740;
-  --color-overlay: #05070c;
+  --color-button-text: #0b0f17;
+
+  /* Status / semantic colors */
+  --color-success: #22c55e;
+  --color-success-bg: #132a1c;
+  --color-error: #f04438;
+  --color-error-bg: #2c1517;
+  --color-warning: #f59e0b;
+  --color-warning-bg: #2b2011;
+  --color-info: #38bdf8;
+  --color-info-bg: #12222e;
+
+  /* Existing status aliases */
   --color-ok: #22c55e;
   --color-bad: #f04438;
   --color-warn: #f59e0b;
-  --color-info: #38bdf8;
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
+  /* Workflow states */
+  --color-state-idle: #8b96ad;
+  --color-state-queued: #4a5578;
+  --color-state-running: #3b82f6;
+  --color-state-success: #22c55e;
+  --color-state-failed: #f04438;
+  --color-state-retrying: #f59e0b;
+  --color-state-skipped: #8b96ad;
+  --color-state-paused: #8b7cf6;
+  --color-state-cancelled: #4a5578;
+  --color-state-timed-out: #d45c50;
+  --color-state-waiting: #38bdf8;
+  --color-border-strong: #4a5578;
+
+  /* Node type colors */
+  --color-node-trigger: #3b82f6;
+  --color-node-action: #8b96ad;
+  --color-node-condition: #8b7cf6;
+  --color-node-transform: #4cc9f0;
+  --color-node-http: #38bdf8;
+  --color-node-database: #22c55e;
+  --color-node-webhook: #f59e0b;
+  --color-node-delay: #8b96ad;
+  --color-node-queue: #4a5578;
+  --color-node-worker: #3b82f6;
+
+  /* Data visualization */
+  --color-viz-1: #3b82f6;
+  --color-viz-2: #8b7cf6;
+  --color-viz-3: #4cc9f0;
+  --color-viz-4: #22c55e;
+  --color-viz-5: #f04438;
+  --color-viz-6: #f59e0b;
+  --color-viz-7: #6d7b9e;
+  --color-viz-8: #e7ebf3;
+
+  /* Code / terminal / log palette */
+  --color-code-bg: #0d1220;
+  --color-code-text: #c9d2e3;
+  --color-timestamp: #6d7b9e;
+  --color-log-debug: #6d7b9e;
+  --color-log-info: #38bdf8;
+  --color-log-warn: #f59e0b;
+  --color-log-error: #f04438;
+  --color-stack-trace-frame: #8b96ad;
+  --color-stack-trace-file: #4cc9f0;
+  --color-http-get: #3880f8;
+  --color-http-post: #22c55e;
+  --color-http-put: #f59e0b;
+  --color-http-delete: #f04438;
+  --color-http-patch: #887cf6;
+  --color-status-2xx: #22c55e;
+  --color-status-3xx: #38bdf8;
+  --color-status-4xx: #f59e0b;
+  --color-status-5xx: #f04438;
+  --color-json-key: #4cc9f0;
+  --color-json-string: #22c55e;
+  --color-json-number: #8b7cf6;
+  --color-json-boolean: #f59e0b;
+  --color-json-null: #6d7b9e;
+  --color-comment: #546080;
+
+  /* Existing code alias */
+  --color-code: #0d1220;
+
+  /* Additional UI colors */
+  --color-input-bg: #111726;
+  --color-input-border: #26304a;
+  --color-input-focus: #3b82f6;
+  --color-hover-bg: #182034;
+  --color-active-bg: #1e2740;
+  --color-selected-bg: #152140;
+  --color-disabled-bg: #111726;
+  --color-disabled-text: #4a5578;
+  --color-overlay: #05070c;
+  --color-tooltip-bg: #1e2740;
+  --color-skeleton: #182034;
+  --color-code-selection: #3b82f6;
+  --color-focus-ring: #3b82f6;
+
+  /* Existing interaction aliases */
+  --color-input: #111726;
+  --color-hover: #182034;
+  --color-active: #1e2740;
+  --color-selected: #152140;
+  --color-tooltip: #1e2740;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  :root {
+    --font-sans: var(--font-inter);
+    --font-mono: var(--font-jetbrains);
+  }
+  /* Runbolt */
+  :root,
+  [data-theme="runbolt"],
+  .theme-preview-runbolt {
+    --theme-bg: #0b0f17;
+    --theme-surface: #111726;
+    --theme-surface-2: #182034;
+    --theme-border: #26304a;
+    --theme-primary: #3b82f6;
+    --theme-accent: #8b7cf6;
+    --theme-highlight: #4cc9f0;
+    --theme-text-secondary: #8b96ad;
+    --theme-text-primary: #e7ebf3;
+    --theme-button-text: #0b0f17;
+  }
+  body {
+    background-color: var(--color-neutral-bg);
+    color: var(--color-neutral-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-neutral-border);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-neutral-text-secondary);
+  }
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-body {
-  background: var(--color-ink);
-  color: var(--color-fg);
-  font-family: var(--font-sans);
-  text-rendering: optimizeLegibility;
-}
-
 ::selection {
-  background: rgba(59, 130, 246, 0.35);
+  background: rgba(59, 130, 246, 0.25);
   color: #e7ebf3;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-highlight);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
   border-radius: 4px;
 }
