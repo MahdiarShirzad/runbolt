@@ -240,6 +240,35 @@ export function ArrowLeftIcon(props: IconProps) {
   );
 }
 
+export function EyeOffIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M4 4l16 16M10 5.3A9.8 9.8 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17.6 17.6 0 0 1-2.4 3.2M6.1 6.9C3.9 8.5 2.5 12 2.5 12S6 18.5 12 18.5c1.5 0 2.9-.4 4.1-1" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+    </svg>
+  );
+}
+
+export function MailIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <rect x="3" y="5.5" width="18" height="13" rx="2" />
+      <path d="m3.5 7 8.5 6 8.5-6" />
+    </svg>
+  );
+}
+
+export function GoogleIcon(props: IconProps) {
+  return (
+    <svg {...base(props)} fill="currentColor" stroke="none">
+      <path d="M21.6 12.2c0-.7-.06-1.4-.18-2H12v3.9h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.75 3-4.3 3-7.4Z" />
+      <path d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1a5.9 5.9 0 0 1-5.5-4H3.2v2.6A10 10 0 0 0 12 22Z" />
+      <path d="M6.5 14.1a6 6 0 0 1 0-3.8V7.7H3.2a10 10 0 0 0 0 9l3.3-2.6Z" />
+      <path d="M12 6.1c1.5 0 2.8.5 3.8 1.5L18.7 5A10 10 0 0 0 3.2 7.7l3.3 2.6a5.9 5.9 0 0 1 5.5-4.2Z" />
+    </svg>
+  );
+}
+
 export function WebhookIcon(props: IconProps) {
   return (
     <svg {...base(props)}>

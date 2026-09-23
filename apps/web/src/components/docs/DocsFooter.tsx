@@ -15,7 +15,7 @@ const columns: { title: string; links: { label: string; href: string }[] }[] = [
     links: [
       { label: "API", href: "/docs/api" },
       { label: "SDKs", href: "/docs/sdks" },
-      { label: "Changelog", href: "#" },
+      { label: "Changelog", href: "/docs/getting-started" },
     ],
   },
   {

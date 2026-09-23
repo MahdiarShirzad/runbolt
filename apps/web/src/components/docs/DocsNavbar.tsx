@@ -95,7 +95,7 @@ export function DocsNavbar() {
         </button>
 
         <a
-          href="#"
+          href="https://github.com/runbolt"
           className="hidden h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-hover hover:text-fg sm:flex"
           aria-label="Runbolt on GitHub"
         >
@@ -105,13 +105,13 @@ export function DocsNavbar() {
         </a>
 
         <Link
-          href="/"
+          href="/login"
           className="hidden rounded-md px-2.5 py-1.5 text-[13px] text-muted transition-colors hover:text-fg md:block"
         >
           Log in
         </Link>
         <Link
-          href="/"
+          href="/register"
           className="hidden rounded-md bg-primary px-3 py-1.5 text-[13px] font-medium text-white shadow-[0_1px_10px_rgba(59,130,246,0.35)] transition-all duration-200 hover:bg-[#2f76ef] md:block"
         >
           Start Building
@@ -145,14 +145,14 @@ export function DocsNavbar() {
             ))}
             <li className="flex gap-3 pt-2">
               <Link
-                href="/"
+                href="/login"
                 onClick={() => setMenuOpen(false)}
                 className="flex-1 rounded-md border border-line px-3 py-2 text-center text-sm text-fg transition-colors hover:bg-hover"
               >
                 Log in
               </Link>
               <Link
-                href="/"
+                href="/register"
                 onClick={() => setMenuOpen(false)}
                 className="flex-1 rounded-md bg-primary px-3 py-2 text-center text-sm font-medium text-white"
               >

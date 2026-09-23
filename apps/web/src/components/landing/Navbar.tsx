@@ -56,18 +56,18 @@ export function Navbar() {
         </ul>
 
         <div className="hidden items-center gap-2 md:flex">
-          <a
-            href="#"
+          <Link
+            href="/login"
             className="rounded-md px-3 py-2 text-[13.5px] text-muted transition-colors duration-200 hover:text-fg"
           >
             Log in
-          </a>
-          <a
-            href="#cta"
+          </Link>
+          <Link
+            href="/register"
             className="rounded-md bg-primary px-3.5 py-2 text-[13.5px] font-medium text-white shadow-[0_1px_10px_rgba(59,130,246,0.35)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_1px_16px_rgba(59,130,246,0.5)] active:bg-active"
           >
             Start Building
-          </a>
+          </Link>
         </div>
 
         <button
@@ -100,20 +100,20 @@ export function Navbar() {
               </li>
             ))}
             <li className="flex gap-3 pt-3">
-              <a
-                href="#"
+              <Link
+                href="/login"
                 onClick={() => setOpen(false)}
                 className="flex-1 rounded-md border border-line px-3 py-2.5 text-center text-sm text-fg transition-colors hover:bg-hover"
               >
                 Log in
-              </a>
-              <a
-                href="#cta"
+              </Link>
+              <Link
+                href="/register"
                 onClick={() => setOpen(false)}
                 className="flex-1 rounded-md bg-primary px-3 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-[#2f76ef]"
               >
                 Start Building
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

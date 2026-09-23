@@ -1,10 +1,43 @@
+import Link from "next/link";
 import { BoltIcon } from "./icons";
 
-const columns: { title: string; links: string[] }[] = [
-  { title: "Product", links: ["Workflow Builder", "Background Workers", "Observability", "Pricing"] },
-  { title: "Developers", links: ["Documentation", "API Reference", "CLI", "Changelog"] },
-  { title: "Company", links: ["About", "Blog", "Careers", "Contact"] },
-  { title: "Legal", links: ["Privacy", "Terms", "Security", "DPA"] },
+const columns: { title: string; links: { label: string; href: string }[] }[] = [
+  {
+    title: "Product",
+    links: [
+      { label: "Workflow Builder", href: "/features" },
+      { label: "Background Workers", href: "/features" },
+      { label: "Observability", href: "/features" },
+      { label: "Pricing", href: "/pricing" },
+    ],
+  },
+  {
+    title: "Developers",
+    links: [
+      { label: "Documentation", href: "/docs" },
+      { label: "API Reference", href: "/docs/api" },
+      { label: "CLI", href: "/docs/sdks" },
+      { label: "Changelog", href: "/docs/getting-started" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "#" },
+      { label: "Blog", href: "#" },
+      { label: "Careers", href: "#" },
+      { label: "Contact", href: "#" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy", href: "#" },
+      { label: "Terms", href: "#" },
+      { label: "Security", href: "#" },
+      { label: "DPA", href: "#" },
+    ],
+  },
 ];
 
 export function Footer() {
@@ -13,12 +46,12 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.5fr_repeat(4,1fr)]">
           <div>
-            <a href="#top" className="flex items-center gap-2.5 rounded-md">
+            <Link href="/" className="flex items-center gap-2.5 rounded-md">
               <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-primary to-highlight text-white">
                 <BoltIcon width={14} height={14} />
               </span>
               <span className="text-[15px] font-semibold tracking-tight">Runbolt</span>
-            </a>
+            </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
               Workflow orchestration for engineers. Build, run, and observe —
               from trigger to worker.
@@ -34,13 +67,13 @@ export function Footer() {
               <p className="text-[13px] font-semibold text-fg">{col.title}</p>
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
                       className="text-sm text-muted transition-colors duration-200 hover:text-fg"
                     >
-                      {link}
-                    </a>
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
