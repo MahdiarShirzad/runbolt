@@ -8,11 +8,12 @@ import {
   ChevronDownIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
+  MenuIcon,
 } from "../landing/icons";
 import {
   DOCS_NAV_CLOSED_EVENT,
   DOCS_NAV_EVENT,
-} from "./DocsNavbar";
+} from "./events";
 
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -157,7 +158,7 @@ export function DocsShell({
     <div className="mx-auto max-w-[1400px] px-4 sm:px-6">
       <div className="lg:grid lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[230px_minmax(0,1fr)_210px]">
         {/* Desktop sidebar */}
-        <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] overflow-y-auto py-8 pr-2 scroll-slim lg:block">
+        <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] overflow-y-auto py-8 pr-2 scroll-slim lg:block">
           <SidebarNav />
         </aside>
 
@@ -176,6 +177,17 @@ export function DocsShell({
 
         {/* Article */}
         <main className="min-w-0 py-8 sm:py-10">
+          {/* Mobile docs menu — replaces the old DocsNavbar drawer trigger */}
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent(DOCS_NAV_EVENT))}
+            className="mb-5 inline-flex h-9 items-center gap-2 rounded-md border border-line bg-surface px-3 text-[13px] text-muted transition-colors duration-200 hover:border-[#3a466b] hover:text-fg lg:hidden"
+            aria-label="Open documentation navigation"
+          >
+            <MenuIcon width={15} height={15} />
+            Docs menu
+          </button>
+
           {/* Mobile TOC (collapsible) */}
           {toc.length > 0 && (
             <details className="group mb-6 rounded-lg border border-line bg-surface/60 xl:hidden">
@@ -206,7 +218,7 @@ export function DocsShell({
         </main>
 
         {/* Right TOC */}
-        <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] overflow-y-auto py-10 scroll-slim xl:block">
+        <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] overflow-y-auto py-10 scroll-slim xl:block">
           {toc.length > 0 && <TableOfContents items={toc} />}
         </aside>
       </div>

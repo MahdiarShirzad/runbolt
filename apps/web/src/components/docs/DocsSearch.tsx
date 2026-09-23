@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { searchIndex } from "@/content/docs/registry";
-import { DOCS_SEARCH_EVENT } from "./DocsNavbar";
+import { DOCS_SEARCH_EVENT } from "./events";
 import { SearchIcon } from "../landing/icons";
 
 const RECENT = ["Getting Started", "Execution API", "Retries and Timeouts"];
@@ -15,11 +15,20 @@ export function DocsSearch() {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    const onOpen = () => setOpen(true);
+    const onOpen = () => {
+      setQuery("");
+      setOpen(true);
+      // wait a frame so the input exists before focusing
+      requestAnimationFrame(() => inputRef.current?.focus());
+    };
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpen((v) => !v);
+        if (open) {
+          setOpen(false);
+        } else {
+          onOpen();
+        }
       }
       if (e.key === "Escape") setOpen(false);
     };
@@ -29,14 +38,6 @@ export function DocsSearch() {
       window.removeEventListener(DOCS_SEARCH_EVENT, onOpen);
       window.removeEventListener("keydown", onKey);
     };
-  }, []);
-
-  useEffect(() => {
-    if (open) {
-      setQuery("");
-      // wait a frame so the input exists before focusing
-      requestAnimationFrame(() => inputRef.current?.focus());
-    }
   }, [open]);
 
   const results = useMemo(() => {

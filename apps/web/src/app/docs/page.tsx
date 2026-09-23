@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { openSearch } from "@/components/docs/DocsNavbar";
+import { openSearch } from "@/components/docs/events";
 import {
   CodeIcon,
   DbIcon,

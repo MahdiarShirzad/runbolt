@@ -49,7 +49,7 @@ const footerColumns = [
   {
     title: "Company",
     links: [
-      { label: "About", href: "#" },
+      { label: "About", href: "/about" },
       { label: "Contact", href: "mailto:hello@runbolt.dev" },
     ],
   },

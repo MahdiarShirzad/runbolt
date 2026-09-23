@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BuilderMock } from "./BuilderMock";
 import { ArrowRightIcon, BookIcon } from "./icons";
 
@@ -34,8 +35,8 @@ export function Hero() {
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a
-              href="#cta"
+            <Link
+              href="/register"
               className="group inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-white shadow-[0_2px_20px_rgba(59,130,246,0.4)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_2px_28px_rgba(59,130,246,0.55)] sm:w-auto"
             >
               Start Building
@@ -44,7 +45,7 @@ export function Hero() {
                 height={15}
                 className="transition-transform duration-200 group-hover:translate-x-0.5"
               />
-            </a>
+            </Link>
             <a
               href="#developers"
               className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-line bg-surface/60 px-6 text-sm font-medium text-fg backdrop-blur transition-colors duration-200 hover:border-[#3a466b] hover:bg-hover sm:w-auto"

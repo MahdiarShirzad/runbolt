@@ -1,14 +1,14 @@
-import { DocsNavbar } from "@/components/docs/DocsNavbar";
+import { Navbar } from "@/components/landing/Navbar";
+import { Footer } from "@/components/landing/Footer";
 import { DocsSearch } from "@/components/docs/DocsSearch";
-import { DocsFooter } from "@/components/docs/DocsFooter";
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <DocsNavbar />
+      <Navbar />
       <DocsSearch />
       <div className="flex-1">{children}</div>
-      <DocsFooter />
+      <Footer />
     </div>
   );
 }

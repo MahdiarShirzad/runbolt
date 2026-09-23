@@ -28,7 +28,7 @@ const defaultColumns: FooterColumn[] = [
   {
     title: "Company",
     links: [
-      { label: "About", href: "#" },
+      { label: "About", href: "/about" },
       { label: "Blog", href: "#" },
       { label: "Careers", href: "#" },
       { label: "Contact", href: "#" },

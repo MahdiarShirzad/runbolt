@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Reveal } from "./Reveal";
 import { ArrowRightIcon, BookIcon } from "./icons";
 
@@ -15,7 +16,7 @@ export function CTASection({
   sub = "Spin up your first workflow in minutes. No credit card, no sales call — just you and a terminal.",
   primaryLabel = "Start Building",
   secondaryLabel = "Read Documentation",
-  primaryHref = "#top",
+  primaryHref = "/register",
   secondaryHref = "#developers",
 }: CTASectionProps) {
   return (
@@ -37,7 +38,7 @@ export function CTASection({
           {sub}
         </p>
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <a
+          <Link
             href={primaryHref}
             className="group inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-white shadow-[0_2px_24px_rgba(59,130,246,0.45)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_2px_32px_rgba(59,130,246,0.6)] sm:w-auto"
           >
@@ -47,7 +48,7 @@ export function CTASection({
               height={15}
               className="transition-transform duration-200 group-hover:translate-x-0.5"
             />
-          </a>
+          </Link>
           <a
             href={secondaryHref}
             className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-line bg-surface/60 px-6 text-sm font-medium text-fg backdrop-blur transition-colors duration-200 hover:border-[#3a466b] hover:bg-hover sm:w-auto"
