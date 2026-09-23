@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { BoltIcon } from "./icons";
 
-const columns: { title: string; links: { label: string; href: string }[] }[] = [
+type FooterColumn = {
+  title: string;
+  links: { label: string; href: string }[];
+};
+
+const defaultColumns: FooterColumn[] = [
   {
     title: "Product",
     links: [
@@ -34,17 +39,26 @@ const columns: { title: string; links: { label: string; href: string }[] }[] = [
     links: [
       { label: "Privacy", href: "#" },
       { label: "Terms", href: "#" },
-      { label: "Security", href: "#" },
+      { label: "Security", href: "/security" },
       { label: "DPA", href: "#" },
     ],
   },
 ];
 
-export function Footer() {
+type FooterProps = {
+  columns?: FooterColumn[];
+  /** Tailwind grid template for the lg breakpoint (brand column included). */
+  columnsClass?: string;
+};
+
+export function Footer({
+  columns = defaultColumns,
+  columnsClass = "lg:grid-cols-[1.5fr_repeat(4,1fr)]",
+}: FooterProps) {
   return (
     <footer className="border-t border-line/70 bg-surface/30">
       <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.5fr_repeat(4,1fr)]">
+        <div className={`grid gap-10 md:grid-cols-2 ${columnsClass}`}>
           <div>
             <Link href="/" className="flex items-center gap-2.5 rounded-md">
               <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-primary to-highlight text-white">

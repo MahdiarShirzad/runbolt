@@ -175,6 +175,28 @@ body {
   animation: spin 1.2s linear infinite;
 }
 
+/* Comet traveling along a horizontal connector (architecture diagram) */
+@keyframes flow-x {
+  0% {
+    left: -8%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    left: 108%;
+    opacity: 0;
+  }
+}
+.flow-x-dot {
+  animation: flow-x 2.4s linear infinite;
+  animation-delay: var(--flow-delay, 0s);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -189,11 +211,15 @@ body {
   .blink,
   .gradient-pan,
   .rail-pulse,
-  .spin {
+  .spin,
+  .flow-x-dot {
     animation: none;
   }
   .edge-flow,
   .rail-pulse {
     opacity: 0.9;
+  }
+  .flow-x-dot {
+    opacity: 0;
   }
 }
