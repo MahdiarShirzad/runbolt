@@ -1,5 +1,3 @@
-"use client";
-
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { Reveal } from "../landing/Reveal";

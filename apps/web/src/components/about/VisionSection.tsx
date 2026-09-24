@@ -1,48 +1,13 @@
-"use client";
-
-import { useEffect, useRef } from "react";
 import { Reveal } from "../landing/Reveal";
 
 /**
- * Subtle animated workflow graph + gentle parallax behind the vision statement.
- * Respects prefers-reduced-motion via CSS animations and an early return here.
+ * Static workflow-graph backdrop. The energy comets animate via the shared
+ * CSS `edge-flow` keyframes — no client JavaScript, and the parallax layer
+ * was removed as part of the performance pass.
  */
 function WorkflowGraphBackdrop() {
-  const ref = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reduce.matches) return;
-
-    let frame = 0;
-    const onScroll = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(() => {
-        frame = 0;
-        const rect = el.getBoundingClientRect();
-        const viewH = window.innerHeight || 1;
-        const progress = (viewH - rect.top) / (viewH + rect.height);
-        const offset = (progress - 0.5) * 36;
-        el.style.transform = `translate3d(0, ${offset.toFixed(2)}px, 0)`;
-      });
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
-  }, []);
-
   return (
-    <div
-      ref={ref}
-      aria-hidden
-      className="pointer-events-none absolute inset-0 will-change-transform"
-    >
+    <div aria-hidden className="pointer-events-none absolute inset-0">
       <div className="bg-grid mask-fade-radial absolute inset-0 opacity-40" />
       <svg
         className="absolute inset-0 h-full w-full"
@@ -51,70 +16,20 @@ function WorkflowGraphBackdrop() {
         preserveAspectRatio="xMidYMid slice"
       >
         {/* Edges */}
-        <path
-          d="M120 120 C 260 120, 300 220, 440 220"
-          stroke="#232C3B"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M440 220 C 560 220, 600 140, 740 140"
-          stroke="#232C3B"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M440 220 C 580 220, 620 340, 780 340"
-          stroke="#232C3B"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M740 140 C 880 140, 920 260, 1060 260"
-          stroke="#232C3B"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M780 340 C 900 340, 940 260, 1060 260"
-          stroke="#232C3B"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M120 420 C 280 420, 320 340, 440 340"
-          stroke="#232C3B"
-          strokeWidth="1.5"
-          opacity="0.7"
-        />
-        <path
-          d="M440 340 C 560 340, 600 440, 760 440"
-          stroke="#232C3B"
-          strokeWidth="1.5"
-          opacity="0.7"
-        />
+        <path d="M120 120 C 260 120, 300 220, 440 220" stroke="#232C3B" strokeWidth="1.5" />
+        <path d="M440 220 C 560 220, 600 140, 740 140" stroke="#232C3B" strokeWidth="1.5" />
+        <path d="M440 220 C 580 220, 620 340, 780 340" stroke="#232C3B" strokeWidth="1.5" />
+        <path d="M740 140 C 880 140, 920 260, 1060 260" stroke="#232C3B" strokeWidth="1.5" />
+        <path d="M780 340 C 900 340, 940 260, 1060 260" stroke="#232C3B" strokeWidth="1.5" />
+        <path d="M120 420 C 280 420, 320 340, 440 340" stroke="#232C3B" strokeWidth="1.5" opacity="0.7" />
+        <path d="M440 340 C 560 340, 600 440, 760 440" stroke="#232C3B" strokeWidth="1.5" opacity="0.7" />
 
         {/* Flowing comets along edges */}
-        <path
-          className="edge-flow"
-          style={{ stroke: "#C7F04E", strokeWidth: 2, animationDelay: "0s" }}
-          d="M120 120 C 260 120, 300 220, 440 220"
-        />
-        <path
-          className="edge-flow"
-          style={{ stroke: "#C7F04E", strokeWidth: 2, animationDelay: "0.8s" }}
-          d="M440 220 C 560 220, 600 140, 740 140"
-        />
-        <path
-          className="edge-flow"
-          style={{ stroke: "#A08BF0", strokeWidth: 2, animationDelay: "1.4s" }}
-          d="M440 220 C 580 220, 620 340, 780 340"
-        />
-        <path
-          className="edge-flow"
-          style={{ stroke: "#3ECF8E", strokeWidth: 2, animationDelay: "2s" }}
-          d="M740 140 C 880 140, 920 260, 1060 260"
-        />
-        <path
-          className="edge-flow"
-          style={{ stroke: "#C7F04E", strokeWidth: 2, animationDelay: "2.5s" }}
-          d="M780 340 C 900 340, 940 260, 1060 260"
-        />
+        <path className="edge-flow" style={{ stroke: "#C7F04E", strokeWidth: 2, animationDelay: "0s" }} d="M120 120 C 260 120, 300 220, 440 220" />
+        <path className="edge-flow" style={{ stroke: "#5CC9EE", strokeWidth: 2, animationDelay: "0.8s" }} d="M440 220 C 560 220, 600 140, 740 140" />
+        <path className="edge-flow" style={{ stroke: "#A08BF0", strokeWidth: 2, animationDelay: "1.4s" }} d="M440 220 C 580 220, 620 340, 780 340" />
+        <path className="edge-flow" style={{ stroke: "#3ECF8E", strokeWidth: 2, animationDelay: "2s" }} d="M740 140 C 880 140, 920 260, 1060 260" />
+        <path className="edge-flow" style={{ stroke: "#C7F04E", strokeWidth: 2, animationDelay: "2.5s" }} d="M780 340 C 900 340, 940 260, 1060 260" />
 
         {/* Nodes */}
         {[
@@ -125,7 +40,7 @@ function WorkflowGraphBackdrop() {
           { x: 1060, y: 260, c: "#3ECF8E" },
           { x: 120, y: 420, c: "#F5B23C" },
           { x: 440, y: 340, c: "#C7F04E" },
-          { x: 760, y: 440, c: "#C7F04E" },
+          { x: 760, y: 440, c: "#5CC9EE" },
         ].map((n) => (
           <g key={`${n.x}-${n.y}`}>
             <circle cx={n.x} cy={n.y} r="14" fill="#0A0D13" stroke={n.c} strokeWidth="1.5" opacity="0.9" />
@@ -133,7 +48,7 @@ function WorkflowGraphBackdrop() {
           </g>
         ))}
       </svg>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(11,15,23,0.2),rgba(11,15,23,0.85))]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(10,13,19,0.2),rgba(10,13,19,0.85))]" />
     </div>
   );
 }

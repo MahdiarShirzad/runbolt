@@ -1,5 +1,3 @@
-"use client";
-
 import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 
 /* ---------- FormInput ---------- */

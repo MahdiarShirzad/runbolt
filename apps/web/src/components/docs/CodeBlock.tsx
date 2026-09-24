@@ -1,10 +1,7 @@
-"use client";
-
-import { useMemo, useState } from "react";
 import type { CodeLanguage } from "@/content/docs/content";
 import type { Token, TokenRole } from "../landing/CodeBlock";
 import { roleClass } from "../landing/CodeBlock";
-import { CheckIcon, CopyIcon } from "../landing/icons";
+import { CopyButton } from "../ui/copy-button";
 
 /**
  * Small regex scanner for the code palette. Not a full parser — it covers
@@ -95,41 +92,16 @@ export function CodeBlock({
   title?: string;
   lineNumbers?: boolean;
 }) {
-  const [copied, setCopied] = useState(false);
-  const lines = useMemo(() => highlight(code, language), [code, language]);
-
-  async function onCopy() {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1600);
-    } catch {
-      // clipboard unavailable — quietly ignore
-    }
-  }
+  const lines = highlight(code, language);
 
   return (
     <div className="group overflow-hidden rounded-lg border border-line bg-code">
       <div className="flex items-center border-b border-line/60 px-4 py-2">
         <span className="font-mono text-[11px] text-muted">{title ?? language}</span>
-        <button
-          type="button"
-          onClick={onCopy}
-          aria-label={copied ? "Copied" : "Copy code"}
-          className="ml-auto flex items-center gap-1.5 rounded-md border border-transparent px-1.5 py-1 text-[11px] text-muted opacity-0 transition-all duration-200 hover:border-line hover:text-fg focus-visible:opacity-100 group-hover:opacity-100"
-        >
-          {copied ? (
-            <>
-              <CheckIcon width={11} height={11} className="text-ok" />
-              <span className="text-ok">Copied</span>
-            </>
-          ) : (
-            <>
-              <CopyIcon width={11} height={11} />
-              Copy
-            </>
-          )}
-        </button>
+        <CopyButton
+          text={code}
+          className="opacity-0 focus-visible:opacity-100 group-hover:opacity-100"
+        />
       </div>
       <div className="flex">
         {lineNumbers && (

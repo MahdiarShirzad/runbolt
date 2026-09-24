@@ -1,9 +1,6 @@
-"use client";
-
-import { useState } from "react";
 import { Reveal } from "../landing/Reveal";
 import { SectionHeader } from "../ui/kit";
-import { CheckIcon, CopyIcon } from "../landing/icons";
+import { CopyButton } from "../ui/copy-button";
 import { roleClass, type Token, type TokenRole } from "../landing/CodeBlock";
 
 type Line = Token[];
@@ -67,8 +64,6 @@ const terminal: [string, string, string][] = [
 ];
 
 function CodeEditor() {
-  const [copied, setCopied] = useState(false);
-
   const plainText = code
     .map((line) =>
       line
@@ -77,16 +72,6 @@ function CodeEditor() {
     )
     .join("\n");
 
-  async function onCopy() {
-    try {
-      await navigator.clipboard.writeText(plainText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1600);
-    } catch {
-      // clipboard unavailable (e.g. insecure context) — quietly ignore
-    }
-  }
-
   return (
     <div className="overflow-hidden rounded-xl border border-line bg-code shadow-[0_24px_80px_-24px_rgba(3,5,9,0.95)]">
       <div className="flex items-center gap-3 border-b border-line/70 px-4 py-2.5">
@@ -94,24 +79,10 @@ function CodeEditor() {
         <span className="h-2 w-2 rounded-full bg-line" aria-hidden />
         <span className="h-2 w-2 rounded-full bg-line" aria-hidden />
         <span className="ml-2 font-mono text-xs text-muted">customer-sync.ts</span>
-        <button
-          type="button"
-          onClick={onCopy}
-          className="ml-auto flex items-center gap-1.5 rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-muted transition-colors duration-200 hover:text-fg"
-          aria-label={copied ? "Copied" : "Copy code"}
-        >
-          {copied ? (
-            <>
-              <CheckIcon width={11} height={11} className="text-ok" />
-              <span className="text-ok">Copied</span>
-            </>
-          ) : (
-            <>
-              <CopyIcon width={11} height={11} />
-              Copy
-            </>
-          )}
-        </button>
+        <CopyButton
+          text={plainText}
+          className="border-line bg-surface px-2 py-1 hover:text-fg"
+        />
       </div>
       <div className="flex">
         <ol
