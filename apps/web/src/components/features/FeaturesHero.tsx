@@ -1,11 +1,11 @@
 import { Reveal } from "../landing/Reveal";
+import { ButtonAnchor } from "../ui/kit";
 import {
-  ArrowRightIcon,
   BookIcon,
+  CheckIcon,
   DbIcon,
   FilterIcon,
   GlobeIcon,
-  CheckIcon,
   ShuffleIcon,
   WebhookIcon,
   WorkerIcon,
@@ -48,17 +48,12 @@ const inspectorRows: [string, string][] = [
 
 function PipelinePreview() {
   return (
-    <div className="relative overflow-hidden rounded-xl border border-line bg-surface shadow-[0_24px_80px_-24px_rgba(5,7,12,0.9)]">
-      {/* Window chrome */}
-      <div className="flex items-center gap-3 border-b border-line/80 bg-raised/60 px-4 py-2.5">
-        <div className="flex gap-1.5" aria-hidden>
-          <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-warn/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-ok/70" />
-        </div>
+    <div className="relative overflow-hidden rounded-[10px] border border-line bg-surface shadow-[0_24px_70px_-28px_rgba(3,5,9,0.95)]">
+      {/* Trace chrome */}
+      <div className="ruler flex items-center gap-3 border-b border-line/80 bg-raised/60 px-4 pb-2 pt-2.5">
         <p className="truncate font-mono text-[11px] text-muted">
-          runbolt<span className="text-line">/</span>workflows
-          <span className="text-line">/</span>
+          runbolt<span className="text-line-strong">/</span>workflows
+          <span className="text-line-strong">/</span>
           <span className="text-fg">order-fulfillment</span>
         </p>
         <span className="ml-auto flex items-center gap-1.5 rounded border border-ok/25 bg-ok/10 px-2 py-0.5 font-mono text-[10px] text-ok">
@@ -79,19 +74,19 @@ function PipelinePreview() {
                 aria-hidden
               />
               <span
-                className="rail-pulse absolute left-[5px] h-3 w-3 rounded-full bg-highlight shadow-[0_0_12px_rgba(76,201,240,0.8)]"
+                className="rail-pulse absolute left-[5px] h-3 w-3 bg-primary shadow-[0_0_10px_rgba(199,240,78,0.7)]"
                 aria-hidden
               />
               {pipeline.map((step) => (
                 <li key={step.label} className="relative pb-2.5 pl-7">
                   <span
-                    className={`absolute left-0 top-1/2 h-[15px] w-[15px] -translate-y-1/2 rounded-full border-2 border-ink ${
+                    className={`absolute left-0 top-1/2 h-[13px] w-[13px] -translate-y-1/2 border-2 border-ink ${
                       step.status === "running" ? "bg-primary" : "bg-line"
                     }`}
                     aria-hidden
                   />
                   <div
-                    className={`flex items-center gap-2.5 rounded-lg border bg-surface/95 px-3 py-2 backdrop-blur-sm ${
+                    className={`flex items-center gap-2.5 rounded-lg border bg-surface/95 px-3 py-2 ${
                       step.status === "running"
                         ? "border-primary/60 pulse-primary"
                         : "border-line"
@@ -122,7 +117,7 @@ function PipelinePreview() {
                 >
                   <CheckIcon width={9} height={9} />
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-ok/40 bg-ok/10 px-3 py-1 text-[11px] font-medium text-ok shadow-[0_0_18px_rgba(34,197,94,0.2)]">
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-ok/40 bg-ok/10 px-3 py-1 text-[11px] font-medium text-ok">
                   <CheckIcon width={11} height={11} />
                   Success
                 </span>
@@ -135,7 +130,7 @@ function PipelinePreview() {
         <div className="flex flex-col bg-code/60">
           <div className="border-b border-line/60 p-4">
             <div className="flex items-center justify-between">
-              <p className="font-mono text-[10px] uppercase tracking-widest text-muted/70">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-faint">
                 Inspector
               </p>
               <span className="rounded border border-highlight/30 bg-highlight/10 px-1.5 py-0.5 font-mono text-[9px] text-highlight">
@@ -146,34 +141,34 @@ function PipelinePreview() {
               {inspectorRows.map(([key, value]) => (
                 <div key={key} className="flex gap-2">
                   <dt className="w-16 shrink-0 text-highlight">{key}</dt>
-                  <dd className="truncate text-[#A7B2C9]">{value}</dd>
+                  <dd className="truncate text-code-text">{value}</dd>
                 </div>
               ))}
             </dl>
           </div>
           <div className="flex-1 p-4" aria-label="Execution logs">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-muted/70">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-faint">
               Logs
             </p>
             <div className="scroll-slim mt-3 space-y-1 overflow-x-auto font-mono text-[10.5px] leading-5">
               {logs.map(([time, level, msg], i) => (
                 <p key={i} className="whitespace-pre">
-                  <span className="text-muted/60">{time}</span>{" "}
+                  <span className="text-faint">{time}</span>{" "}
                   <span
                     className={
                       level === "OK"
                         ? "text-ok"
                         : level === "RUN"
                           ? "text-primary"
-                          : "text-info"
+                          : "text-highlight"
                     }
                   >
                     {level.padEnd(4)}
                   </span>{" "}
-                  <span className="text-[#A7B2C9]">{msg}</span>
+                  <span className="text-code-text">{msg}</span>
                 </p>
               ))}
-              <p className="whitespace-pre text-highlight">▍</p>
+              <p className="whitespace-pre text-primary">▍</p>
             </div>
           </div>
         </div>
@@ -184,44 +179,30 @@ function PipelinePreview() {
 
 export function FeaturesHero() {
   return (
-    <section className="relative overflow-hidden pt-16 sm:pt-24">
+    <section className="relative overflow-hidden pt-14 sm:pt-20">
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="bg-grid mask-fade-radial absolute inset-0 opacity-60" />
-        <div className="absolute left-1/2 top-[-320px] h-[640px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(59,130,246,0.14),transparent)] blur-2xl" />
+        <div className="bg-grid mask-fade-radial absolute inset-0 opacity-50" />
       </div>
 
       <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-highlight">
-            Powerful automation for developers
-          </p>
-          <h1 className="mt-5 text-balance text-4xl font-bold leading-[1.08] tracking-[-0.03em] sm:text-6xl">
-            Everything you need to build powerful workflows.
+        <div className="max-w-3xl">
+          <h1 className="text-balance font-display text-4xl font-bold leading-[1.08] tracking-[-0.025em] sm:text-5xl lg:text-[56px]">
+            Everything you need to run workflows in production
+            <span className="text-primary">.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted sm:text-lg">
+          <p className="mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted sm:text-lg">
             Build, execute, monitor, and scale automated workflows with a
             developer-first platform designed for modern engineering teams.
           </p>
 
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a
-              href="#cta"
-              className="group inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-button-text shadow-[0_2px_20px_rgba(59,130,246,0.4)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_2px_28px_rgba(59,130,246,0.55)] sm:w-auto"
-            >
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <ButtonAnchor href="#cta">
               Start Building
-              <ArrowRightIcon
-                width={15}
-                height={15}
-                className="transition-transform duration-200 group-hover:translate-x-0.5"
-              />
-            </a>
-            <a
-              href="#developers"
-              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-line bg-surface/60 px-6 text-sm font-medium text-fg backdrop-blur transition-colors duration-200 hover:border-[#3a466b] hover:bg-hover sm:w-auto"
-            >
+            </ButtonAnchor>
+            <ButtonAnchor href="#developers" variant="secondary">
               <BookIcon width={15} height={15} className="text-muted" />
               Read Documentation
-            </a>
+            </ButtonAnchor>
           </div>
         </div>
 

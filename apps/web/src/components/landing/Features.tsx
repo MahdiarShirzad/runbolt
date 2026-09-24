@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Reveal } from "./Reveal";
+import { SectionHeader } from "../ui/kit";
 import { CodeIcon, EyeIcon, NodeGraphIcon, PulseIcon, WorkerIcon } from "./icons";
 
 function MiniGraph() {
@@ -8,7 +9,7 @@ function MiniGraph() {
       {[
         ["Webhook", "border-warn/40 text-warn"],
         ["Condition", "border-accent/40 text-accent"],
-        ["Worker", "border-primary/40 text-primary"],
+        ["Worker", "border-highlight/40 text-highlight"],
       ].map(([label, cls], i) => (
         <div key={label} className="flex items-center">
           {i > 0 && <span className="h-px w-5 bg-line" />}
@@ -33,16 +34,16 @@ function MiniLogs() {
   return (
     <div className="space-y-1 font-mono text-[10px] leading-4" aria-hidden>
       <p>
-        <span className="text-info">INFO</span>{" "}
-        <span className="text-[#A7B2C9]">step http.request → 200 (171ms)</span>
+        <span className="text-highlight">INFO</span>{" "}
+        <span className="text-code-text">step http.request → 200 (171ms)</span>
       </p>
       <p>
         <span className="text-ok">OK&nbsp;&nbsp;</span>{" "}
-        <span className="text-[#A7B2C9]">step db.insert committed (94ms)</span>
+        <span className="text-code-text">step db.insert committed (94ms)</span>
       </p>
       <p>
         <span className="text-primary">RUN&nbsp;</span>{" "}
-        <span className="text-[#A7B2C9]">step worker.enqueue #48213 …</span>
+        <span className="text-code-text">step worker.enqueue #48213 …</span>
       </p>
     </div>
   );
@@ -54,15 +55,15 @@ function MiniCode() {
       <p>
         <span className="text-accent">const</span>{" "}
         <span className="text-fg">run = </span>
-        <span className="text-info">await</span>{" "}
+        <span className="text-highlight">await</span>{" "}
         <span className="text-fg">runbolt.</span>
-        <span className="text-highlight">trigger</span>
-        <span className="text-[#7C89A6]">(</span>
+        <span className="text-primary">trigger</span>
+        <span className="text-[#6E7C94]">(</span>
         <span className="text-ok">&quot;deploy&quot;</span>
-        <span className="text-[#7C89A6]">)</span>
+        <span className="text-[#6E7C94]">)</span>
       </p>
       <p>
-        <span className="text-com text-[#546080]">// → run_9f2ac1e7 · running</span>
+        <span className="text-comment">{"// → run_9f2ac1e7 · running"}</span>
       </p>
     </div>
   );
@@ -77,7 +78,7 @@ function MiniQueue() {
         ["w-3/5", "bg-line"],
       ].map(([w, c], i) => (
         <div key={i} className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-line" />
+          <span className="h-1.5 w-1.5 bg-line" aria-hidden />
           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-code">
             <span className={`block h-full rounded-full ${w} ${c}`} />
           </div>
@@ -93,8 +94,8 @@ function MiniSpark() {
       <svg viewBox="0 0 160 40" className="h-10 w-full">
         <defs>
           <linearGradient id="spark-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#4CC9F0" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#4CC9F0" stopOpacity="0" />
+            <stop offset="0%" stopColor="#C7F04E" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#C7F04E" stopOpacity="0" />
           </linearGradient>
         </defs>
         <path
@@ -104,7 +105,7 @@ function MiniSpark() {
         <path
           d="M0 30 L20 26 L40 28 L60 18 L80 22 L100 12 L120 16 L140 8 L160 10"
           fill="none"
-          stroke="#4CC9F0"
+          stroke="#C7F04E"
           strokeWidth="1.5"
           strokeLinejoin="round"
         />
@@ -121,7 +122,7 @@ export type Feature = {
   title: string;
   description: string;
   preview: ReactNode;
-  span: string;
+  span?: string;
 };
 
 const features: Feature[] = [
@@ -170,16 +171,20 @@ const features: Feature[] = [
 export function FeatureCard({ feature }: { feature: Feature }) {
   return (
     <article
-      className={`group flex flex-col rounded-xl border border-line bg-surface/60 p-5 transition-colors duration-200 hover:border-[#33406a] hover:bg-surface ${feature.span}`}
+      className={`group flex h-full flex-col rounded-lg border border-line bg-surface/60 p-5 transition-colors duration-200 hover:border-line-strong hover:bg-surface ${feature.span ?? ""}`}
     >
-      <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-raised text-info transition-colors duration-200 group-hover:border-primary/40 group-hover:text-highlight">
-        {feature.icon}
+      <div className="mb-3.5 flex items-center justify-between">
+        <h3 className="font-display text-[15px] font-semibold tracking-tight">
+          {feature.title}
+        </h3>
+        <span className="text-muted transition-colors duration-200 group-hover:text-primary">
+          {feature.icon}
+        </span>
       </div>
-      <h3 className="text-[15px] font-semibold tracking-tight">{feature.title}</h3>
-      <p className="mt-1.5 text-sm leading-relaxed text-muted">
+      <p className="text-sm leading-relaxed text-muted">
         {feature.description}
       </p>
-      <div className="mt-5 flex-1 rounded-lg border border-line/60 bg-code/60 p-3.5 pt-4">
+      <div className="mt-5 flex-1 rounded-md border border-line/60 bg-code/60 p-3.5 pt-4">
         {feature.preview}
       </div>
     </article>
@@ -190,14 +195,12 @@ export function Features() {
   return (
     <section id="features" className="py-24 sm:py-32" aria-labelledby="features-heading">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <Reveal className="max-w-2xl">
-          <p className="font-mono text-xs text-highlight">Platform</p>
-          <h2
+        <Reveal>
+          <SectionHeader
             id="features-heading"
-            className="mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            Built like the infrastructure you already trust.
-          </h2>
+            eyebrow="Platform"
+            title="Built like the infrastructure you already trust."
+          />
         </Reveal>
 
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-6">

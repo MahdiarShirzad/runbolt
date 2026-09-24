@@ -101,7 +101,6 @@ export function SystemVisualization() {
       aria-labelledby="system-heading"
     >
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/2 h-[500px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(59,130,246,0.07),transparent)] blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
@@ -120,7 +119,7 @@ export function SystemVisualization() {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="mt-12 overflow-hidden rounded-xl border border-line bg-surface/60 shadow-[0_24px_80px_-24px_rgba(5,7,12,0.9)]">
+          <div className="mt-12 overflow-hidden rounded-[10px] border border-line bg-surface/60 shadow-[0_24px_80px_-24px_rgba(3,5,9,0.95)]">
             {/* Poster header */}
             <div className="flex flex-wrap items-center gap-3 border-b border-line/80 bg-raised/60 px-5 py-3">
               <p className="font-mono text-xs text-muted">
@@ -146,7 +145,7 @@ export function SystemVisualization() {
                           aria-hidden
                           className="absolute bottom-[-10px] left-[19px] top-[38px] w-px bg-line sm:left-[23px]"
                         >
-                          <span className="rail-pulse absolute left-1/2 h-5 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-highlight to-transparent" />
+                          <span className="rail-pulse absolute left-1/2 h-5 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-primary to-transparent" />
                         </span>
                       ) : null}
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CodeBlock, type Token } from "./CodeBlock";
 import { Reveal } from "./Reveal";
+import { SectionHeader } from "../ui/kit";
 import { CheckIcon } from "./icons";
 
 const tabs = ["TypeScript SDK", "CLI", "REST API"] as const;
@@ -131,18 +132,12 @@ export function DeveloperExperience() {
     <section id="developers" className="py-24 sm:py-32" aria-labelledby="devex-heading">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
         <Reveal>
-          <p className="font-mono text-xs text-highlight">Developer experience</p>
-          <h2
+          <SectionHeader
             id="devex-heading"
-            className="mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            An API you would design yourself.
-          </h2>
-          <p className="mt-4 text-pretty leading-relaxed text-muted">
-            Runbolt stays out of your way. Define workflows in the builder or in
-            code, trigger them from anywhere, and inspect every run with tools
-            you already use.
-          </p>
+            eyebrow="Developer experience"
+            title="An API you would design yourself."
+            lede="Runbolt stays out of your way. Define workflows in the builder or in code, trigger them from anywhere, and inspect every run with tools you already use."
+          />
           <ul className="mt-6 space-y-3">
             {points.map((point) => (
               <li key={point} className="flex items-start gap-3 text-sm text-fg">
@@ -159,7 +154,7 @@ export function DeveloperExperience() {
           <div
             role="tablist"
             aria-label="Code examples"
-            className="mb-3 flex gap-1 rounded-lg border border-line bg-surface/60 p-1"
+            className="mb-3 flex gap-1 rounded-md border border-line bg-surface/60 p-1"
           >
             {tabs.map((tab) => (
               <button
@@ -170,7 +165,7 @@ export function DeveloperExperience() {
                 aria-controls={`code-panel-${tab}`}
                 id={`tab-${tab}`}
                 onClick={() => setActive(tab)}
-                className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
+                className={`flex-1 rounded px-3 py-1.5 font-mono text-xs transition-colors duration-200 ${
                   active === tab
                     ? "bg-active text-fg"
                     : "text-muted hover:bg-hover hover:text-fg"

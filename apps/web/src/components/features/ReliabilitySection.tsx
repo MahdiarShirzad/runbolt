@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Reveal } from "../landing/Reveal";
+import { SectionHeader } from "../ui/kit";
 import { EyeIcon, PulseIcon, RetryIcon, WorkerIcon } from "../landing/icons";
 
 function ShieldIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -94,19 +95,13 @@ export function ReliabilitySection() {
       aria-labelledby="reliability-heading"
     >
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <Reveal className="max-w-2xl">
-          <p className="font-mono text-xs text-highlight">Reliability</p>
-          <h2
+        <Reveal>
+          <SectionHeader
             id="reliability-heading"
-            className="mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            Built for workflows that cannot fail silently.
-          </h2>
-          <p className="mt-4 text-pretty leading-relaxed text-muted">
-            Automation you cannot trust is worse than no automation. Runbolt
-            treats failure as a first-class state — visible, handled, and
-            recoverable.
-          </p>
+            eyebrow="Reliability"
+            title="Built for workflows that cannot fail silently."
+            lede="Automation you cannot trust is worse than no automation. Runbolt treats failure as a first-class state — visible, handled, and recoverable."
+          />
         </Reveal>
 
         <div className="mt-12 grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3">

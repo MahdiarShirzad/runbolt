@@ -4,10 +4,10 @@ import { CheckIcon, DbIcon, FilterIcon, GlobeIcon, WebhookIcon, WorkerIcon } fro
 /* Node kinds → color roles from the Runbolt node palette */
 const kindColor: Record<string, string> = {
   webhook: "text-warn",
-  http: "text-info",
+  http: "text-highlight",
   condition: "text-accent",
   db: "text-ok",
-  worker: "text-primary",
+  worker: "text-highlight",
 };
 
 type NodeStatus = "success" | "running";
@@ -85,11 +85,11 @@ const edges = [
 ];
 
 const logs: [string, string, string, string][] = [
-  ["12:04:31", "INFO", "text-info", "webhook.received POST /hooks/orders (18ms)"],
-  ["12:04:31", "INFO", "text-info", "condition.eval premium === true"],
-  ["12:04:31", "INFO", "text-info", "http.request stripe/charges → 200 (171ms)"],
+  ["12:04:31", "INFO", "text-highlight", "webhook.received POST /hooks/orders (18ms)"],
+  ["12:04:31", "INFO", "text-highlight", "condition.eval premium === true"],
+  ["12:04:31", "INFO", "text-highlight", "http.request stripe/charges → 200 (171ms)"],
   ["12:04:31", " OK ", "text-ok", "db.insert orders · 1 row (94ms)"],
-  ["12:04:31", "INFO", "text-info", "worker.enqueue fulfillment.job #48213"],
+  ["12:04:31", "INFO", "text-highlight", "worker.enqueue fulfillment.job #48213"],
   ["12:04:31", "RUN ", "text-primary", "worker.running fulfillment.job #48213 …"],
 ];
 
@@ -97,9 +97,9 @@ const logs: [string, string, string, string][] = [
 const spans: [string, number, number, string, boolean?][] = [
   ["webhook.received", 1, 5, "bg-warn/70"],
   ["condition.eval", 7, 5, "bg-accent/70"],
-  ["http.request", 13, 24, "bg-info/70"],
+  ["http.request", 13, 24, "bg-highlight/70"],
   ["db.insert", 38, 12, "bg-ok/70"],
-  ["worker.running", 51, 47, "bg-gradient-to-r from-primary/80 to-highlight/80", true],
+  ["worker.running", 51, 47, "bg-primary/80", true],
 ];
 
 function StatusBadge({ status }: { status: NodeStatus }) {
@@ -125,23 +125,12 @@ function StatusBadge({ status }: { status: NodeStatus }) {
 export function BuilderMock() {
   return (
     <div className="relative">
-      {/* Ambient glow behind the mock */}
-      <div
-        aria-hidden
-        className="absolute -inset-x-8 -top-10 -bottom-16 rounded-[32px] bg-[radial-gradient(50%_60%_at_50%_30%,rgba(59,130,246,0.16),transparent_70%)] blur-2xl"
-      />
-
-      <div className="relative overflow-hidden rounded-xl border border-line bg-surface shadow-[0_24px_80px_-24px_rgba(5,7,12,0.9)]">
-        {/* Window chrome */}
-        <div className="flex items-center gap-3 border-b border-line/80 bg-raised/60 px-4 py-2.5">
-          <div className="flex gap-1.5" aria-hidden>
-            <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]/70" />
-            <span className="h-2.5 w-2.5 rounded-full bg-warn/70" />
-            <span className="h-2.5 w-2.5 rounded-full bg-ok/70" />
-          </div>
+      <div className="relative overflow-hidden rounded-[10px] border border-line bg-surface shadow-[0_24px_70px_-28px_rgba(3,5,9,0.95)]">
+        {/* Trace chrome */}
+        <div className="ruler flex items-center gap-3 border-b border-line/80 bg-raised/60 px-4 pb-2 pt-2.5">
           <p className="truncate font-mono text-[11px] text-muted">
-            runbolt<span className="text-line">/</span>workflows
-            <span className="text-line">/</span>
+            runbolt<span className="text-line-strong">/</span>workflows
+            <span className="text-line-strong">/</span>
             <span className="text-fg">order-fulfillment</span>
           </p>
           <div className="ml-auto flex items-center gap-2">
@@ -158,24 +147,24 @@ export function BuilderMock() {
         <div className="flex">
           {/* Node library */}
           <aside className="hidden w-44 shrink-0 border-r border-line/80 p-3 md:block" aria-label="Node library">
-            <p className="px-2 pb-2 font-mono text-[10px] uppercase tracking-widest text-muted/70">
+            <p className="px-2 pb-2 font-mono text-[10px] uppercase tracking-widest text-faint">
               Nodes
             </p>
             <ul className="space-y-0.5">
               {[
                 ["Trigger", "bg-primary"],
                 ["Webhook", "bg-warn"],
-                ["HTTP", "bg-info"],
+                ["HTTP", "bg-highlight"],
                 ["Condition", "bg-accent"],
-                ["Transform", "bg-highlight"],
+                ["Transform", "bg-viz-7"],
                 ["Database", "bg-ok"],
-                ["Worker", "bg-primary"],
+                ["Worker", "bg-highlight"],
               ].map(([label, dot]) => (
                 <li
                   key={label}
                   className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-xs text-muted transition-colors hover:bg-hover hover:text-fg"
                 >
-                  <span className={`h-1.5 w-1.5 rounded-full ${dot}`} aria-hidden />
+                  <span className={`h-1.5 w-1.5 ${dot}`} aria-hidden />
                   {label}
                 </li>
               ))}
@@ -199,14 +188,14 @@ export function BuilderMock() {
                     <path
                       d={edge.d}
                       fill="none"
-                      stroke="#26304A"
+                      stroke="#232C3B"
                       strokeWidth={1.5}
                       vectorEffect="non-scaling-stroke"
                     />
                     <path
                       d={edge.d}
                       fill="none"
-                      stroke="#4CC9F0"
+                      stroke="#C7F04E"
                       strokeWidth={1.5}
                       strokeLinecap="round"
                       vectorEffect="non-scaling-stroke"
@@ -221,7 +210,7 @@ export function BuilderMock() {
               {nodes.map((node) => (
                 <div
                   key={node.id}
-                  className={`absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-2.5 rounded-lg border bg-surface/95 px-3 py-2 backdrop-blur-sm ${
+                  className={`absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-2.5 rounded-lg border bg-surface/95 px-3 py-2 ${
                     node.status === "running"
                       ? "border-primary/60 pulse-primary"
                       : "border-line"
@@ -248,20 +237,20 @@ export function BuilderMock() {
             className="hidden w-72 shrink-0 flex-col border-l border-line/80 bg-code lg:flex"
             aria-label="Execution logs"
           >
-            <p className="border-b border-line/60 px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-muted/70">
+            <p className="border-b border-line/60 px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest text-faint">
               Execution log
             </p>
             <div className="scroll-slim flex-1 overflow-y-auto overflow-x-auto p-3 font-mono text-[10.5px] leading-5">
               {logs.map(([time, level, levelColor, msg], i) => (
                 <p key={i} className="whitespace-pre">
-                  <span className="text-muted/60">{time}</span>{" "}
+                  <span className="text-faint">{time}</span>{" "}
                   <span className={levelColor}>{level}</span>{" "}
-                  <span className="text-[#A7B2C9]">{msg}</span>
+                  <span className="text-code-text">{msg}</span>
                 </p>
               ))}
               <p className="whitespace-pre">
-                <span className="text-muted/60">12:04:31</span>{" "}
-                <span className="text-highlight">▍</span>
+                <span className="text-faint">12:04:31</span>{" "}
+                <span className="text-primary">▍</span>
               </p>
             </div>
           </aside>
@@ -269,7 +258,7 @@ export function BuilderMock() {
 
         {/* Tracing waterfall */}
         <div className="border-t border-line/80 bg-raised/40 px-4 py-3">
-          <div className="mb-2 flex items-center justify-between font-mono text-[10px] text-muted/70">
+          <div className="mb-2 flex items-center justify-between font-mono text-[10px] text-faint">
             <span className="uppercase tracking-widest">Trace · run #48213</span>
             <span>
               elapsed <span className="text-fg">395ms</span> · retries{" "}

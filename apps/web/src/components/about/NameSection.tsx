@@ -69,7 +69,7 @@ export function NameSection() {
         </div>
 
         <Reveal delay={120}>
-          <div className="mt-12 overflow-hidden rounded-xl border border-line bg-surface/50">
+          <div className="mt-12 overflow-hidden rounded-[10px] border border-line bg-surface/50">
             <div className="grid divide-y divide-line/70 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
               <div className="p-6 sm:p-8">
                 <WordColumn word="RUN" words={runWords} />
@@ -95,7 +95,7 @@ export function NameSection() {
                 <span className="text-xl text-muted sm:text-2xl" aria-hidden>
                   →
                 </span>
-                <span className="bg-gradient-to-r from-primary via-highlight to-primary bg-clip-text text-3xl font-bold tracking-[0.22em] text-transparent sm:text-4xl">
+                <span className="font-display text-3xl font-bold tracking-[0.22em] text-primary sm:text-4xl">
                   RUNBOLT
                 </span>
               </p>

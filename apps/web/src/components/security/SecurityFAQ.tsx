@@ -54,7 +54,7 @@ function FaqItem({
           aria-expanded={open}
           aria-controls={panelId}
           onClick={onToggle}
-          className="flex w-full items-center justify-between gap-4 py-5 text-left text-[15px] font-medium text-fg transition-colors duration-200 hover:text-highlight"
+          className="flex w-full items-center justify-between gap-4 py-5 text-left text-[15px] font-medium text-fg transition-colors duration-200 hover:text-primary"
         >
           {question}
           <ChevronDownIcon
@@ -99,7 +99,7 @@ export function SecurityFAQ() {
             Something else on your mind? Reach out at{" "}
             <a
               href="mailto:hello@runbolt.dev"
-              className="text-info transition-colors hover:text-highlight"
+              className="text-muted underline decoration-line-strong underline-offset-4 transition-colors hover:text-fg hover:decoration-primary"
             >
               hello@runbolt.dev
             </a>

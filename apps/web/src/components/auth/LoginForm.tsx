@@ -82,7 +82,7 @@ export function LoginForm() {
           >
             <Link
               href="/forgot-password"
-              className="text-[12.5px] text-info transition-colors hover:text-highlight"
+              className="text-[12.5px] text-muted underline decoration-line-strong underline-offset-4 transition-colors hover:text-fg hover:decoration-primary"
             >
               Forgot password?
             </Link>
@@ -94,7 +94,7 @@ export function LoginForm() {
             type="checkbox"
             checked={remember}
             onChange={(e) => setRemember(e.target.checked)}
-            className="h-3.5 w-3.5 rounded border-line bg-input accent-[#3B82F6]"
+            className="h-3.5 w-3.5 rounded border-line bg-input accent-primary"
           />
           Remember me for 30 days
         </label>

@@ -1,4 +1,5 @@
 import { Reveal } from "../landing/Reveal";
+import { SectionHeader } from "../ui/kit";
 import { StepIcon, type NodeStatus } from "./shared";
 
 const steps: { label: string; detail: string; dur: string; status: NodeStatus }[] = [
@@ -20,7 +21,7 @@ const logs: [string, string, string][] = [
 
 function RunPanel() {
   return (
-    <div className="overflow-hidden rounded-xl border border-line bg-surface shadow-[0_24px_80px_-24px_rgba(5,7,12,0.9)]">
+    <div className="overflow-hidden rounded-xl border border-line bg-surface shadow-[0_24px_80px_-24px_rgba(3,5,9,0.95)]">
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-line/80 bg-raised/60 px-4 py-3">
         <p className="font-mono text-xs text-muted">
@@ -95,7 +96,7 @@ function RunPanel() {
               >
                 {level.padEnd(4)}
               </span>{" "}
-              <span className="text-[#A7B2C9]">{msg}</span>
+              <span className="text-code-text">{msg}</span>
             </p>
           ))}
         </div>
@@ -103,12 +104,12 @@ function RunPanel() {
           <p className="text-muted/60">output</p>
           <p className="mt-1 whitespace-pre">
             <span className="text-highlight">{"{"}</span>{" "}
-            <span className="text-highlight">"customerId"</span>
-            <span className="text-[#7C89A6]">: </span>
-            <span className="text-ok">"cus_123"</span>
-            <span className="text-[#7C89A6]">, </span>
-            <span className="text-highlight">"synced"</span>
-            <span className="text-[#7C89A6]">: </span>
+            <span className="text-highlight">&quot;customerId&quot;</span>
+            <span className="text-[#6E7C94]">: </span>
+            <span className="text-ok">&quot;cus_123&quot;</span>
+            <span className="text-[#6E7C94]">, </span>
+            <span className="text-highlight">&quot;synced&quot;</span>
+            <span className="text-[#6E7C94]">: </span>
             <span className="text-warn">true</span>{" "}
             <span className="text-highlight">{"}"}</span>
           </p>
@@ -123,18 +124,12 @@ export function ExecutionPreview() {
     <section className="py-24 sm:py-32" aria-labelledby="observability-heading">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
         <Reveal className="lg:order-1">
-          <p className="font-mono text-xs text-highlight">Observability</p>
-          <h2
+          <SectionHeader
             id="observability-heading"
-            className="mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            Know what every workflow is doing.
-          </h2>
-          <p className="mt-4 text-pretty leading-relaxed text-muted">
-            Trace executions from trigger to completion with detailed logs,
-            states, outputs, errors, and timing information. When something
-            fails, you see exactly which step, why, and what to change.
-          </p>
+            eyebrow="Observability"
+            title="Know what every workflow is doing."
+            lede="Trace executions from trigger to completion with detailed logs, states, outputs, errors, and timing information. When something fails, you see exactly which step, why, and what to change."
+          />
           <ul className="mt-6 space-y-2.5 font-mono text-xs text-muted">
             <li>
               <span className="text-ok">✓</span> per-step status and timings

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Reveal } from "../landing/Reveal";
+import { SectionHeader } from "../ui/kit";
 import {
   DbIcon,
   FilterIcon,
@@ -55,7 +56,7 @@ function CanvasNodeCard({ node }: { node: CanvasNode }) {
     <div
       className={`flex items-center gap-2.5 rounded-lg border bg-surface/95 px-3 py-2.5 backdrop-blur-sm ${
         node.selected
-          ? "border-primary shadow-[0_0_0_1px_rgba(59,130,246,0.6),0_0_24px_rgba(59,130,246,0.25)]"
+          ? "border-primary shadow-[0_0_0_1px_rgba(199,240,78,0.5)]"
           : running
             ? "border-primary/60 pulse-primary"
             : "border-line"
@@ -79,16 +80,11 @@ function CanvasNodeCard({ node }: { node: CanvasNode }) {
 
 function ShowcaseCanvas() {
   return (
-    <div className="overflow-hidden rounded-xl border border-line bg-surface shadow-[0_24px_80px_-24px_rgba(5,7,12,0.9)]">
+    <div className="overflow-hidden rounded-[10px] border border-line bg-surface shadow-[0_24px_80px_-24px_rgba(3,5,9,0.95)]">
       {/* Editor toolbar */}
       <div className="flex items-center gap-3 border-b border-line/80 bg-raised/60 px-4 py-2.5">
-        <div className="flex gap-1.5" aria-hidden>
-          <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-warn/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-ok/70" />
-        </div>
         <p className="truncate font-mono text-[11px] text-muted">
-          runbolt<span className="text-line">/</span>
+          runbolt<span className="text-line-strong">/</span>
           <span className="text-fg">customer-sync</span>
           <span className="text-line"> · v12</span>
         </p>
@@ -125,7 +121,7 @@ function ShowcaseCanvas() {
                 <path
                   d={edge.d}
                   fill="none"
-                  stroke="#26304A"
+                  stroke="#232C3B"
                   strokeWidth={1.5}
                   vectorEffect="non-scaling-stroke"
                 />
@@ -133,7 +129,7 @@ function ShowcaseCanvas() {
                   <path
                     d={edge.d}
                     fill="none"
-                    stroke="#4CC9F0"
+                    stroke="#C7F04E"
                     strokeWidth={1.5}
                     strokeLinecap="round"
                     vectorEffect="non-scaling-stroke"
@@ -186,7 +182,7 @@ function ShowcaseCanvas() {
               {inspectorRows.map(([key, value]) => (
                 <div key={key} className="flex gap-2">
                   <dt className="w-16 shrink-0 text-highlight">{key}</dt>
-                  <dd className="truncate text-[#A7B2C9]">{value}</dd>
+                  <dd className="truncate text-code-text">{value}</dd>
                 </div>
               ))}
             </dl>
@@ -214,18 +210,13 @@ export function BuilderShowcase() {
   return (
     <section className="py-24 sm:py-32" aria-labelledby="builder-heading">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <Reveal className="max-w-2xl">
-          <p className="font-mono text-xs text-highlight">Workflow builder</p>
-          <h2
+        <Reveal>
+          <SectionHeader
             id="builder-heading"
-            className="mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            Build workflows visually. Think in systems.
-          </h2>
-          <p className="mt-4 text-pretty leading-relaxed text-muted">
-            Compose triggers, conditions, APIs, databases, workers, and
-            transformations into reliable execution pipelines.
-          </p>
+            eyebrow="Workflow builder"
+            title="Build workflows visually. Think in systems."
+            lede="Compose triggers, conditions, APIs, databases, workers, and transformations into reliable execution pipelines."
+          />
         </Reveal>
 
         <Reveal delay={120} className="mt-12">

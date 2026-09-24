@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Reveal } from "../landing/Reveal";
+import { SectionHeader } from "../ui/kit";
 import { CheckIcon, CopyIcon } from "../landing/icons";
 import { roleClass, type Token, type TokenRole } from "../landing/CodeBlock";
 
@@ -87,7 +88,7 @@ function CodeEditor() {
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-line bg-code shadow-[0_24px_80px_-24px_rgba(5,7,12,0.9)]">
+    <div className="overflow-hidden rounded-xl border border-line bg-code shadow-[0_24px_80px_-24px_rgba(3,5,9,0.95)]">
       <div className="flex items-center gap-3 border-b border-line/70 px-4 py-2.5">
         <span className="h-2 w-2 rounded-full bg-line" aria-hidden />
         <span className="h-2 w-2 rounded-full bg-line" aria-hidden />
@@ -158,7 +159,7 @@ function Terminal() {
         {terminal.map(([prefix, prefixCls, msg], i) => (
           <p key={i} className="whitespace-pre">
             <span className={prefixCls}>{prefix}</span>
-            <span className="text-[#C9D2E3]">{msg}</span>
+            <span className="text-code-text">{msg}</span>
           </p>
         ))}
       </div>
@@ -171,18 +172,12 @@ export function CodeShowcase() {
     <section id="developers" className="py-24 sm:py-32" aria-labelledby="devex-heading">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
         <Reveal>
-          <p className="font-mono text-xs text-highlight">Developer experience</p>
-          <h2
+          <SectionHeader
             id="devex-heading"
-            className="mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            Automation that fits your stack.
-          </h2>
-          <p className="mt-4 text-pretty leading-relaxed text-muted">
-            Use APIs and code where you need them, and visual workflows where
-            they make complexity easier to understand. Both stay in sync —
-            every workflow is inspectable and triggerable from either side.
-          </p>
+            eyebrow="Developer experience"
+            title="Automation that fits your stack."
+            lede="Use APIs and code where you need them, and visual workflows where they make complexity easier to understand. Both stay in sync — every workflow is inspectable and triggerable from either side."
+          />
         </Reveal>
         <Reveal delay={120} className="space-y-4">
           <CodeEditor />

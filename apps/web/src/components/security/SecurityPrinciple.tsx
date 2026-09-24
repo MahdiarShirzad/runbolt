@@ -71,7 +71,7 @@ export function SecurityPrinciples() {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="mt-10 overflow-hidden rounded-xl border border-line bg-surface/60 sm:grid sm:grid-cols-2">
+          <div className="mt-10 overflow-hidden rounded-[10px] border border-line bg-surface/60 sm:grid sm:grid-cols-2">
             {principles.map((principle, i) => {
               // Internal hairlines: vertical split on sm, horizontal on mobile
               const divide = [

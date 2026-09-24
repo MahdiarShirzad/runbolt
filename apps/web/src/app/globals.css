@@ -1,172 +1,187 @@
 @import "tailwindcss";
 
+/*
+ * Runbolt design system — "execution infrastructure".
+ *
+ * Base: deep blue-black ink surfaces with hairline structure.
+ * Accent: volt — a single electric yellow-green reserved for actions,
+ * live state, and the execution comets (the brand's motion signature).
+ * Secondary accent: ice — technical metadata, logs, informational text.
+ * Radii are deliberately small (4/6/10px); structure comes from hairlines,
+ * not shadows or pills.
+ */
+
 @theme {
   /* Typography */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sora), var(--font-plex), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
 
   /* Runbolt brand palette */
-  --color-brand-bg: #0b0f17;
-  --color-brand-primary: #3b82f6;
-  --color-brand-surface: #111726;
-  --color-brand-accent: #8b7cf6;
-  --color-brand-highlight: #4cc9f0;
+  --color-brand-bg: #0a0d13;
+  --color-brand-primary: #c7f04e;
+  --color-brand-surface: #10151d;
+  --color-brand-accent: #a08bf0;
+  --color-brand-highlight: #5cc9ee;
 
   /* Neutral scale */
-  --color-neutral-bg: #0b0f17;
-  --color-neutral-surface-1: #111726;
-  --color-neutral-surface-2: #182034;
-  --color-neutral-border: #26304a;
-  --color-neutral-text-secondary: #8b96ad;
-  --color-neutral-text-primary: #e7ebf3;
+  --color-neutral-bg: #0a0d13;
+  --color-neutral-surface-1: #10151d;
+  --color-neutral-surface-2: #161d28;
+  --color-neutral-border: #232c3b;
+  --color-neutral-text-secondary: #8c97ab;
+  --color-neutral-text-primary: #e9edf4;
 
-  /* Primary palette aliases (existing component tokens) */
-  --color-ink: #0b0f17;
-  --color-surface: #111726;
-  --color-raised: #182034;
-  --color-line: #26304a;
-  --color-primary: #3b82f6;
-  --color-accent: #8b7cf6;
-  --color-highlight: #4cc9f0;
-  --color-fg: #e7ebf3;
-  --color-muted: #8b96ad;
-  --color-button-text: #0b0f17;
+  /* Primary palette aliases (component tokens) */
+  --color-ink: #0a0d13;
+  --color-surface: #10151d;
+  --color-raised: #161d28;
+  --color-line: #232c3b;
+  --color-line-strong: #35435c;
+  --color-primary: #c7f04e;
+  --color-primary-strong: #d9fb72;
+  --color-primary-deep: #a9d13c;
+  --color-accent: #a08bf0;
+  --color-highlight: #5cc9ee;
+  --color-fg: #e9edf4;
+  --color-muted: #8c97ab;
+  --color-faint: #5c6779;
+  --color-button-text: #0a0d13;
 
   /* Status / semantic colors */
-  --color-success: #22c55e;
-  --color-success-bg: #132a1c;
-  --color-error: #f04438;
-  --color-error-bg: #2c1517;
-  --color-warning: #f59e0b;
-  --color-warning-bg: #2b2011;
-  --color-info: #38bdf8;
-  --color-info-bg: #12222e;
+  --color-success: #3ecf8e;
+  --color-success-bg: #12271d;
+  --color-error: #f2614e;
+  --color-error-bg: #2c1713;
+  --color-warning: #f5b23c;
+  --color-warning-bg: #2b2210;
+  --color-info: #5cc9ee;
+  --color-info-bg: #10222c;
 
-  /* Existing status aliases */
-  --color-ok: #22c55e;
-  --color-bad: #f04438;
-  --color-warn: #f59e0b;
+  /* Status aliases */
+  --color-ok: #3ecf8e;
+  --color-bad: #f2614e;
+  --color-warn: #f5b23c;
 
   /* Workflow states */
-  --color-state-idle: #8b96ad;
-  --color-state-queued: #4a5578;
-  --color-state-running: #3b82f6;
-  --color-state-success: #22c55e;
-  --color-state-failed: #f04438;
-  --color-state-retrying: #f59e0b;
-  --color-state-skipped: #8b96ad;
-  --color-state-paused: #8b7cf6;
-  --color-state-cancelled: #4a5578;
-  --color-state-timed-out: #d45c50;
-  --color-state-waiting: #38bdf8;
-  --color-border-strong: #4a5578;
+  --color-state-idle: #8c97ab;
+  --color-state-queued: #47536e;
+  --color-state-running: #c7f04e;
+  --color-state-success: #3ecf8e;
+  --color-state-failed: #f2614e;
+  --color-state-retrying: #f5b23c;
+  --color-state-skipped: #8c97ab;
+  --color-state-paused: #a08bf0;
+  --color-state-cancelled: #47536e;
+  --color-state-timed-out: #e07856;
+  --color-state-waiting: #5cc9ee;
 
-  /* Node type colors */
-  --color-node-trigger: #3b82f6;
-  --color-node-action: #8b96ad;
-  --color-node-condition: #8b7cf6;
-  --color-node-transform: #4cc9f0;
-  --color-node-http: #38bdf8;
-  --color-node-database: #22c55e;
-  --color-node-webhook: #f59e0b;
-  --color-node-delay: #8b96ad;
-  --color-node-queue: #4a5578;
-  --color-node-worker: #3b82f6;
+  /* Node type colors (functional data-viz, not brand chrome) */
+  --color-node-trigger: #c7f04e;
+  --color-node-action: #8c97ab;
+  --color-node-condition: #a08bf0;
+  --color-node-transform: #8195b5;
+  --color-node-http: #5cc9ee;
+  --color-node-database: #3ecf8e;
+  --color-node-webhook: #f5b23c;
+  --color-node-delay: #a08bf0;
+  --color-node-queue: #8195b5;
+  --color-node-worker: #5cc9ee;
 
   /* Data visualization */
-  --color-viz-1: #3b82f6;
-  --color-viz-2: #8b7cf6;
-  --color-viz-3: #4cc9f0;
-  --color-viz-4: #22c55e;
-  --color-viz-5: #f04438;
-  --color-viz-6: #f59e0b;
-  --color-viz-7: #6d7b9e;
-  --color-viz-8: #e7ebf3;
+  --color-viz-1: #c7f04e;
+  --color-viz-2: #5cc9ee;
+  --color-viz-3: #a08bf0;
+  --color-viz-4: #3ecf8e;
+  --color-viz-5: #f2614e;
+  --color-viz-6: #f5b23c;
+  --color-viz-7: #8195b5;
+  --color-viz-8: #e9edf4;
 
   /* Code / terminal / log palette */
-  --color-code-bg: #0d1220;
-  --color-code-text: #c9d2e3;
-  --color-timestamp: #6d7b9e;
-  --color-log-debug: #6d7b9e;
-  --color-log-info: #38bdf8;
-  --color-log-warn: #f59e0b;
-  --color-log-error: #f04438;
-  --color-stack-trace-frame: #8b96ad;
-  --color-stack-trace-file: #4cc9f0;
-  --color-http-get: #3880f8;
-  --color-http-post: #22c55e;
-  --color-http-put: #f59e0b;
-  --color-http-delete: #f04438;
-  --color-http-patch: #887cf6;
-  --color-status-2xx: #22c55e;
-  --color-status-3xx: #38bdf8;
-  --color-status-4xx: #f59e0b;
-  --color-status-5xx: #f04438;
-  --color-json-key: #4cc9f0;
-  --color-json-string: #22c55e;
-  --color-json-number: #8b7cf6;
-  --color-json-boolean: #f59e0b;
-  --color-json-null: #6d7b9e;
-  --color-comment: #546080;
+  --color-code-bg: #0c1017;
+  --color-code-text: #c4cedd;
+  --color-timestamp: #5c6779;
+  --color-log-debug: #5c6779;
+  --color-log-info: #5cc9ee;
+  --color-log-warn: #f5b23c;
+  --color-log-error: #f2614e;
+  --color-stack-trace-frame: #8c97ab;
+  --color-stack-trace-file: #5cc9ee;
+  --color-http-get: #5cc9ee;
+  --color-http-post: #3ecf8e;
+  --color-http-put: #f5b23c;
+  --color-http-delete: #f2614e;
+  --color-http-patch: #a08bf0;
+  --color-status-2xx: #3ecf8e;
+  --color-status-3xx: #5cc9ee;
+  --color-status-4xx: #f5b23c;
+  --color-status-5xx: #f2614e;
+  --color-json-key: #5cc9ee;
+  --color-json-string: #3ecf8e;
+  --color-json-number: #a08bf0;
+  --color-json-boolean: #f5b23c;
+  --color-json-null: #5c6779;
+  --color-comment: #4e5a70;
 
-  /* Existing code alias */
-  --color-code: #0d1220;
+  /* Code alias */
+  --color-code: #0c1017;
 
-  /* Additional UI colors */
-  --color-input-bg: #111726;
-  --color-input-border: #26304a;
-  --color-input-focus: #3b82f6;
-  --color-hover-bg: #182034;
-  --color-active-bg: #1e2740;
-  --color-selected-bg: #152140;
-  --color-disabled-bg: #111726;
-  --color-disabled-text: #4a5578;
-  --color-overlay: #05070c;
-  --color-tooltip-bg: #1e2740;
-  --color-skeleton: #182034;
-  --color-code-selection: #3b82f6;
-  --color-focus-ring: #3b82f6;
+  /* Interaction colors */
+  --color-input-bg: #0d121a;
+  --color-input-border: #232c3b;
+  --color-input-focus: #c7f04e;
+  --color-hover-bg: #161d28;
+  --color-active-bg: #1c2532;
+  --color-selected-bg: #1a2b17;
+  --color-disabled-bg: #10151d;
+  --color-disabled-text: #47536e;
+  --color-overlay: #05070b;
+  --color-tooltip-bg: #1c2532;
+  --color-skeleton: #161d28;
+  --color-code-selection: #c7f04e;
+  --color-focus-ring: #c7f04e;
 
-  /* Existing interaction aliases */
-  --color-input: #111726;
-  --color-hover: #182034;
-  --color-active: #1e2740;
-  --color-selected: #152140;
-  --color-tooltip: #1e2740;
+  /* Interaction aliases */
+  --color-input: #0d121a;
+  --color-hover: #161d28;
+  --color-active: #1c2532;
+  --color-selected: #1a2b17;
+  --color-tooltip: #1c2532;
 }
 
 @layer base {
   :root {
     color-scheme: dark;
+    --theme-bg: #0a0d13;
+    --theme-surface: #10151d;
+    --theme-surface-2: #161d28;
+    --theme-border: #232c3b;
+    --theme-primary: #c7f04e;
+    --theme-accent: #a08bf0;
+    --theme-highlight: #5cc9ee;
+    --theme-text-secondary: #8c97ab;
+    --theme-text-primary: #e9edf4;
+    --theme-button-text: #0a0d13;
   }
-  :root {
-    --font-sans: var(--font-inter);
-    --font-mono: var(--font-jetbrains);
-  }
-  /* Runbolt */
-  :root,
-  [data-theme="runbolt"],
-  .theme-preview-runbolt {
-    --theme-bg: #0b0f17;
-    --theme-surface: #111726;
-    --theme-surface-2: #182034;
-    --theme-border: #26304a;
-    --theme-primary: #3b82f6;
-    --theme-accent: #8b7cf6;
-    --theme-highlight: #4cc9f0;
-    --theme-text-secondary: #8b96ad;
-    --theme-text-primary: #e7ebf3;
-    --theme-button-text: #0b0f17;
-  }
+
   body {
     background-color: var(--color-neutral-bg);
     color: var(--color-neutral-text-primary);
     font-family: var(--font-sans);
+    font-size: 15px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
     text-rendering: optimizeLegibility;
   }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -179,7 +194,7 @@
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--color-neutral-text-secondary);
+    background-color: var(--color-line-strong);
   }
 }
 
@@ -188,14 +203,14 @@ html {
 }
 
 ::selection {
-  background: rgba(59, 130, 246, 0.25);
-  color: #e7ebf3;
+  background: rgba(199, 240, 78, 0.22);
+  color: #f4f8ec;
 }
 
 :focus-visible {
   outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 /* Slim scrollbars for code / log panels */
@@ -215,10 +230,10 @@ html {
 /* ---------- Scroll reveal ---------- */
 .reveal {
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(14px);
   transition:
-    opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+    opacity 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
   transition-delay: var(--reveal-delay, 0ms);
 }
 .reveal.is-visible {
@@ -229,12 +244,24 @@ html {
 /* ---------- Background grid ---------- */
 .bg-grid {
   background-image:
-    linear-gradient(to right, rgba(38, 48, 74, 0.45) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(38, 48, 74, 0.45) 1px, transparent 1px);
+    linear-gradient(to right, rgba(35, 44, 59, 0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(35, 44, 59, 0.5) 1px, transparent 1px);
   background-size: 36px 36px;
 }
 .mask-fade-radial {
   mask-image: radial-gradient(ellipse 90% 80% at 50% 20%, black 30%, transparent 75%);
+}
+
+/* Ruler tick strip — precision-instrument edge for trace panels */
+.ruler {
+  background-image: linear-gradient(
+    to right,
+    var(--color-line) 1px,
+    transparent 1px
+  );
+  background-size: 9px 100%;
+  background-position: bottom;
+  background-repeat: repeat-x;
 }
 
 /* ---------- Execution choreography ---------- */
@@ -254,13 +281,13 @@ html {
 /* Running-node ring pulse */
 @keyframes node-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 0 rgba(199, 240, 78, 0.4);
   }
   70% {
-    box-shadow: 0 0 0 12px rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 10px rgba(199, 240, 78, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 0 rgba(199, 240, 78, 0);
   }
 }
 .pulse-primary {
@@ -279,21 +306,6 @@ html {
 }
 .blink {
   animation: blink 1.4s ease-in-out infinite;
-}
-
-/* Slow gradient pan for hero glows / CTA */
-@keyframes gradient-pan {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-.gradient-pan {
-  background-size: 200% 200%;
-  animation: gradient-pan 14s ease-in-out infinite;
 }
 
 /* Execution comet traveling down a vertical pipeline rail */
@@ -361,7 +373,6 @@ html {
   .edge-flow,
   .pulse-primary,
   .blink,
-  .gradient-pan,
   .rail-pulse,
   .spin,
   .flow-x-dot {

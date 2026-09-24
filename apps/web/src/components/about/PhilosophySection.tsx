@@ -60,7 +60,7 @@ export function PhilosophySection() {
 
         {/* Philosophy comparison */}
         <Reveal delay={120}>
-          <div className="mt-14 overflow-hidden rounded-xl border border-line bg-surface/60">
+          <div className="mt-14 overflow-hidden rounded-[10px] border border-line bg-surface/60">
             <div className="border-b border-line/70 bg-raised/50 px-5 py-3">
               <p className="font-mono text-[10.5px] uppercase tracking-widest text-muted/70">
                 product philosophy · how we frame the tradeoffs
@@ -107,7 +107,7 @@ export function PhilosophySection() {
                   {approach.map((item) => (
                     <li key={item} className="flex items-center gap-3">
                       <span
-                        className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary shadow-[0_0_8px_rgba(59,130,246,0.8)]"
+                        className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary shadow-[0_0_8px_rgba(199,240,78,0.7)]"
                         aria-hidden
                       />
                       <span className="text-lg font-medium text-fg">{item}</span>

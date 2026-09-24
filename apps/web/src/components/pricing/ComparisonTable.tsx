@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import { Reveal } from "../landing/Reveal";
+import { SectionHeader } from "../ui/kit";
 import { CheckIcon } from "../landing/icons";
 
 type CellValue = { type: "check" } | { type: "none" } | { type: "text"; value: string };
@@ -52,14 +52,12 @@ export function ComparisonTable() {
   return (
     <section className="py-24 sm:py-32" aria-labelledby="compare-heading">
       <div className="mx-auto max-w-5xl px-5 sm:px-8">
-        <Reveal className="max-w-2xl">
-          <p className="font-mono text-xs text-highlight">Comparison</p>
-          <h2
+        <Reveal>
+          <SectionHeader
             id="compare-heading"
-            className="mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            Compare capabilities
-          </h2>
+            eyebrow="Comparison"
+            title="Compare capabilities"
+          />
         </Reveal>
 
         <Reveal delay={120} className="mt-10">

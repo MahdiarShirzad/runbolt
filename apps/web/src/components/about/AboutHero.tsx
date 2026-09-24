@@ -18,7 +18,7 @@ const stages: Stage[] = [
     detail: "intent · what should happen",
     state: "draft",
     stateCls: "border-line bg-raised text-muted",
-    nodeCls: "bg-highlight shadow-[0_0_10px_rgba(76,201,240,0.7)]",
+    nodeCls: "bg-primary",
   },
   {
     name: "Workflow",
@@ -47,7 +47,7 @@ const stages: Stage[] = [
     detail: "outcome · verified",
     state: "ok",
     stateCls: "border-ok/30 bg-ok/10 text-ok",
-    nodeCls: "bg-ok shadow-[0_0_10px_rgba(34,197,94,0.6)]",
+    nodeCls: "bg-ok shadow-[0_0_10px_rgba(62,207,142,0.55)]",
   },
 ];
 
@@ -60,10 +60,10 @@ const logs: [string, string, string][] = [
 
 function WorkflowStoryPanel() {
   return (
-    <div className="overflow-hidden rounded-xl border border-line bg-surface shadow-[0_24px_80px_-24px_rgba(5,7,12,0.9)]">
+    <div className="overflow-hidden rounded-[10px] border border-line bg-surface shadow-[0_24px_80px_-24px_rgba(3,5,9,0.95)]">
       <div className="flex items-center gap-3 border-b border-line/80 bg-raised/60 px-4 py-3">
         <p className="truncate font-mono text-xs text-muted">
-          runbolt<span className="text-line">/</span>
+          runbolt<span className="text-line-strong">/</span>
           <span className="text-fg">workflow-story</span>
         </p>
         <span className="ml-auto flex items-center gap-1.5 rounded border border-highlight/30 bg-highlight/10 px-2 py-0.5 font-mono text-[10px] text-highlight">
@@ -84,7 +84,7 @@ function WorkflowStoryPanel() {
                   className="absolute left-[calc(50%+22px)] right-[calc(-50%+22px)] top-[19px] h-px bg-line"
                 >
                   <span
-                    className="flow-x-dot absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-highlight shadow-[0_0_6px_rgba(76,201,240,0.8)]"
+                    className="flow-x-dot absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-primary shadow-[0_0_6px_rgba(199,240,78,0.7)]"
                     style={{ "--flow-delay": `${i * 0.45}s` } as CSSProperties}
                   />
                 </span>
@@ -122,7 +122,7 @@ function WorkflowStoryPanel() {
           aria-hidden
           className="absolute bottom-8 left-[31px] top-8 w-px bg-gradient-to-b from-line via-line to-transparent"
         >
-          <span className="rail-pulse absolute left-1/2 h-6 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-highlight to-transparent" />
+          <span className="rail-pulse absolute left-1/2 h-6 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-primary to-transparent" />
         </div>
         <ol className="space-y-1">
           {stages.map((stage) => (
@@ -169,10 +169,10 @@ function WorkflowStoryPanel() {
               >
                 {level.padEnd(4)}
               </span>{" "}
-              <span className="text-[#A7B2C9]">{msg}</span>
+              <span className="text-code-text">{msg}</span>
             </p>
           ))}
-          <p className="whitespace-pre text-highlight">▍</p>
+          <p className="whitespace-pre text-primary">▍</p>
         </div>
       </div>
     </div>
@@ -188,19 +188,17 @@ export function AboutHero() {
     >
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="bg-grid mask-fade-radial absolute inset-0 opacity-50" />
-        <div className="absolute left-1/2 top-[-280px] h-[560px] w-[880px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(59,130,246,0.13),transparent)] blur-2xl" />
-        <div className="absolute right-[6%] top-[140px] h-[360px] w-[360px] rounded-full bg-[radial-gradient(closest-side,rgba(76,201,240,0.08),transparent)] blur-2xl" />
       </div>
 
       <div className="relative mx-auto max-w-6xl px-5 pb-16 sm:px-8 sm:pb-20">
         <div className="grid items-center gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14">
           <div>
             <Reveal>
-              <p className="inline-flex items-center gap-2.5 rounded-full border border-line bg-surface/80 py-1 pl-3 pr-3.5 font-mono text-[10.5px] uppercase tracking-[0.16em] text-muted backdrop-blur">
-                <span
-                  className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(59,130,246,0.9)]"
-                  aria-hidden
-                />
+              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+                <span className="relative mr-2.5 inline-flex h-[7px] w-[7px] items-center justify-center align-middle" aria-hidden>
+                  <span className="absolute inset-0 border border-volt/60" />
+                  <span className="h-[3px] w-[3px] bg-volt" />
+                </span>
                 About Runbolt
               </p>
             </Reveal>
@@ -226,7 +224,7 @@ export function AboutHero() {
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/features"
-                  className="group inline-flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-button-text shadow-[0_2px_20px_rgba(59,130,246,0.4)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_2px_28px_rgba(59,130,246,0.55)]"
+                  className="group inline-flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-button-text transition-all duration-200 hover:bg-primary-strong active:translate-y-px"
                 >
                   Explore Features
                   <ArrowRightIcon
@@ -237,7 +235,7 @@ export function AboutHero() {
                 </Link>
                 <Link
                   href="/docs"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-line bg-surface/60 px-6 text-sm font-medium text-fg backdrop-blur transition-colors duration-200 hover:border-[#3a466b] hover:bg-hover"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-line bg-surface/70 px-6 text-sm font-medium text-fg transition-colors duration-200 hover:border-line-strong hover:bg-hover"
                 >
                   <BookIcon width={15} height={15} className="text-muted" />
                   Read Documentation

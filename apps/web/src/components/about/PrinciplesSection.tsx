@@ -115,7 +115,7 @@ function InspectFragment() {
         {rows.map(([k, v]) => (
           <div key={k} className="flex gap-3">
             <dt className="w-14 shrink-0 text-highlight">{k}</dt>
-            <dd className="truncate text-[#A7B2C9]">{v}</dd>
+            <dd className="truncate text-code-text">{v}</dd>
           </div>
         ))}
       </dl>
@@ -189,7 +189,7 @@ function ObservabilityFragment() {
             >
               {level.padEnd(4)}
             </span>{" "}
-            <span className="text-[#A7B2C9]">{msg}</span>
+            <span className="text-code-text">{msg}</span>
           </p>
         ))}
       </div>

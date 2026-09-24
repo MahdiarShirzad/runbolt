@@ -181,7 +181,7 @@ export function DocsShell({
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent(DOCS_NAV_EVENT))}
-            className="mb-5 inline-flex h-9 items-center gap-2 rounded-md border border-line bg-surface px-3 text-[13px] text-muted transition-colors duration-200 hover:border-[#3a466b] hover:text-fg lg:hidden"
+            className="mb-5 inline-flex h-9 items-center gap-2 rounded-md border border-line bg-surface px-3 text-[13px] text-muted transition-colors duration-200 hover:border-line-strong hover:text-fg lg:hidden"
             aria-label="Open documentation navigation"
           >
             <MenuIcon width={15} height={15} />
@@ -232,13 +232,13 @@ export function DocsShell({
           {prev ? (
             <Link
               href={prev.href}
-              className="group rounded-lg border border-line bg-surface/50 p-4 transition-colors hover:border-[#33406a] hover:bg-surface"
+              className="group rounded-lg border border-line bg-surface/50 p-4 transition-colors hover:border-line-strong hover:bg-surface"
             >
               <p className="flex items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-widest text-muted/70">
                 <ArrowLeftIcon width={12} height={12} />
                 Previous
               </p>
-              <p className="mt-1.5 text-sm font-medium text-fg transition-colors group-hover:text-highlight">
+              <p className="mt-1.5 text-sm font-medium text-fg transition-colors group-hover:text-primary">
                 {prev.title}
               </p>
             </Link>
@@ -248,13 +248,13 @@ export function DocsShell({
           {next && (
             <Link
               href={next.href}
-              className="group rounded-lg border border-line bg-surface/50 p-4 text-right transition-colors hover:border-[#33406a] hover:bg-surface"
+              className="group rounded-lg border border-line bg-surface/50 p-4 text-right transition-colors hover:border-line-strong hover:bg-surface"
             >
               <p className="flex items-center justify-end gap-1.5 font-mono text-[10.5px] uppercase tracking-widest text-muted/70">
                 Next
                 <ArrowRightIcon width={12} height={12} />
               </p>
-              <p className="mt-1.5 text-sm font-medium text-fg transition-colors group-hover:text-highlight">
+              <p className="mt-1.5 text-sm font-medium text-fg transition-colors group-hover:text-primary">
                 {next.title}
               </p>
             </Link>

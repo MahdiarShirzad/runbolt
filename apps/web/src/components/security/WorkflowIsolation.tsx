@@ -71,7 +71,7 @@ const levelCls: Record<string, string> = {
 function IsolationPanel({ workflow }: { workflow: IsolatedWorkflow }) {
   const pill = statusPill[workflow.status];
   return (
-    <div className="rounded-xl border border-dashed border-line bg-surface/60 transition-colors duration-200 hover:border-[#3a466b]">
+    <div className="rounded-[10px] border border-dashed border-line bg-surface/60 transition-colors duration-200 hover:border-line-strong">
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-dashed border-line/70 px-4 py-3">
         <p className="font-mono text-xs text-fg">{workflow.name}</p>
@@ -102,7 +102,7 @@ function IsolationPanel({ workflow }: { workflow: IsolatedWorkflow }) {
           <p key={time + level} className="whitespace-pre font-mono text-[10px] leading-5">
             <span className="text-muted/50">{time}</span>{" "}
             <span className={levelCls[level]}>{level.padEnd(4)}</span>{" "}
-            <span className="text-[#C9D2E3]">{msg}</span>
+            <span className="text-code-text">{msg}</span>
           </p>
         ))}
       </div>

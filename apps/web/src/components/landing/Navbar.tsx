@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BoltIcon, CloseIcon, MenuIcon } from "./icons";
 
@@ -12,9 +13,29 @@ const links = [
   { label: "About", href: "/about" },
 ];
 
+function isActivePath(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+const desktopLinkCls = (active: boolean) =>
+  `rounded-md px-3 py-2 text-[13.5px] transition-colors duration-200 ${
+    active
+      ? "bg-surface font-medium text-fg shadow-[inset_0_0_0_1px_rgba(38,48,74,0.9)]"
+      : "text-muted hover:bg-hover hover:text-fg"
+  }`;
+
+const mobileLinkCls = (active: boolean) =>
+  `block rounded-md px-3 py-2.5 text-sm transition-colors ${
+    active
+      ? "bg-surface font-medium text-fg"
+      : "text-muted hover:bg-hover hover:text-fg"
+  }`;
+
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -27,8 +48,8 @@ export function Navbar() {
     <header
       className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
         scrolled
-          ? "border-line/80 bg-ink/80 backdrop-blur-md"
-          : "border-transparent bg-ink/40 backdrop-blur-sm"
+          ? "border-line/80 bg-ink/85 backdrop-blur-md"
+          : "border-transparent bg-ink/50 backdrop-blur-sm"
       }`}
     >
       <nav
@@ -36,23 +57,29 @@ export function Navbar() {
         className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8"
       >
         <Link href="/" className="flex items-center gap-2.5 rounded-md">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-primary to-highlight text-white shadow-[0_0_18px_rgba(59,130,246,0.35)]">
-            <BoltIcon width={14} height={14} />
+          <span className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-primary text-button-text">
+            <BoltIcon width={13} height={13} />
           </span>
-          <span className="text-[15px] font-semibold tracking-tight">Runbolt</span>
+          <span className="font-display text-[15px] font-semibold tracking-tight">
+            Runbolt
+          </span>
         </Link>
 
         <ul className="hidden items-center gap-1 md:flex">
-          {links.map((link) => (
-            <li key={link.label}>
-              <Link
-                href={link.href}
-                className="rounded-md px-3 py-2 text-[13.5px] text-muted transition-colors duration-200 hover:bg-hover hover:text-fg"
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
+          {links.map((link) => {
+            const active = isActivePath(pathname, link.href);
+            return (
+              <li key={link.label}>
+                <Link
+                  href={link.href}
+                  aria-current={active ? "page" : undefined}
+                  className={desktopLinkCls(active)}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="hidden items-center gap-2 md:flex">
@@ -64,7 +91,7 @@ export function Navbar() {
           </Link>
           <Link
             href="/register"
-            className="rounded-md bg-primary px-3.5 py-2 text-[13.5px] font-medium text-button-text shadow-[0_1px_10px_rgba(59,130,246,0.35)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_1px_16px_rgba(59,130,246,0.5)] active:bg-active"
+            className="rounded-md bg-primary px-3.5 py-2 text-[13.5px] font-medium text-button-text transition-all duration-200 hover:bg-primary-strong active:translate-y-px"
           >
             Start Building
           </Link>
@@ -88,17 +115,21 @@ export function Navbar() {
           className="border-t border-line/70 bg-ink/95 backdrop-blur-md md:hidden"
         >
           <ul className="space-y-1 px-5 py-4">
-            {links.map((link) => (
-              <li key={link.label}>
-                <Link
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="block rounded-md px-3 py-2.5 text-sm text-muted transition-colors hover:bg-hover hover:text-fg"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {links.map((link) => {
+              const active = isActivePath(pathname, link.href);
+              return (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    aria-current={active ? "page" : undefined}
+                    onClick={() => setOpen(false)}
+                    className={mobileLinkCls(active)}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              );
+            })}
             <li className="flex gap-3 pt-3">
               <Link
                 href="/login"
@@ -110,7 +141,7 @@ export function Navbar() {
               <Link
                 href="/register"
                 onClick={() => setOpen(false)}
-                className="flex-1 rounded-md bg-primary px-3 py-2.5 text-center text-sm font-medium text-button-text transition-colors hover:bg-[#2f76ef]"
+                className="flex-1 rounded-md bg-primary px-3 py-2.5 text-center text-sm font-medium text-button-text transition-colors hover:bg-primary-strong"
               >
                 Start Building
               </Link>

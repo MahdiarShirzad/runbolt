@@ -105,7 +105,7 @@ function CommunityArea() {
             <li key={label}>
               <Link
                 href={href}
-                className="inline-flex h-8 items-center rounded-md border border-line bg-surface/70 px-3 text-[13px] text-muted transition-colors hover:border-[#3a466b] hover:text-fg"
+                className="inline-flex h-8 items-center rounded-md border border-line bg-surface/70 px-3 text-[13px] text-muted transition-colors hover:border-line-strong hover:text-fg"
               >
                 {label}
               </Link>
@@ -123,14 +123,17 @@ export default function DocsHomePage() {
       <section className="relative overflow-hidden border-b border-line/70">
         <div aria-hidden className="pointer-events-none absolute inset-0">
           <div className="bg-grid mask-fade-radial absolute inset-0 opacity-50" />
-          <div className="absolute left-1/2 top-[-240px] h-[480px] w-[760px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(59,130,246,0.12),transparent)] blur-2xl" />
         </div>
 
         <div className="relative mx-auto max-w-[1100px] px-4 pb-14 pt-16 sm:px-6 sm:pt-20">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-highlight">
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+            <span className="relative mr-2.5 inline-flex h-[7px] w-[7px] items-center justify-center align-middle" aria-hidden>
+              <span className="absolute inset-0 border border-volt/60" />
+              <span className="h-[3px] w-[3px] bg-volt" />
+            </span>
             Runbolt documentation
           </p>
-          <h1 className="mt-4 text-balance text-4xl font-bold tracking-[-0.03em] sm:text-5xl">
+          <h1 className="mt-4 text-balance font-display text-4xl font-bold tracking-[-0.03em] sm:text-5xl">
             Build with Runbolt.
           </h1>
           <p className="mt-4 max-w-xl text-pretty leading-relaxed text-muted">
@@ -142,7 +145,7 @@ export default function DocsHomePage() {
           <button
             type="button"
             onClick={openSearch}
-            className="group mt-8 flex h-12 w-full max-w-lg items-center gap-3 rounded-lg border border-line bg-input px-4 text-left transition-colors duration-200 hover:border-[#3a466b]"
+            className="group mt-8 flex h-12 w-full max-w-lg items-center gap-3 rounded-lg border border-line bg-input px-4 text-left transition-colors duration-200 hover:border-line-strong"
             aria-label="Search documentation"
           >
             <SearchIcon width={15} height={15} className="shrink-0 text-muted" />
@@ -157,7 +160,7 @@ export default function DocsHomePage() {
               <li key={link.label}>
                 <Link
                   href={link.href}
-                  className="text-info underline decoration-info/25 underline-offset-2 transition-colors hover:text-highlight"
+                  className="underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary"
                 >
                   {link.label}
                 </Link>
@@ -174,9 +177,9 @@ export default function DocsHomePage() {
               <Link
                 key={category.title}
                 href={category.href}
-                className="group flex flex-col rounded-lg border border-line bg-surface/50 p-4 transition-colors duration-200 hover:border-[#33406a] hover:bg-surface"
+                className="group flex flex-col rounded-lg border border-line bg-surface/50 p-4 transition-colors duration-200 hover:border-line-strong hover:bg-surface"
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-md border border-line bg-raised text-info transition-colors group-hover:border-primary/40 group-hover:text-highlight">
+                <span className="flex h-8 w-8 items-center justify-center rounded border border-line bg-raised text-muted transition-colors group-hover:border-primary/40 group-hover:text-primary">
                   {category.icon}
                 </span>
                 <span className="mt-3.5 flex items-center gap-2 text-[14.5px] font-semibold text-fg">
@@ -190,7 +193,7 @@ export default function DocsHomePage() {
                     strokeWidth={2}
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="text-muted/50 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-highlight"
+                    className="text-muted/50 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-primary"
                     aria-hidden
                   >
                     <path d="M5 12h13m0 0-5-5m5 5-5 5" />
@@ -207,7 +210,7 @@ export default function DocsHomePage() {
           <div className="mt-10 grid gap-3 sm:grid-cols-2">
             <Link
               href="/docs/api"
-              className="group flex items-center gap-4 rounded-lg border border-line bg-code/60 p-4 transition-colors hover:border-[#33406a]"
+              className="group flex items-center gap-4 rounded-lg border border-line bg-code/60 p-4 transition-colors hover:border-line-strong"
             >
               <span className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-md border border-line bg-raised text-ok sm:flex">
                 <DbIcon width={15} height={15} />
@@ -221,7 +224,7 @@ export default function DocsHomePage() {
             </Link>
             <Link
               href="/docs/workers"
-              className="group flex items-center gap-4 rounded-lg border border-line bg-code/60 p-4 transition-colors hover:border-[#33406a]"
+              className="group flex items-center gap-4 rounded-lg border border-line bg-code/60 p-4 transition-colors hover:border-line-strong"
             >
               <span className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-md border border-line bg-raised text-primary sm:flex">
                 <WorkerIcon width={15} height={15} />

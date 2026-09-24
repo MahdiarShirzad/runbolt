@@ -20,17 +20,17 @@ export type TokenRole =
 export type Token = [text: string, role?: TokenRole] | string;
 
 export const roleClass: Record<TokenRole, string> = {
-  txt: "text-[#C9D2E3]",
+  txt: "text-code-text",
   key: "text-highlight",
   str: "text-ok",
   num: "text-accent",
-  com: "text-[#546080]",
+  com: "text-comment",
   kw: "text-accent",
-  fn: "text-info",
-  punc: "text-[#7C89A6]",
+  fn: "text-highlight",
+  punc: "text-[#6E7C94]",
   ok: "text-ok",
   warn: "text-warn",
-  info: "text-info",
+  info: "text-highlight",
 };
 
 export function CodeBlock({
@@ -47,11 +47,9 @@ export function CodeBlock({
       className={`overflow-hidden rounded-lg border border-line bg-code font-mono text-[13px] leading-relaxed ${className}`}
     >
       {title ? (
-        <div className="flex items-center gap-2 border-b border-line/70 px-4 py-2.5">
-          <span className="h-2 w-2 rounded-full bg-line" aria-hidden />
-          <span className="h-2 w-2 rounded-full bg-line" aria-hidden />
-          <span className="h-2 w-2 rounded-full bg-line" aria-hidden />
-          <span className="ml-2 text-xs text-muted">{title}</span>
+        <div className="ruler flex items-center gap-2 border-b border-line/70 bg-raised/50 px-4 pb-2 pt-2.5">
+          <span className="h-1.5 w-1.5 bg-line-strong" aria-hidden />
+          <span className="font-mono text-xs text-muted">{title}</span>
         </div>
       ) : null}
       <pre className="scroll-slim overflow-x-auto p-4" tabIndex={0} aria-label={title ?? "Code sample"}>

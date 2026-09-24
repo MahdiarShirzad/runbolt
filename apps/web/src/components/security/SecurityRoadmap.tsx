@@ -99,7 +99,7 @@ export function SecurityRoadmap() {
             const meta = statusMeta[column.status];
             return (
               <Reveal key={column.status} delay={ci * 110}>
-                <div className="h-full rounded-xl border border-line bg-surface/60">
+                <div className="h-full rounded-[10px] border border-line bg-surface/60">
                   <div className="flex items-center gap-2.5 border-b border-line/70 px-4 py-3">
                     <span className={`h-2 w-2 rounded-full ${meta.dot}`} aria-hidden />
                     <span className="text-[13px] font-semibold text-fg">{meta.label}</span>

@@ -30,7 +30,7 @@ export function StatusPill({ status }: { status: NodeStatus }) {
   const s = statusStyle[status];
   return (
     <span
-      className={`flex items-center gap-1 rounded-full px-1.5 py-0.5 font-mono text-[9px] ${s.cls}`}
+      className={`flex items-center gap-1 rounded px-1.5 py-0.5 font-mono text-[9px] ${s.cls}`}
     >
       {status === "running" && (
         <span className="blink h-1 w-1 rounded-full bg-current" aria-hidden />

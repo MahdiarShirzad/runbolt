@@ -60,12 +60,10 @@ function Counter({ stat }: { stat: Stat }) {
   return (
     <span
       ref={ref}
-      className="font-mono text-4xl font-semibold tracking-tight text-fg tabular-nums sm:text-5xl"
+      className="font-display text-4xl font-semibold tracking-tight text-fg tabular-nums sm:text-5xl"
     >
       {display}
-      <span className="bg-gradient-to-r from-primary to-highlight bg-clip-text text-transparent">
-        {stat.suffix}
-      </span>
+      <span className="text-primary">{stat.suffix}</span>
     </span>
   );
 }
@@ -77,8 +75,11 @@ export function Metrics() {
         <Reveal>
           <dl className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
             {stats.map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center gap-2 text-center lg:items-start lg:text-left">
-                <dt className="order-2 text-sm text-muted">{stat.label}</dt>
+              <div
+                key={stat.label}
+                className="flex flex-col gap-2 border-l border-line/70 pl-5"
+              >
+                <dt className="order-2 font-mono text-xs text-muted">{stat.label}</dt>
                 <dd className="order-1">
                   <Counter stat={stat} />
                 </dd>
@@ -87,7 +88,7 @@ export function Metrics() {
           </dl>
         </Reveal>
         <Reveal delay={100}>
-          <p className="mt-12 text-center text-sm text-muted lg:text-left">
+          <p className="mt-12 max-w-xl text-sm leading-relaxed text-muted">
             Built for modern engineering teams — from two-person startups to
             platform orgs running millions of workflows a day.
           </p>

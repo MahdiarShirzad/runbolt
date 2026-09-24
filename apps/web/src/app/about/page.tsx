@@ -18,49 +18,6 @@ export const metadata: Metadata = {
     "Why Runbolt exists, the philosophy behind the product, the principles it is built around, and where the platform is heading.",
 };
 
-const footerColumns = [
-  {
-    title: "Product",
-    links: [
-      { label: "Features", href: "/features" },
-      { label: "Pricing", href: "/pricing" },
-      { label: "Documentation", href: "/docs" },
-      { label: "Security", href: "/security" },
-    ],
-  },
-  {
-    title: "Developers",
-    links: [
-      { label: "API", href: "/docs/api" },
-      { label: "SDKs", href: "/docs/sdks" },
-      { label: "Changelog", href: "/docs/getting-started" },
-      { label: "GitHub", href: "#" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { label: "Guides", href: "/docs" },
-      { label: "FAQ", href: "/security#faq" },
-      { label: "Troubleshooting", href: "#" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "About", href: "/about" },
-      { label: "Contact", href: "mailto:hello@runbolt.dev" },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Privacy", href: "#" },
-      { label: "Terms", href: "#" },
-    ],
-  },
-];
-
 export default function AboutPage() {
   return (
     <div className="flex w-full flex-col">
@@ -84,10 +41,7 @@ export default function AboutPage() {
           secondaryHref="/docs"
         />
       </main>
-      <Footer
-        columns={footerColumns}
-        columnsClass="lg:grid-cols-[1.3fr_repeat(5,1fr)]"
-      />
+      <Footer />
     </div>
   );
 }

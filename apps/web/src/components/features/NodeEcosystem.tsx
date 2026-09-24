@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Reveal } from "../landing/Reveal";
+import { SectionHeader } from "../ui/kit";
 import {
   ClockIcon,
   DbIcon,
@@ -36,26 +37,21 @@ export function NodeEcosystem() {
   return (
     <section className="py-24 sm:py-32" aria-labelledby="nodes-heading">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <Reveal className="max-w-2xl">
-          <p className="font-mono text-xs text-highlight">Node ecosystem</p>
-          <h2
+        <Reveal>
+          <SectionHeader
             id="nodes-heading"
-            className="mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            Composable building blocks.
-          </h2>
-          <p className="mt-4 text-pretty leading-relaxed text-muted">
-            Every workflow is a graph of focused nodes. Start with the
-            essentials and extend with your own.
-          </p>
+            eyebrow="Node ecosystem"
+            title="Composable building blocks."
+            lede="Every workflow is a graph of focused nodes. Start with the essentials and extend with your own."
+          />
         </Reveal>
 
         <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {nodes.map((node, i) => (
             <Reveal key={node.name} delay={(i % 3) * 60}>
-              <article className="group flex h-full items-start gap-3.5 rounded-lg border border-line bg-surface/50 p-4 transition-colors duration-200 hover:border-[#33406a] hover:bg-surface">
+              <article className="group flex h-full items-start gap-3.5 rounded-lg border border-line bg-surface/50 p-4 transition-colors duration-200 hover:border-line-strong hover:bg-surface">
                 <span
-                  className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-line bg-raised ${kindColor[node.kind]} transition-colors duration-200 group-hover:border-[#33406a]`}
+                  className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-line bg-raised ${kindColor[node.kind]} transition-colors duration-200 group-hover:border-line-strong`}
                 >
                   {node.icon}
                 </span>

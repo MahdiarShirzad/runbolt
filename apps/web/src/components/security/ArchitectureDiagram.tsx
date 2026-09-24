@@ -53,7 +53,7 @@ function Connector({ delay }: { delay: number }) {
       className="relative mx-0.5 mt-[34px] hidden h-px w-6 shrink-0 self-start bg-line md:block lg:w-8"
     >
       <span
-        className="flow-x-dot absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-highlight shadow-[0_0_6px_rgba(76,201,240,0.8)]"
+        className="flow-x-dot absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-highlight shadow-[0_0_6px_rgba(199,240,78,0.7)]"
         style={{ "--flow-delay": `${delay}s` } as CSSProperties}
       />
     </span>
@@ -63,7 +63,7 @@ function Connector({ delay }: { delay: number }) {
 function StageBox({ stage }: { stage: Stage }) {
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <div className="flex h-[68px] flex-col items-center justify-center gap-1 rounded-lg border border-line bg-surface px-2 text-center transition-colors duration-200 hover:border-[#3a466b]">
+      <div className="flex h-[68px] flex-col items-center justify-center gap-1 rounded-lg border border-line bg-surface px-2 text-center transition-colors duration-200 hover:border-line-strong">
         <span className={`font-mono text-[9.5px] uppercase tracking-wider ${toneCls[stage.tone]}`}>
           {stage.tag}
         </span>
@@ -81,7 +81,7 @@ function MobilePipeline() {
         aria-hidden
         className="absolute bottom-6 left-[19px] top-6 w-px bg-gradient-to-b from-line via-line to-transparent"
       >
-        <span className="rail-pulse absolute left-1/2 h-6 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-highlight to-transparent" />
+        <span className="rail-pulse absolute left-1/2 h-6 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-primary to-transparent" />
       </div>
       <ol className="space-y-2">
         {stages.map((stage) => (
@@ -112,7 +112,6 @@ export function ArchitectureDiagram() {
     <section id="data-flow" className="py-20 sm:py-28" aria-labelledby="data-flow-heading">
       {/* Ambient glow */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-1/2 h-[420px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(59,130,246,0.06),transparent)] blur-3xl" />
       </div>
 
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
@@ -132,7 +131,7 @@ export function ArchitectureDiagram() {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="mt-12 rounded-xl border border-line bg-surface/60 p-5 sm:p-7">
+          <div className="mt-12 rounded-[10px] border border-line bg-surface/60 p-5 sm:p-7">
             {/* sr-only narrative for the diagram */}
             <p className="sr-only">
               Conceptual data flow: a request moves from the client through the
@@ -169,7 +168,7 @@ export function ArchitectureDiagram() {
               {stores.map((store) => (
                 <div
                   key={store.name}
-                  className="rounded-lg border border-line bg-code/50 p-4 transition-colors duration-200 hover:border-[#3a466b]"
+                  className="rounded-lg border border-line bg-code/50 p-4 transition-colors duration-200 hover:border-line-strong"
                 >
                   <div className="flex items-center gap-2.5">
                     <span className={`h-1.5 w-1.5 rounded-full ${store.dot}`} aria-hidden />

@@ -18,11 +18,11 @@ const levelCls: Record<string, string> = {
 function LogsPanel() {
   return (
     <div>
-      <div className="overflow-hidden rounded-xl border border-line bg-surface shadow-[0_24px_80px_-24px_rgba(5,7,12,0.9)]">
+      <div className="overflow-hidden rounded-[10px] border border-line bg-surface shadow-[0_24px_80px_-24px_rgba(3,5,9,0.95)]">
         {/* Header */}
         <div className="flex items-center gap-3 border-b border-line/80 bg-raised/60 px-4 py-3">
           <p className="font-mono text-xs text-muted">
-            runbolt<span className="text-line">/</span>
+            runbolt<span className="text-line-strong">/</span>
             <span className="text-fg">logs</span>
           </p>
           <span className="ml-auto rounded border border-line bg-raised px-2 py-0.5 font-mono text-[10px] text-muted">
@@ -36,7 +36,7 @@ function LogsPanel() {
             <p key={i} className="whitespace-pre">
               <span className="text-muted/50">{time}</span>{" "}
               <span className={levelCls[level]}>{level.padEnd(4)}</span>{" "}
-              <span className="text-[#C9D2E3]">{msg}</span>
+              <span className="text-code-text">{msg}</span>
             </p>
           ))}
         </div>

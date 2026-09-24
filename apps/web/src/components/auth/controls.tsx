@@ -14,7 +14,7 @@ import {
 
 export function AuthCard({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-xl border border-line bg-surface p-6 shadow-[0_16px_48px_-16px_rgba(5,7,12,0.7)] sm:p-8">
+    <div className="rounded-[10px] border border-line bg-surface p-6 shadow-[0_16px_48px_-20px_rgba(3,5,9,0.8)] sm:p-8">
       {children}
     </div>
   );
@@ -29,7 +29,7 @@ export function AuthHeader({
 }) {
   return (
     <div className="mb-7">
-      <h1 className="text-balance text-2xl font-semibold tracking-tight text-fg">
+      <h1 className="text-balance font-display text-2xl font-semibold tracking-tight text-fg">
         {title}
       </h1>
       <p className="mt-1.5 text-sm leading-relaxed text-muted">{description}</p>
@@ -41,7 +41,10 @@ export function AuthFooter({ text, label, href }: { text: string; label: string;
   return (
     <p className="mt-6 text-center text-[13.5px] text-muted">
       {text}{" "}
-      <Link href={href} className="font-medium text-info transition-colors hover:text-highlight">
+      <Link
+        href={href}
+        className="font-medium text-fg underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary"
+      >
         {label}
       </Link>
     </p>
@@ -78,13 +81,13 @@ export function PrimaryButton({
       type="submit"
       onClick={onClick}
       disabled={loading || disabled}
-      className={`inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary text-sm font-medium text-button-text shadow-[0_1px_12px_rgba(59,130,246,0.35)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_2px_18px_rgba(59,130,246,0.5)] active:bg-active ${
+      className={`inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary text-sm font-medium text-button-text transition-all duration-200 hover:bg-primary-strong active:translate-y-px ${
         full ? "w-full" : ""
       } ${(loading || disabled) && "cursor-not-allowed opacity-60"}`}
     >
       {loading && (
         <span
-          className="spin h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white"
+          className="spin h-3.5 w-3.5 rounded-full border-2 border-button-text/40 border-t-button-text"
           role="status"
           aria-label="Loading"
         />
@@ -192,7 +195,7 @@ export function AuthInput({
           className={`${inputBase} ${icon ? "pl-9" : ""} ${
             error
               ? "border-bad/60 focus:border-bad focus:ring-2 focus:ring-bad/25"
-              : "border-line focus:border-primary focus:ring-2 focus:ring-primary/25"
+              : "border-line focus:border-primary focus:ring-2 focus:ring-primary/20"
           }`}
         />
       </div>
@@ -251,7 +254,7 @@ export function PasswordInput({
           className={`${inputBase} pr-10 ${
             error
               ? "border-bad/60 focus:border-bad focus:ring-2 focus:ring-bad/25"
-              : "border-line focus:border-primary focus:ring-2 focus:ring-primary/25"
+              : "border-line focus:border-primary focus:ring-2 focus:ring-primary/20"
           }`}
         />
         <button

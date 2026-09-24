@@ -53,38 +53,38 @@ function WorkflowGraphBackdrop() {
         {/* Edges */}
         <path
           d="M120 120 C 260 120, 300 220, 440 220"
-          stroke="#26304A"
+          stroke="#232C3B"
           strokeWidth="1.5"
         />
         <path
           d="M440 220 C 560 220, 600 140, 740 140"
-          stroke="#26304A"
+          stroke="#232C3B"
           strokeWidth="1.5"
         />
         <path
           d="M440 220 C 580 220, 620 340, 780 340"
-          stroke="#26304A"
+          stroke="#232C3B"
           strokeWidth="1.5"
         />
         <path
           d="M740 140 C 880 140, 920 260, 1060 260"
-          stroke="#26304A"
+          stroke="#232C3B"
           strokeWidth="1.5"
         />
         <path
           d="M780 340 C 900 340, 940 260, 1060 260"
-          stroke="#26304A"
+          stroke="#232C3B"
           strokeWidth="1.5"
         />
         <path
           d="M120 420 C 280 420, 320 340, 440 340"
-          stroke="#26304A"
+          stroke="#232C3B"
           strokeWidth="1.5"
           opacity="0.7"
         />
         <path
           d="M440 340 C 560 340, 600 440, 760 440"
-          stroke="#26304A"
+          stroke="#232C3B"
           strokeWidth="1.5"
           opacity="0.7"
         />
@@ -92,43 +92,43 @@ function WorkflowGraphBackdrop() {
         {/* Flowing comets along edges */}
         <path
           className="edge-flow"
-          style={{ stroke: "#4CC9F0", strokeWidth: 2, animationDelay: "0s" }}
+          style={{ stroke: "#C7F04E", strokeWidth: 2, animationDelay: "0s" }}
           d="M120 120 C 260 120, 300 220, 440 220"
         />
         <path
           className="edge-flow"
-          style={{ stroke: "#3B82F6", strokeWidth: 2, animationDelay: "0.8s" }}
+          style={{ stroke: "#C7F04E", strokeWidth: 2, animationDelay: "0.8s" }}
           d="M440 220 C 560 220, 600 140, 740 140"
         />
         <path
           className="edge-flow"
-          style={{ stroke: "#8B7CF6", strokeWidth: 2, animationDelay: "1.4s" }}
+          style={{ stroke: "#A08BF0", strokeWidth: 2, animationDelay: "1.4s" }}
           d="M440 220 C 580 220, 620 340, 780 340"
         />
         <path
           className="edge-flow"
-          style={{ stroke: "#22C55E", strokeWidth: 2, animationDelay: "2s" }}
+          style={{ stroke: "#3ECF8E", strokeWidth: 2, animationDelay: "2s" }}
           d="M740 140 C 880 140, 920 260, 1060 260"
         />
         <path
           className="edge-flow"
-          style={{ stroke: "#3B82F6", strokeWidth: 2, animationDelay: "2.5s" }}
+          style={{ stroke: "#C7F04E", strokeWidth: 2, animationDelay: "2.5s" }}
           d="M780 340 C 900 340, 940 260, 1060 260"
         />
 
         {/* Nodes */}
         {[
-          { x: 120, y: 120, c: "#3B82F6" },
-          { x: 440, y: 220, c: "#3B82F6" },
-          { x: 740, y: 140, c: "#38BDF8" },
-          { x: 780, y: 340, c: "#8B7CF6" },
-          { x: 1060, y: 260, c: "#22C55E" },
-          { x: 120, y: 420, c: "#F59E0B" },
-          { x: 440, y: 340, c: "#3B82F6" },
-          { x: 760, y: 440, c: "#4CC9F0" },
+          { x: 120, y: 120, c: "#C7F04E" },
+          { x: 440, y: 220, c: "#C7F04E" },
+          { x: 740, y: 140, c: "#5CC9EE" },
+          { x: 780, y: 340, c: "#A08BF0" },
+          { x: 1060, y: 260, c: "#3ECF8E" },
+          { x: 120, y: 420, c: "#F5B23C" },
+          { x: 440, y: 340, c: "#C7F04E" },
+          { x: 760, y: 440, c: "#C7F04E" },
         ].map((n) => (
           <g key={`${n.x}-${n.y}`}>
-            <circle cx={n.x} cy={n.y} r="14" fill="#0B0F17" stroke={n.c} strokeWidth="1.5" opacity="0.9" />
+            <circle cx={n.x} cy={n.y} r="14" fill="#0A0D13" stroke={n.c} strokeWidth="1.5" opacity="0.9" />
             <circle cx={n.x} cy={n.y} r="4.5" fill={n.c} />
           </g>
         ))}

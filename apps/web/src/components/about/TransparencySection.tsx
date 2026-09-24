@@ -69,7 +69,7 @@ export function TransparencySection() {
 
           {/* Timeline-inspired visual */}
           <Reveal delay={120}>
-            <div className="relative overflow-hidden rounded-xl border border-line bg-surface/60 p-5 sm:p-6">
+            <div className="relative overflow-hidden rounded-[10px] border border-line bg-surface/60 p-5 sm:p-6">
               <div className="bg-grid absolute inset-0 opacity-40" aria-hidden />
               <p className="relative font-mono text-[10.5px] uppercase tracking-widest text-muted/70">
                 working principles · continuous loop
@@ -84,7 +84,7 @@ export function TransparencySection() {
                         aria-hidden
                         className="absolute bottom-0 left-[13px] top-8 w-px bg-line"
                       >
-                        <span className="rail-pulse absolute left-1/2 h-4 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-highlight to-transparent" />
+                        <span className="rail-pulse absolute left-1/2 h-4 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-primary to-transparent" />
                       </span>
                     ) : null}
 

@@ -6,7 +6,8 @@ type FooterColumn = {
   links: { label: string; href: string }[];
 };
 
-const defaultColumns: FooterColumn[] = [
+/** Single shared site footer — every page uses this exact configuration. */
+const columns: FooterColumn[] = [
   {
     title: "Product",
     links: [
@@ -31,7 +32,7 @@ const defaultColumns: FooterColumn[] = [
       { label: "About", href: "/about" },
       { label: "Blog", href: "#" },
       { label: "Careers", href: "#" },
-      { label: "Contact", href: "#" },
+      { label: "Contact", href: "/contact" },
     ],
   },
   {
@@ -45,32 +46,25 @@ const defaultColumns: FooterColumn[] = [
   },
 ];
 
-type FooterProps = {
-  columns?: FooterColumn[];
-  /** Tailwind grid template for the lg breakpoint (brand column included). */
-  columnsClass?: string;
-};
-
-export function Footer({
-  columns = defaultColumns,
-  columnsClass = "lg:grid-cols-[1.5fr_repeat(4,1fr)]",
-}: FooterProps) {
+export function Footer() {
   return (
-    <footer className="border-t border-line/70 bg-surface/30">
+    <footer className="border-t border-line/70 bg-code/60">
       <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
-        <div className={`grid gap-10 md:grid-cols-2 ${columnsClass}`}>
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.5fr_repeat(4,1fr)]">
           <div>
             <Link href="/" className="flex items-center gap-2.5 rounded-md">
-              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-primary to-highlight text-white">
-                <BoltIcon width={14} height={14} />
+              <span className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-primary text-button-text">
+                <BoltIcon width={13} height={13} />
               </span>
-              <span className="text-[15px] font-semibold tracking-tight">Runbolt</span>
+              <span className="font-display text-[15px] font-semibold tracking-tight">
+                Runbolt
+              </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
               Workflow orchestration for engineers. Build, run, and observe —
               from trigger to worker.
             </p>
-            <p className="mt-5 inline-flex items-center gap-2 rounded-md border border-line bg-code px-2.5 py-1 font-mono text-[11px] text-muted">
+            <p className="mt-5 inline-flex items-center gap-2 rounded-md border border-line bg-ink px-2.5 py-1 font-mono text-[11px] text-muted">
               <span className="blink h-1.5 w-1.5 rounded-full bg-ok" aria-hidden />
               All systems operational
             </p>
@@ -95,11 +89,12 @@ export function Footer({
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 border-t border-line/70 pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-3 border-t border-line/70 pt-6 font-mono text-xs text-faint sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 Runbolt, Inc. All rights reserved.</p>
-          <p className="font-mono">
-            status: <span className="text-ok">operational</span> · region:{" "}
-            <span className="text-fg">global</span>
+          <p>
+            status: <span className="text-ok">operational</span>
+            <span className="mx-1.5 text-line-strong">/</span>
+            region: <span className="text-muted">global</span>
           </p>
         </div>
       </div>

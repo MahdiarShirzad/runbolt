@@ -24,7 +24,7 @@ const roles: Role[] = [
 function AccessPanel() {
   return (
     <div>
-      <div className="overflow-hidden rounded-xl border border-line bg-surface shadow-[0_24px_80px_-24px_rgba(5,7,12,0.9)]">
+      <div className="overflow-hidden rounded-[10px] border border-line bg-surface shadow-[0_24px_80px_-24px_rgba(3,5,9,0.95)]">
         {/* Header */}
         <div className="flex items-center gap-3 border-b border-line/80 bg-raised/60 px-4 py-3">
           <UsersIcon width={14} height={14} className="text-accent" />

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { FeatureCard, type Feature } from "../landing/Features";
 import { Reveal } from "../landing/Reveal";
+import { SectionHeader } from "../ui/kit";
 import {
   CheckIcon,
   CodeIcon,
@@ -82,7 +83,7 @@ function PreviewIntegrations() {
         {services.map(([name, dot, kind]) => (
           <li
             key={name}
-            className="flex items-center gap-2 rounded px-1.5 py-1 text-[10.5px] text-[#A7B2C9]"
+            className="flex items-center gap-2 rounded px-1.5 py-1 text-[10.5px] text-code-text"
           >
             <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
             <span>{name}</span>
@@ -107,7 +108,7 @@ function PreviewWorkers() {
       {jobs.map(([label, icon]) => (
         <li
           key={label}
-          className="flex items-center gap-2 rounded border border-line/60 bg-ink px-2 py-1.5 font-mono text-[9.5px] text-[#A7B2C9]"
+          className="flex items-center gap-2 rounded border border-line/60 bg-ink px-2 py-1.5 font-mono text-[9.5px] text-code-text"
         >
           {icon}
           {label}
@@ -124,15 +125,15 @@ function PreviewLogs() {
     <div className="space-y-1 font-mono text-[10px] leading-4" aria-hidden>
       <p>
         <span className="text-info">INFO</span>{" "}
-        <span className="text-[#A7B2C9]">http.sync → 200 OK (204ms)</span>
+        <span className="text-code-text">http.sync → 200 OK (204ms)</span>
       </p>
       <p>
         <span className="text-warn">WARN</span>{" "}
-        <span className="text-[#A7B2C9]">db.upsert retry 1/2 · deadlock</span>
+        <span className="text-code-text">db.upsert retry 1/2 · deadlock</span>
       </p>
       <p>
         <span className="text-ok">OK&nbsp;&nbsp;</span>{" "}
-        <span className="text-[#A7B2C9]">db.upsert committed (96ms)</span>
+        <span className="text-code-text">db.upsert committed (96ms)</span>
       </p>
       <p>
         <span className="text-highlight">▍</span>
@@ -148,22 +149,22 @@ function PreviewApi() {
       <p>
         <span className="text-muted/60">$</span>{" "}
         <span className="text-info">curl</span>{" "}
-        <span className="text-[#A7B2C9]">-X POST api.runbolt.dev/v1/runs \</span>
+        <span className="text-code-text">-X POST api.runbolt.dev/v1/runs \</span>
       </p>
       <p className="pl-4">
-        <span className="text-highlight">"workflowId"</span>
-        <span className="text-[#7C89A6]">: </span>
-        <span className="text-ok">"customer-sync"</span>
-        <span className="text-[#7C89A6]">,</span>
+        <span className="text-highlight">&quot;workflowId&quot;</span>
+        <span className="text-[#6E7C94]">: </span>
+        <span className="text-ok">&quot;customer-sync&quot;</span>
+        <span className="text-[#6E7C94]">,</span>
       </p>
       <p className="pl-4">
-        <span className="text-highlight">"input"</span>
-        <span className="text-[#7C89A6]">: {"{ … }"}</span>
+        <span className="text-highlight">&quot;input&quot;</span>
+        <span className="text-[#6E7C94]">: {"{ … }"}</span>
       </p>
       <p>
         <span className="text-muted/60">→</span>{" "}
         <span className="text-accent">201</span>{" "}
-        <span className="text-[#A7B2C9]">run_7c31aa92 · running</span>
+        <span className="text-code-text">run_7c31aa92 · running</span>
       </p>
     </div>
   );
@@ -242,18 +243,13 @@ export function FeatureGrid() {
   return (
     <section className="py-24 sm:py-32" aria-labelledby="capabilities-heading">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <Reveal className="max-w-2xl">
-          <p className="font-mono text-xs text-highlight">Capabilities</p>
-          <h2
+        <Reveal>
+          <SectionHeader
             id="capabilities-heading"
-            className="mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl"
-          >
-            Built for modern workflows.
-          </h2>
-          <p className="mt-4 text-pretty leading-relaxed text-muted">
-            From the first trigger to the final execution, Runbolt gives you the
-            building blocks to automate complex engineering workflows.
-          </p>
+            eyebrow="Capabilities"
+            title="Built for modern workflows."
+            lede="From the first trigger to the final execution, Runbolt gives you the building blocks to automate complex engineering workflows."
+          />
         </Reveal>
 
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">

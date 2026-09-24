@@ -20,7 +20,7 @@ export function InlineText({ text }: { text: string }) {
             <Link
               key={i}
               href={link[2]}
-              className="text-info underline decoration-info/30 underline-offset-2 transition-colors hover:text-highlight hover:decoration-highlight/50"
+              className="underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary"
             >
               {link[1]}
             </Link>
@@ -132,14 +132,9 @@ function UiPanel({ variant }: { variant: "builder" | "run" }) {
   if (variant === "builder") {
     return (
       <div className="overflow-hidden rounded-lg border border-line bg-surface" aria-label="Workflow builder preview">
-        <div className="flex items-center gap-3 border-b border-line/80 bg-raised/60 px-4 py-2.5">
-          <div className="flex gap-1.5" aria-hidden>
-            <span className="h-2 w-2 rounded-full bg-line" />
-            <span className="h-2 w-2 rounded-full bg-line" />
-            <span className="h-2 w-2 rounded-full bg-line" />
-          </div>
+        <div className="ruler flex items-center gap-3 border-b border-line/80 bg-raised/60 px-4 pb-2 pt-2.5">
           <p className="font-mono text-[11px] text-muted">
-            runbolt<span className="text-line">/</span>
+            runbolt<span className="text-line-strong">/</span>
             <span className="text-fg">order-fulfillment</span>
           </p>
           <span className="ml-auto rounded bg-primary px-2 py-0.5 text-[10px] font-medium text-button-text">

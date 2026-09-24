@@ -40,7 +40,6 @@ export function StorySection() {
             {f.text}
           </span>
         ))}
-        <div className="absolute left-1/2 top-1/2 h-[380px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(59,130,246,0.05),transparent)] blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-6xl px-5 sm:px-8">

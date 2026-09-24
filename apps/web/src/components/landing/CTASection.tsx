@@ -1,6 +1,4 @@
-import Link from "next/link";
-import { Reveal } from "./Reveal";
-import { ArrowRightIcon, BookIcon } from "./icons";
+import { ButtonAnchor, ButtonLink } from "../ui/kit";
 
 type CTASectionProps = {
   headline?: string;
@@ -20,44 +18,41 @@ export function CTASection({
   secondaryHref = "#developers",
 }: CTASectionProps) {
   return (
-    <section id="cta" className="relative overflow-hidden py-28 sm:py-36" aria-labelledby="cta-heading">
-      {/* Glow field */}
+    <section id="cta" className="relative overflow-hidden py-24 sm:py-32" aria-labelledby="cta-heading">
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="gradient-pan absolute left-1/2 top-1/2 h-[480px] w-[820px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(59,130,246,0.16),rgba(139,124,246,0.08),transparent)] blur-3xl" />
         <div className="bg-grid mask-fade-radial absolute inset-0 opacity-40" />
       </div>
 
-      <Reveal className="relative mx-auto max-w-2xl px-5 text-center sm:px-8">
-        <h2
-          id="cta-heading"
-          className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl"
-        >
-          {headline}
-        </h2>
-        <p className="mx-auto mt-5 max-w-md text-pretty leading-relaxed text-muted">
-          {sub}
-        </p>
-        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            href={primaryHref}
-            className="group inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-button-text shadow-[0_2px_24px_rgba(59,130,246,0.45)] transition-all duration-200 hover:bg-[#2f76ef] hover:shadow-[0_2px_32px_rgba(59,130,246,0.6)] sm:w-auto"
+      <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
+        <div className="relative overflow-hidden rounded-[10px] border border-line bg-surface/70 px-6 py-14 text-center sm:px-12 sm:py-16">
+          {/* Power line across the panel top */}
+          <div
+            aria-hidden
+            className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-volt/40 to-transparent"
+          />
+
+          <h2
+            id="cta-heading"
+            className="text-balance font-display text-3xl font-semibold tracking-[-0.015em] sm:text-4xl"
           >
-            {primaryLabel}
-            <ArrowRightIcon
-              width={15}
-              height={15}
-              className="transition-transform duration-200 group-hover:translate-x-0.5"
-            />
-          </Link>
-          <a
-            href={secondaryHref}
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-line bg-surface/60 px-6 text-sm font-medium text-fg backdrop-blur transition-colors duration-200 hover:border-[#3a466b] hover:bg-hover sm:w-auto"
-          >
-            <BookIcon width={15} height={15} className="text-muted" />
-            {secondaryLabel}
-          </a>
+            {headline}
+          </h2>
+          <p className="mx-auto mt-4 max-w-md text-pretty leading-relaxed text-muted">
+            {sub}
+          </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <ButtonLink href={primaryHref}>
+              {primaryLabel}
+            </ButtonLink>
+            <ButtonAnchor href={secondaryHref} variant="secondary">
+              {secondaryLabel}
+            </ButtonAnchor>
+          </div>
+          <p className="mt-6 font-mono text-[11px] text-faint">
+            static demo · no signup required to explore
+          </p>
         </div>
-      </Reveal>
+      </div>
     </section>
   );
 }

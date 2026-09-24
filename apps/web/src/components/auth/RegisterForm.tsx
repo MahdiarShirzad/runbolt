@@ -59,7 +59,7 @@ export function RegisterForm() {
         </AuthBanner>
         <Link
           href="/verify-email"
-          className="inline-flex h-10 w-full items-center justify-center rounded-md bg-primary text-sm font-medium text-button-text shadow-[0_1px_12px_rgba(59,130,246,0.35)] transition-all duration-200 hover:bg-[#2f76ef]"
+          className="inline-flex h-10 w-full items-center justify-center rounded-md bg-primary text-sm font-medium text-button-text transition-all duration-200 hover:bg-primary-strong"
         >
           Open verification page
         </Link>
@@ -122,11 +122,11 @@ export function RegisterForm() {
 
       <p className="mt-4 text-center text-[12px] leading-relaxed text-muted/80">
         By creating an account, you agree to the{" "}
-        <Link href="#" className="text-info transition-colors hover:text-highlight">
+        <Link href="#" className="underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary">
           Terms of Service
         </Link>{" "}
         and{" "}
-        <Link href="#" className="text-info transition-colors hover:text-highlight">
+        <Link href="#" className="underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary">
           Privacy Policy
         </Link>
         .

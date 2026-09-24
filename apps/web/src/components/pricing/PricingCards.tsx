@@ -65,29 +65,29 @@ const plans: Plan[] = [
 function PricingCard({ plan }: { plan: Plan }) {
   return (
     <article
-      className={`relative flex flex-col rounded-xl border p-6 transition-all duration-200 ${
+      className={`relative flex h-full flex-col rounded-[10px] border p-6 transition-colors duration-200 ${
         plan.highlighted
-          ? "border-primary/60 bg-surface shadow-[0_0_0_1px_rgba(59,130,246,0.35),0_8px_40px_-8px_rgba(59,130,246,0.35)]"
-          : "border-line bg-surface/60 hover:-translate-y-0.5 hover:border-[#33406a] hover:bg-surface"
+          ? "border-primary/50 bg-surface shadow-[0_0_0_1px_rgba(199,240,78,0.25),0_16px_48px_-20px_rgba(3,5,9,0.9)]"
+          : "border-line bg-surface/60 hover:border-line-strong hover:bg-surface"
       }`}
     >
       {plan.highlighted && (
-        <span className="absolute -top-3 left-6 rounded-full border border-primary/50 bg-active px-2.5 py-0.5 text-[11px] font-medium text-primary">
+        <span className="absolute -top-2.5 left-6 rounded border border-primary/40 bg-primary px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-button-text">
           Most popular
         </span>
       )}
 
       <div className="flex items-center gap-2.5">
         <span
-          className={`flex h-7 w-7 items-center justify-center rounded-md border ${
+          className={`flex h-7 w-7 items-center justify-center rounded border ${
             plan.highlighted
-              ? "border-primary/40 bg-primary/15 text-primary"
+              ? "border-primary/40 bg-primary/10 text-primary"
               : "border-line bg-raised text-muted"
           }`}
         >
           {plan.icon}
         </span>
-        <h3 className="text-[15px] font-semibold tracking-tight">{plan.name}</h3>
+        <h3 className="font-display text-[15px] font-semibold tracking-tight">{plan.name}</h3>
       </div>
 
       <p className="mt-3 min-h-10 text-sm leading-relaxed text-muted">
@@ -95,7 +95,7 @@ function PricingCard({ plan }: { plan: Plan }) {
       </p>
 
       <p className="mt-5 flex items-baseline gap-1.5">
-        <span className="text-4xl font-semibold tracking-tight text-fg">
+        <span className="font-display text-4xl font-semibold tracking-tight text-fg">
           {plan.price}
         </span>
         {plan.period && <span className="text-sm text-muted">{plan.period}</span>}
@@ -105,8 +105,8 @@ function PricingCard({ plan }: { plan: Plan }) {
         href="#cta"
         className={`mt-6 inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium transition-colors duration-200 ${
           plan.highlighted
-            ? "bg-primary text-button-text shadow-[0_2px_16px_rgba(59,130,246,0.4)] hover:bg-[#2f76ef]"
-            : "border border-line bg-raised text-fg hover:border-[#3a466b] hover:bg-hover"
+            ? "bg-primary text-button-text hover:bg-primary-strong"
+            : "border border-line bg-raised text-fg hover:border-line-strong hover:bg-hover"
         }`}
       >
         {plan.cta}
@@ -118,7 +118,7 @@ function PricingCard({ plan }: { plan: Plan }) {
             <CheckIcon
               width={13}
               height={13}
-              className={`mt-0.5 shrink-0 ${i === 0 ? "text-accent" : "text-ok"}`}
+              className={`mt-0.5 shrink-0 ${i === 0 ? "text-highlight" : "text-ok"}`}
             />
             <span className="text-muted">{feature}</span>
           </li>
