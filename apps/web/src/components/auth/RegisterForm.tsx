@@ -122,11 +122,11 @@ export function RegisterForm() {
 
       <p className="mt-4 text-center text-[12px] leading-relaxed text-muted/80">
         By creating an account, you agree to the{" "}
-        <Link href="#" className="underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary">
+        <Link href="/terms" className="underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary">
           Terms of Service
         </Link>{" "}
         and{" "}
-        <Link href="#" className="underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary">
+        <Link href="/privacy" className="underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary">
           Privacy Policy
         </Link>
         .

@@ -30,18 +30,18 @@ const columns: FooterColumn[] = [
     title: "Company",
     links: [
       { label: "About", href: "/about" },
-      { label: "Blog", href: "#" },
-      { label: "Careers", href: "#" },
+      { label: "Blog", href: "/blog" },
+      { label: "Careers", href: "/careers" },
       { label: "Contact", href: "/contact" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { label: "Privacy", href: "#" },
-      { label: "Terms", href: "#" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
       { label: "Security", href: "/security" },
-      { label: "DPA", href: "#" },
+      { label: "DPA", href: "/dpa" },
     ],
   },
 ];
@@ -76,12 +76,23 @@ export function Footer() {
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted transition-colors duration-200 hover:text-fg"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.href.startsWith("http") ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm text-muted transition-colors duration-200 hover:text-fg"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="text-sm text-muted transition-colors duration-200 hover:text-fg"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
