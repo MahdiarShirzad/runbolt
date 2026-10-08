@@ -3,7 +3,7 @@ import { Hero } from "@/components/landing/Hero";
 import { Features } from "@/components/landing/Features";
 import { WorkflowCanvas } from "@/components/landing/WorkflowCanvas";
 import { DeveloperExperience } from "@/components/landing/DeveloperExperience";
-import { Metrics } from "@/components/landing/Metrics";
+import { ExecutionPipeline } from "@/components/landing/ExecutionPipeline";
 import { CTASection } from "@/components/landing/CTASection";
 import { Footer } from "@/components/landing/Footer";
 
@@ -16,7 +16,7 @@ export default function Home() {
         <Features />
         <WorkflowCanvas />
         <DeveloperExperience />
-        <Metrics />
+        <ExecutionPipeline />
         <CTASection />
       </main>
       <Footer />
