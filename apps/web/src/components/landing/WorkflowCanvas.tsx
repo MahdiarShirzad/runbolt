@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Reveal } from "./Reveal";
 import { SectionHeader } from "../ui/kit";
 import { CheckIcon, DbIcon, FilterIcon, GlobeIcon, ShuffleIcon, WebhookIcon, WorkerIcon } from "./icons";
@@ -34,20 +37,24 @@ const nodes: GraphNode[] = [
   { id: "fulfill", label: "Worker", sub: "queue: fulfillment", kind: "worker", icon: <WorkerIcon width={14} height={14} />, x: 925, y: 240, status: "running" },
 ];
 
+// Edges with distance for particle travel
 const edges = [
-  { d: "M95 240 H295", delay: "0s" },
-  { d: "M295 240 C360 240 420 130 505 130", delay: "0.6s" },
-  { d: "M295 240 C360 240 420 350 505 350", delay: "0.6s", dim: true },
-  { d: "M505 130 H720", delay: "1.2s" },
-  { d: "M720 130 C800 130 850 240 925 240", delay: "1.8s" },
-  { d: "M505 350 C650 350 790 240 925 240", delay: "1.8s", dim: true },
-  { d: "M925 240 H1035", delay: "2.4s" },
+  { d: "M95 240 H295", delay: "0s", distance: 200 },
+  { d: "M295 240 C360 240 420 130 505 130", delay: "0.6s", distance: 260 },
+  { d: "M295 240 C360 240 420 350 505 350", delay: "0.6s", dim: true, distance: 260 },
+  { d: "M505 130 H720", delay: "1.2s", distance: 215 },
+  { d: "M720 130 C800 130 850 240 925 240", delay: "1.8s", distance: 230 },
+  { d: "M505 350 C650 350 790 240 925 240", delay: "1.8s", dim: true, distance: 230 },
+  { d: "M925 240 H1035", delay: "2.4s", distance: 110 },
 ];
 
-function StatusBadge({ status }: { status: Status }) {
+// Node activation order (matches execution flow)
+const activationOrder = ["hook_in", "check_order", "charge_api", "persist", "fulfill"];
+
+function StatusBadge({ status, isTransitioning }: { status: Status; isTransitioning?: boolean }) {
   if (status === "success") {
     return (
-      <span className="flex items-center gap-1 rounded bg-ok/12 px-1.5 py-0.5 font-mono text-[9px] text-ok">
+      <span className={`flex items-center gap-1 rounded bg-ok/12 px-1.5 py-0.5 font-mono text-[9px] text-ok ${isTransitioning ? "status-transition" : ""}`}>
         <CheckIcon width={8} height={8} />
         ok
       </span>
@@ -68,13 +75,13 @@ function StatusBadge({ status }: { status: Status }) {
   );
 }
 
-function NodeCard({ node, pulse }: { node: GraphNode; pulse?: boolean }) {
+function NodeCard({ node, pulse, isActivating }: { node: GraphNode; pulse?: boolean; isActivating?: boolean }) {
   const skipped = node.status === "skipped";
   return (
     <div
       className={`flex items-center gap-2.5 rounded-lg border bg-surface/95 px-3 py-2.5 ${
         pulse ? "border-primary/60 pulse-primary" : ""
-      } ${skipped ? "border-dashed border-line opacity-65" : "border-line"}`}
+      } ${isActivating ? "node-activate" : ""} ${skipped ? "border-dashed border-line opacity-65" : "border-line"}`}
     >
       <span className={kindColor[node.kind]}>{node.icon}</span>
       <span className="leading-tight">
@@ -85,12 +92,64 @@ function NodeCard({ node, pulse }: { node: GraphNode; pulse?: boolean }) {
           {node.sub}
         </span>
       </span>
-      <StatusBadge status={node.status} />
+      <StatusBadge status={node.status} isTransitioning={isActivating} />
     </div>
   );
 }
 
 function DesktopGraph() {
+  const [activatedNodes, setActivatedNodes] = useState<Set<string>>(new Set());
+  const [particles, setParticles] = useState<{ edgeIndex: number; id: number }[]>([]);
+  const cycleRef = useRef(0);
+
+  // Staggered activation cycle
+  useEffect(() => {
+    const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      setTimeout(() => {
+        setActivatedNodes(new Set(nodes.filter(n => n.status !== "skipped").map(n => n.id)));
+      }, 0);
+      return;
+    }
+
+    const runCycle = () => {
+      const cycle = ++cycleRef.current;
+      
+      // Reset
+      setActivatedNodes(new Set());
+      setParticles([]);
+
+      // Activate nodes in sequence
+      activationOrder.forEach((nodeId, i) => {
+        setTimeout(() => {
+          if (cycleRef.current !== cycle) return;
+          setActivatedNodes((prev) => new Set([...prev, nodeId]));
+        }, i * 500);
+      });
+
+      // Emit particles along edges (only non-dim edges)
+      edges.filter((e) => !e.dim).forEach((edge, edgeIndex) => {
+        const particleId = Date.now() + edgeIndex;
+        const travelTime = 1000;
+        const delay = parseFloat(edge.delay) * 1000 + 300;
+        
+        setTimeout(() => {
+          if (cycleRef.current !== cycle) return;
+          setParticles((prev) => [...prev, { edgeIndex, id: particleId }]);
+          
+          setTimeout(() => {
+            setParticles((prev) => prev.filter((p) => p.id !== particleId));
+          }, travelTime);
+        }, delay);
+      });
+
+      // Loop cycle every ~10 seconds
+      setTimeout(runCycle, 10000);
+    };
+
+    runCycle();
+  }, []);
+
   return (
     <div className="relative hidden aspect-[1100/480] md:block">
       <div className="bg-grid mask-fade-radial absolute inset-0" aria-hidden />
@@ -101,7 +160,7 @@ function DesktopGraph() {
         preserveAspectRatio="none"
         aria-hidden
       >
-        {edges.map((edge) => (
+        {edges.map((edge, edgeIndex) => (
           <g key={edge.d}>
             <path
               d={edge.d}
@@ -123,6 +182,22 @@ function DesktopGraph() {
                 style={{ "--edge-delay": edge.delay } as React.CSSProperties}
               />
             )}
+            {/* Particles traveling between nodes */}
+            {particles
+              .filter((p) => p.edgeIndex === edgeIndex)
+              .map((particle) => (
+                <circle
+                  key={particle.id}
+                  r="2.5"
+                  fill="#C7F04E"
+                  filter="drop-shadow(0 0 4px #C7F04E)"
+                  className="particle-travel"
+                  style={{
+                    "--travel-dist": `${edge.distance}px`,
+                    "--particle-delay": "0s",
+                  } as React.CSSProperties}
+                />
+              ))}
           </g>
         ))}
       </svg>
@@ -147,7 +222,11 @@ function DesktopGraph() {
           className="absolute -translate-x-1/2 -translate-y-1/2"
           style={{ left: `${node.x / 11}%`, top: `${node.y / 4.8}%` }}
         >
-          <NodeCard node={node} pulse={node.status === "running"} />
+          <NodeCard
+            node={node}
+            pulse={node.status === "running"}
+            isActivating={activatedNodes.has(node.id) && node.status !== "running"}
+          />
         </div>
       ))}
 

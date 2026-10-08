@@ -11,6 +11,20 @@
  * not shadows or pills.
  */
 
+/* Motion tokens — consistent timing & easing across the system */
+@layer base {
+  :root {
+    --motion-fast: 120ms;
+    --motion-base: 200ms;
+    --motion-slow: 350ms;
+    --motion-slower: 500ms;
+    --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-in-out: cubic-bezier(0.42, 0, 0.58, 1);
+  }
+}
+
 @theme {
   /* Typography */
   --font-sans: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
@@ -411,14 +425,368 @@ details[open]::details-content {
   .blink,
   .rail-pulse,
   .spin,
-  .flow-x-dot {
+  .flow-x-dot,
+  .execution-comet,
+  .execution-path,
+  .execution-burst,
+  .ambient-drift,
+  .grid-drift,
+  .hero-headline-reveal,
+  .stat-counter,
+  .feature-card-glow,
+  .feature-icon-pulse,
+  .cta-volt-glow,
+  .nav-indicator {
     animation: none;
   }
   .edge-flow,
   .rail-pulse {
     opacity: 0.9;
   }
-  .flow-x-dot {
+  .flow-x-dot,
+  .execution-comet {
     opacity: 0;
   }
+}
+
+/* ============================================================================
+   EXECUTION MOTION SYSTEM — "This thing executes fast."
+   ============================================================================ */
+
+/* ---------- Hero: Execution rail & comets ---------- */
+
+/* Horizontal execution paths — thin technical lines */
+@keyframes path-draw {
+  0% {
+    stroke-dashoffset: 400;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.4;
+  }
+  80% {
+    opacity: 0.4;
+  }
+  100% {
+    stroke-dashoffset: -400;
+    opacity: 0;
+  }
+}
+.execution-path {
+  stroke-dasharray: 20 380;
+  animation: path-draw 4s linear infinite;
+  animation-delay: var(--path-delay, 0s);
+}
+
+/* Volt-colored execution comets traveling along paths */
+@keyframes comet-travel {
+  0% {
+    transform: translateX(-120%) scale(0.5);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translateX(-100%) scale(1);
+  }
+  90% {
+    opacity: 1;
+    transform: translateX(100%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(120%) scale(0.5);
+  }
+}
+.execution-comet {
+  animation: comet-travel 3.5s ease-out infinite;
+  animation-delay: var(--comet-delay, 0s);
+}
+
+/* Occasional execution bursts — short, sharp energy releases */
+@keyframes execution-burst {
+  0% {
+    transform: scale(0);
+    opacity: 0.8;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+.execution-burst {
+  animation: execution-burst 1.2s ease-out infinite;
+  animation-delay: var(--burst-delay, 0s);
+}
+
+/* Subtle ambient background movement */
+@keyframes ambient-drift {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(2px, -1px) rotate(0.15deg);
+  }
+  50% {
+    transform: translate(-1px, 2px) rotate(-0.1deg);
+  }
+  75% {
+    transform: translate(1px, 1px) rotate(0.05deg);
+  }
+}
+.ambient-drift {
+  animation: ambient-drift 20s ease-in-out infinite;
+}
+
+/* Slow grid drift for background */
+@keyframes grid-drift {
+  0%, 100% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 18px 18px;
+  }
+}
+.grid-drift {
+  animation: grid-drift 60s linear infinite;
+}
+
+/* ---------- Hero: Headline staggered entrance ---------- */
+
+@keyframes headline-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+.hero-headline-reveal {
+  animation: headline-reveal 0.55s var(--ease-out) both;
+  animation-delay: var(--reveal-delay, 0s);
+}
+
+/* ---------- Feature Cards: Micro-interactions ---------- */
+
+/* Border glow on hover — volt signal travels through card */
+@keyframes feature-glow {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(199, 240, 78, 0),
+      inset 0 0 0 1px rgba(199, 240, 78, 0);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(199, 240, 78, 0.3),
+      inset 0 0 0 1px rgba(199, 240, 78, 0.15);
+  }
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(199, 240, 78, 0),
+      inset 0 0 0 1px rgba(199, 240, 78, 0);
+  }
+}
+.feature-card-glow {
+  animation: feature-glow 2.8s ease-in-out infinite;
+}
+
+/* Icon subtle pulse on hover */
+@keyframes icon-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+.feature-icon-pulse {
+  animation: icon-pulse 2s ease-in-out infinite;
+}
+
+/* Tiny volt execution signal moving through card on hover */
+@keyframes signal-traverse {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+.signal-traverse {
+  animation: signal-traverse 1.4s ease-out forwards;
+}
+
+/* ---------- CTA: Refined interaction ---------- */
+
+@keyframes cta-volt-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgba(199, 240, 78, 0),
+      0 4px 14px -4px rgba(199, 240, 78, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px rgba(199, 240, 78, 0.15),
+      0 8px 24px -4px rgba(199, 240, 78, 0.4);
+  }
+}
+.cta-volt-glow {
+  animation: cta-volt-glow 3s ease-in-out infinite;
+}
+
+/* ---------- Stats: Counter entrance ---------- */
+
+@keyframes stat-counter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.stat-counter {
+  animation: stat-counter 0.5s var(--ease-out) both;
+}
+
+/* ---------- Navigation: Subtle indicator motion ---------- */
+
+@keyframes nav-indicator {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 100%;
+    opacity: 1;
+  }
+}
+.nav-indicator {
+  animation: nav-indicator 0.25s var(--ease-out) forwards;
+}
+
+/* ---------- BuilderMock / WorkflowCanvas: Live execution ---------- */
+
+/* Log line progressive appearance */
+@keyframes log-line-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.log-line-in {
+  animation: log-line-in 0.3s var(--ease-out) both;
+  animation-delay: var(--log-delay, 0s);
+}
+
+/* Status indicator transitions */
+@keyframes status-transition {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.status-transition {
+  animation: status-transition 0.25s var(--ease-spring) both;
+}
+
+/* Progress bar natural movement */
+@keyframes progress-flow {
+  from {
+    width: var(--progress-start, 0%);
+  }
+  to {
+    width: var(--progress-end, 100%);
+  }
+}
+.progress-flow {
+  animation: progress-flow 1.8s var(--ease-out) forwards;
+}
+
+/* Node activation cascade */
+@keyframes node-activate {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.6;
+    border-color: var(--color-line);
+  }
+  40% {
+    transform: scale(1.02);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(199, 240, 78, 0.2);
+  }
+  100% {
+    transform: scale(1);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0 rgba(199, 240, 78, 0);
+  }
+}
+.node-activate {
+  animation: node-activate 0.6s var(--ease-out) forwards;
+  animation-delay: var(--node-delay, 0s);
+}
+
+/* Particle/comet between connected nodes */
+@keyframes particle-travel {
+  0% {
+    transform: translateX(0) scale(0.5);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  85% {
+    opacity: 1;
+    transform: translateX(var(--travel-dist, 100%)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(var(--travel-dist, 100%)) scale(0.5);
+  }
+}
+.particle-travel {
+  animation: particle-travel 1.2s ease-out forwards;
+  animation-delay: var(--particle-delay, 0s);
+}
+
+/* Timestamp/metadata subtle update */
+@keyframes metadata-tick {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+    color: var(--color-primary);
+  }
+}
+.metadata-tick {
+  animation: metadata-tick 2s ease-in-out infinite;
 }

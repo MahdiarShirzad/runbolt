@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckIcon, DbIcon, FilterIcon, GlobeIcon, WebhookIcon, WorkerIcon } from "./icons";
 
 /* Node kinds → color roles from the Runbolt node palette */
@@ -18,8 +21,8 @@ type MockNode = {
   sub: string;
   kind: keyof typeof kindColor;
   icon: ReactNode;
-  x: number; // viewBox coords (0..1000)
-  y: number; // viewBox coords (0..460)
+  x: number;
+  y: number;
   status: NodeStatus;
 };
 
@@ -78,10 +81,10 @@ const nodes: MockNode[] = [
 
 /* Edges drawn center-to-center; the HTML nodes sit on top and cover the ends. */
 const edges = [
-  { d: "M110 120 H350", delay: "0s" },
-  { d: "M350 120 H590", delay: "0.6s" },
-  { d: "M590 120 C690 120 730 70 830 70", delay: "1.2s" },
-  { d: "M590 120 C690 120 730 210 830 210", delay: "1.2s" },
+  { d: "M110 120 H350", delay: "0s", distance: "240" },
+  { d: "M350 120 H590", delay: "0.6s", distance: "240" },
+  { d: "M590 120 C690 120 730 70 830 70", delay: "1.2s", distance: "280" },
+  { d: "M590 120 C690 120 730 210 830 210", delay: "1.2s", distance: "280" },
 ];
 
 const logs: [string, string, string, string][] = [
@@ -106,7 +109,7 @@ function StatusBadge({ status }: { status: NodeStatus }) {
   if (status === "success") {
     return (
       <span
-        className="flex h-4 w-4 items-center justify-center rounded-full bg-ok/15 text-ok"
+        className="flex h-4 w-4 items-center justify-center rounded-full bg-ok/15 text-ok status-transition"
         aria-label="succeeded"
       >
         <CheckIcon width={9} height={9} />
@@ -122,7 +125,119 @@ function StatusBadge({ status }: { status: NodeStatus }) {
   );
 }
 
+function LogLine({ time, level, levelColor, msg, delay = 0 }: { time: string; level: string; levelColor: string; msg: string; delay: number }) {
+  return (
+    <p className="whitespace-pre log-line-in" style={{ "--log-delay": `${delay}s` } as React.CSSProperties}>
+      <span className="text-faint">{time}</span>{" "}
+      <span className={levelColor}>{level}</span>{" "}
+      <span className="text-code-text">{msg}</span>
+    </p>
+  );
+}
+
+function WaterfallSpan({ label, left, width, color, running = false, delay = 0 }: { label: string; left: number; width: number; color: string; running?: boolean; delay: number }) {
+  return (
+    <div className="flex items-center gap-3 log-line-in" style={{ "--log-delay": `${delay}s` } as React.CSSProperties}>
+      <span className="w-32 shrink-0 truncate font-mono text-[10px] text-muted">
+        {label}
+      </span>
+      <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-code">
+        <span
+          className={`absolute inset-y-0 rounded-full ${color} progress-flow ${running ? "opacity-100" : "opacity-90"}`}
+          style={{ left: `${left}%`, width: `${width}%`, "--progress-start": "0%", "--progress-end": `${width}%` } as React.CSSProperties}
+        />
+        {running && (
+          <span
+            className="absolute right-0 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-primary"
+            style={{ boxShadow: "0 0 6px #C7F04E" }}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function BuilderMock() {
+  const [activatedNodes, setActivatedNodes] = useState<Set<string>>(new Set());
+  const [visibleLogs, setVisibleLogs] = useState<Set<number>>(new Set());
+  const [visibleSpans, setVisibleSpans] = useState<Set<number>>(new Set());
+  const [particles, setParticles] = useState<{ edgeIndex: number; id: number }[]>([]);
+  const cycleRef = useRef(0);
+
+  // Initialize state for reduced motion on mount
+  useEffect(() => {
+    const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      // Defer to next tick to avoid synchronous setState warning
+      setTimeout(() => {
+        setActivatedNodes(new Set(nodes.map((n) => n.id)));
+        setVisibleLogs(new Set(logs.map((_, i) => i)));
+        setVisibleSpans(new Set(spans.map((_, i) => i)));
+      }, 0);
+    }
+  }, []);
+
+  // Staggered activation cycle
+  useEffect(() => {
+    const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
+
+    const runCycle = () => {
+      const cycle = ++cycleRef.current;
+      
+      // Reset
+      setActivatedNodes(new Set());
+      setVisibleLogs(new Set());
+      setVisibleSpans(new Set());
+      setParticles([]);
+
+      // Activate nodes in sequence
+      nodes.forEach((node, i) => {
+        setTimeout(() => {
+          if (cycleRef.current !== cycle) return;
+          setActivatedNodes((prev) => new Set([...prev, node.id]));
+        }, i * 400);
+      });
+
+      // Show logs progressively
+      logs.forEach((_, i) => {
+        setTimeout(() => {
+          if (cycleRef.current !== cycle) return;
+          setVisibleLogs((prev) => new Set([...prev, i]));
+        }, 200 + i * 150);
+      });
+
+      // Show waterfall spans progressively
+      spans.forEach((_, i) => {
+        setTimeout(() => {
+          if (cycleRef.current !== cycle) return;
+          setVisibleSpans((prev) => new Set([...prev, i]));
+        }, 300 + i * 200);
+      });
+
+      // Emit particles along edges
+      edges.forEach((edge, edgeIndex) => {
+        const particleId = Date.now() + edgeIndex;
+        const travelTime = 1200;
+        const delay = parseFloat(edge.delay) * 1000 + 400;
+        
+        setTimeout(() => {
+          if (cycleRef.current !== cycle) return;
+          setParticles((prev) => [...prev, { edgeIndex, id: particleId }]);
+          
+          setTimeout(() => {
+            setParticles((prev) => prev.filter((p) => p.id !== particleId));
+          }, travelTime);
+        }, delay);
+      });
+
+      // Loop cycle every ~8 seconds
+      setTimeout(runCycle, 8000);
+    };
+
+    runCycle();
+  }, []);
+
   return (
     <div className="relative">
       <div className="relative overflow-hidden rounded-[10px] border border-line bg-surface shadow-[0_24px_70px_-28px_rgba(3,5,9,0.95)]">
@@ -176,14 +291,14 @@ export function BuilderMock() {
             <div className="relative aspect-[1000/460] min-w-[600px] bg-ink">
               <div className="bg-grid mask-fade-radial absolute inset-0" aria-hidden />
 
-              {/* Edges */}
+              {/* Edges with flowing comets */}
               <svg
                 className="absolute inset-0 h-full w-full"
                 viewBox="0 0 1000 460"
                 preserveAspectRatio="none"
                 aria-hidden
               >
-                {edges.map((edge) => (
+                {edges.map((edge, edgeIndex) => (
                   <g key={edge.d}>
                     <path
                       d={edge.d}
@@ -202,11 +317,27 @@ export function BuilderMock() {
                       className="edge-flow"
                       style={{ "--edge-delay": edge.delay } as React.CSSProperties}
                     />
+                    {/* Particles traveling between nodes */}
+                    {particles
+                      .filter((p) => p.edgeIndex === edgeIndex)
+                      .map((particle) => (
+                        <circle
+                          key={particle.id}
+                          r="2.5"
+                          fill="#C7F04E"
+                          filter="drop-shadow(0 0 4px #C7F04E)"
+                          className="particle-travel"
+                          style={{
+                            "--travel-dist": `${parseInt(edge.distance) || 240}px`,
+                            "--particle-delay": "0s",
+                          } as React.CSSProperties}
+                        />
+                      ))}
                   </g>
                 ))}
               </svg>
 
-              {/* Nodes */}
+              {/* Nodes with activation cascade */}
               {nodes.map((node) => (
                 <div
                   key={node.id}
@@ -214,7 +345,7 @@ export function BuilderMock() {
                     node.status === "running"
                       ? "border-primary/60 pulse-primary"
                       : "border-line"
-                  }`}
+                  } ${activatedNodes.has(node.id) && node.status !== "running" ? "node-activate" : ""}`}
                   style={{ left: `${node.x / 10}%`, top: `${node.y / 4.6}%` }}
                 >
                   <span className={kindColor[node.kind]}>{node.icon}</span>
@@ -232,7 +363,7 @@ export function BuilderMock() {
             </div>
           </div>
 
-          {/* Logs */}
+          {/* Logs with progressive appearance */}
           <aside
             className="hidden w-72 shrink-0 flex-col border-l border-line/80 bg-code lg:flex"
             aria-label="Execution logs"
@@ -241,44 +372,42 @@ export function BuilderMock() {
               Execution log
             </p>
             <div className="scroll-slim flex-1 overflow-y-auto overflow-x-auto p-3 font-mono text-[10.5px] leading-5">
-              {logs.map(([time, level, levelColor, msg], i) => (
-                <p key={i} className="whitespace-pre">
-                  <span className="text-faint">{time}</span>{" "}
-                  <span className={levelColor}>{level}</span>{" "}
-                  <span className="text-code-text">{msg}</span>
-                </p>
-              ))}
-              <p className="whitespace-pre">
+              {logs.map(([time, level, levelColor, msg], i) =>
+                visibleLogs.has(i) && (
+                  <LogLine key={i} time={time} level={level} levelColor={levelColor} msg={msg} delay={i * 0.1} />
+                )
+              )}
+              <p className="whitespace-pre log-line-in" style={{ "--log-delay": `${logs.length * 0.1}s` } as React.CSSProperties}>
                 <span className="text-faint">12:04:31</span>{" "}
-                <span className="text-primary">▍</span>
+                <span className="text-primary metadata-tick">▍</span>
               </p>
             </div>
           </aside>
         </div>
 
-        {/* Tracing waterfall */}
+        {/* Tracing waterfall with progressive spans */}
         <div className="border-t border-line/80 bg-raised/40 px-4 py-3">
           <div className="mb-2 flex items-center justify-between font-mono text-[10px] text-faint">
             <span className="uppercase tracking-widest">Trace · run #48213</span>
-            <span>
+            <span className="metadata-tick">
               elapsed <span className="text-fg">395ms</span> · retries{" "}
               <span className="text-fg">0</span>
             </span>
           </div>
           <div className="space-y-1.5">
-            {spans.map(([label, left, width, color, running]) => (
-              <div key={label} className="flex items-center gap-3">
-                <span className="w-32 shrink-0 truncate font-mono text-[10px] text-muted">
-                  {label}
-                </span>
-                <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-code">
-                  <span
-                    className={`absolute inset-y-0 rounded-full ${color} ${running ? "" : "opacity-90"}`}
-                    style={{ left: `${left}%`, width: `${width}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+            {spans.map(([label, left, width, color, running], i) =>
+              visibleSpans.has(i) && (
+                <WaterfallSpan
+                  key={label}
+                  label={label}
+                  left={left}
+                  width={width}
+                  color={color}
+                  running={running}
+                  delay={i * 0.15}
+                />
+              )
+            )}
           </div>
         </div>
       </div>

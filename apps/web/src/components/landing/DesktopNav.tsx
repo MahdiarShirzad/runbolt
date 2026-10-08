@@ -9,7 +9,7 @@ function isActivePath(pathname: string, href: string) {
 }
 
 const desktopLinkCls = (active: boolean) =>
-  `rounded-md px-3 py-2 text-[13.5px] transition-colors duration-200 ${
+  `relative rounded-md px-3 py-2 text-[13.5px] transition-all duration-300 ${
     active
       ? "bg-surface font-medium text-fg ring-1 ring-line"
       : "text-muted hover:bg-hover hover:text-fg"
@@ -35,6 +35,12 @@ export function DesktopNav({
               className={desktopLinkCls(active)}
             >
               {link.label}
+              {active && (
+                <span
+                  aria-hidden
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 h-px w-full bg-primary nav-indicator"
+                />
+              )}
             </Link>
           </li>
         );

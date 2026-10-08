@@ -60,7 +60,7 @@ function Counter({ stat }: { stat: Stat }) {
   return (
     <span
       ref={ref}
-      className="font-display text-4xl font-semibold tracking-tight text-fg tabular-nums sm:text-5xl"
+      className="font-display text-4xl font-semibold tracking-tight text-fg tabular-nums sm:text-5xl stat-counter"
     >
       {display}
       <span className="text-primary">{stat.suffix}</span>

@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { Reveal } from "./Reveal";
 import { SectionHeader } from "../ui/kit";
 import { CodeIcon, EyeIcon, NodeGraphIcon, PulseIcon, WorkerIcon } from "./icons";
@@ -169,22 +172,53 @@ const features: Feature[] = [
 ];
 
 export function FeatureCard({ feature }: { feature: Feature }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [signalActive, setSignalActive] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    // Trigger the volt signal traversal
+    setSignalActive(true);
+    setTimeout(() => setSignalActive(false), 1400);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
   return (
     <article
-      className={`group flex h-full flex-col rounded-lg border border-line bg-surface/60 p-5 transition-colors duration-200 hover:border-line-strong hover:bg-surface ${feature.span ?? ""}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={`group relative flex h-full flex-col rounded-lg border border-line bg-surface/60 p-5 transition-all duration-300 hover:border-line-strong hover:bg-surface ${feature.span ?? ""} ${
+        isHovered ? "feature-card-glow" : ""
+      }`}
     >
+      {/* Volt signal traversing the card on hover */}
+      {signalActive && (
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none overflow-hidden"
+          style={{ borderRadius: "inherit" }}
+        >
+          <div
+            className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-volt/60 to-transparent signal-traverse"
+          />
+        </div>
+      )}
+
       <div className="mb-3.5 flex items-center justify-between">
         <h3 className="font-display text-[15px] font-semibold tracking-tight">
           {feature.title}
         </h3>
-        <span className="text-muted transition-colors duration-200 group-hover:text-primary">
+        <span className={`text-muted transition-all duration-300 ${isHovered ? "text-primary feature-icon-pulse" : "group-hover:text-primary"}`}>
           {feature.icon}
         </span>
       </div>
       <p className="text-sm leading-relaxed text-muted">
         {feature.description}
       </p>
-      <div className="mt-5 flex-1 rounded-md border border-line/60 bg-code/60 p-3.5 pt-4">
+      <div className="mt-5 flex-1 rounded-md border border-line/60 bg-code/60 p-3.5 pt-4 transition-colors duration-300 group-hover:border-line/80">
         {feature.preview}
       </div>
     </article>

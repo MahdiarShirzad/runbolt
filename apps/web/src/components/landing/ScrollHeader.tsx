@@ -19,9 +19,9 @@ export function ScrollHeader({ children }: { children: ReactNode }) {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
+      className={`sticky top-0 z-50 border-b transition-all duration-300 ${scrolled ? "nav-indicator" : ""} ${
         scrolled
-          ? "border-line/80 bg-ink/85 backdrop-blur-md"
+          ? "border-line/80 bg-ink/85 backdrop-blur-md shadow-[0_1px_0_0_rgba(199,240,78,0.08)]"
           : "border-transparent bg-ink/50 backdrop-blur-sm"
       }`}
     >

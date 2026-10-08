@@ -1,4 +1,5 @@
 import { ButtonAnchor, ButtonLink } from "../ui/kit";
+import { Reveal } from "./Reveal";
 
 type CTASectionProps = {
   headline?: string;
@@ -31,26 +32,37 @@ export function CTASection({
             className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-volt/40 to-transparent"
           />
 
-          <h2
-            id="cta-heading"
-            className="text-balance font-display text-3xl font-semibold tracking-[-0.015em] sm:text-4xl"
-          >
-            {headline}
-          </h2>
-          <p className="mx-auto mt-4 max-w-md text-pretty leading-relaxed text-muted">
-            {sub}
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <ButtonLink href={primaryHref}>
-              {primaryLabel}
-            </ButtonLink>
-            <ButtonAnchor href={secondaryHref} variant="secondary">
-              {secondaryLabel}
-            </ButtonAnchor>
-          </div>
-          <p className="mt-6 font-mono text-[11px] text-faint">
-            static demo · no signup required to explore
-          </p>
+          <Reveal>
+            <h2
+              id="cta-heading"
+              className="text-balance font-display text-3xl font-semibold tracking-[-0.015em] sm:text-4xl"
+            >
+              {headline}
+            </h2>
+          </Reveal>
+
+          <Reveal delay={80}>
+            <p className="mx-auto mt-4 max-w-md text-pretty leading-relaxed text-muted">
+              {sub}
+            </p>
+          </Reveal>
+
+          <Reveal delay={160}>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <ButtonLink href={primaryHref}>
+                {primaryLabel}
+              </ButtonLink>
+              <ButtonAnchor href={secondaryHref} variant="secondary">
+                {secondaryLabel}
+              </ButtonAnchor>
+            </div>
+          </Reveal>
+
+          <Reveal delay={240}>
+            <p className="mt-6 font-mono text-[11px] text-faint">
+              static demo · no signup required to explore
+            </p>
+          </Reveal>
         </div>
       </div>
     </section>

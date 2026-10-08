@@ -6,11 +6,11 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "reac
 /* ------------------------------------------------------------------ */
 
 const buttonBase =
-  "group inline-flex h-11 items-center justify-center gap-2 rounded-md px-5 text-sm font-medium transition-all duration-200 active:translate-y-px";
+  "group relative inline-flex h-11 items-center justify-center gap-2 rounded-md px-5 text-sm font-medium transition-all duration-200 active:translate-y-px overflow-hidden";
 
 const variants = {
   primary:
-    "bg-primary text-button-text hover:bg-primary-strong",
+    "bg-primary text-button-text hover:bg-primary-strong cta-volt-glow",
   secondary:
     "border border-line bg-surface/70 text-fg hover:border-line-strong hover:bg-hover",
   quiet: "text-muted hover:text-fg",
@@ -32,7 +32,8 @@ export function ButtonLink({
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">) {
   return (
     <Link href={href} className={`${buttonBase} ${variants[variant]} ${className}`} {...rest}>
-      {children}
+      <span className="absolute inset-0 bg-primary/20 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-active:opacity-20" aria-hidden />
+      <span className="relative z-10">{children}</span>
     </Link>
   );
 }
@@ -51,7 +52,8 @@ export function ButtonAnchor({
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">) {
   return (
     <a href={href} className={`${buttonBase} ${variants[variant]} ${className}`} {...rest}>
-      {children}
+      <span className="absolute inset-0 bg-primary/20 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-active:opacity-20" aria-hidden />
+      <span className="relative z-10">{children}</span>
     </a>
   );
 }
@@ -69,7 +71,8 @@ export function Button({
 } & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button type={type} className={`${buttonBase} ${variants[variant]} ${className}`} {...rest}>
-      {children}
+      <span className="absolute inset-0 bg-primary/20 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-active:opacity-20" aria-hidden />
+      <span className="relative z-10">{children}</span>
     </button>
   );
 }
