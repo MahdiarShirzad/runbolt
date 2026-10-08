@@ -88,13 +88,13 @@ export function Button({
  */
 export function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <p className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+    <span className="inline-flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
       <span className="relative flex h-[7px] w-[7px] items-center justify-center" aria-hidden>
         <span className="absolute inset-0 border border-volt/60" />
         <span className="h-[3px] w-[3px] bg-volt" />
       </span>
       {children}
-    </p>
+    </span>
   );
 }
 
