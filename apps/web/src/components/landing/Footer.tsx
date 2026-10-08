@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { BoltIcon } from "./icons";
 
 type FooterColumn = {
   title: string;
@@ -52,13 +52,14 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.5fr_repeat(4,1fr)]">
           <div>
-            <Link href="/" className="flex items-center gap-2.5 rounded-md">
-              <span className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-primary text-button-text">
-                <BoltIcon width={13} height={13} />
-              </span>
-              <span className="font-display text-[15px] font-semibold tracking-tight">
-                Runbolt
-              </span>
+            <Link href="/" className="flex items-center rounded-md">
+              <Image
+                src="/logo.png"
+                alt="Runbolt"
+                width={802}
+                height={180}
+                className="h-7 w-auto"
+              />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
               Workflow orchestration for engineers. Build, run, and observe —

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { BoltIcon, CheckIcon, DbIcon, GlobeIcon, WorkerIcon } from "../landing/icons";
@@ -70,11 +71,14 @@ export function AuthLayout({
   return (
     <div className="flex min-h-screen w-full flex-col bg-ink">
       <header className="mx-auto flex w-full max-w-[1200px] items-center justify-between px-5 py-5 sm:px-8">
-        <Link href="/" className="flex items-center gap-2.5 rounded-md">
-          <span className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-primary text-button-text">
-            <BoltIcon width={13} height={13} />
-          </span>
-          <span className="font-display text-[15px] font-semibold tracking-tight">Runbolt</span>
+        <Link href="/" className="flex items-center rounded-md">
+          <Image
+            src="/logo.png"
+            alt="Runbolt"
+            width={802}
+            height={180}
+            className="h-7 w-auto"
+          />
         </Link>
         <p className="text-[13.5px] text-muted">
           {switchText}{" "}
