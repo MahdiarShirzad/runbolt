@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   AuthBanner,
   AuthCard,
@@ -18,6 +19,7 @@ import { MailIcon } from "../landing/icons";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
@@ -39,7 +41,12 @@ export function LoginForm() {
     // else simulates success. Replace with the real auth call later.
     setTimeout(() => {
       setLoading(false);
-      setOutcome(password.length < 8 ? "bad-password" : "success");
+      if (password.length < 8) {
+        setOutcome("bad-password");
+        return;
+      }
+      setOutcome("success");
+      setTimeout(() => router.push("/dashboard"), 700);
     }, 1200);
   }
 
@@ -57,7 +64,7 @@ export function LoginForm() {
       )}
       {outcome === "success" && (
         <AuthBanner kind="success" title="Signed in.">
-          Redirecting you to your dashboard — this static demo stops here.
+          Taking you to your dashboard…
         </AuthBanner>
       )}
 
