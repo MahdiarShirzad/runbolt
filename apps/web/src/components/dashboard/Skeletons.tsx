@@ -235,6 +235,73 @@ export function IntegrationDetailSkeleton() {
   );
 }
 
+export function TemplatesPageSkeleton() {
+  return (
+    <div className="space-y-4 lg:space-y-5" aria-hidden>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className={`${shimmer} h-2.5 w-24`} />
+          <div className={`${shimmer} mt-3 h-8 w-64`} />
+          <div className={`${shimmer} mt-3 h-3 w-96 max-w-full`} />
+        </div>
+        <div className={`${shimmer} h-9 w-36`} />
+      </div>
+      <div className="flex flex-wrap items-center gap-2.5">
+        <div className={`${shimmer} h-9 w-56`} />
+        <div className={`${shimmer} h-9 w-40`} />
+        <div className={`${shimmer} h-9 w-36`} />
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {Array.from({ length: 6 }, (_, i) => (
+          <div key={i} className={`${shimmer} h-7 w-24 rounded-full`} />
+        ))}
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: 6 }, (_, i) => (
+          <div key={i} className={`${shimmer} h-64 rounded-lg`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function TemplateDetailSkeleton() {
+  return (
+    <div className="space-y-4 lg:space-y-5" aria-hidden>
+      <div className={`${shimmer} h-8 w-40`} />
+      <div>
+        <div className={`${shimmer} h-2.5 w-32`} />
+        <div className={`${shimmer} mt-3 h-8 w-72`} />
+        <div className={`${shimmer} mt-3 h-3 w-96 max-w-full`} />
+      </div>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
+        <div className="space-y-4">
+          <Panel title="What it automates" subtitle="Loading">
+            <div className="space-y-2.5">
+              <div className={`${shimmer} h-4 rounded`} />
+              <div className={`${shimmer} h-4 w-3/4 rounded`} />
+            </div>
+          </Panel>
+          <Panel title="Workflow preview" subtitle="Loading">
+            <div className="space-y-3">
+              {Array.from({ length: 4 }, (_, i) => (
+                <div key={i} className={`${shimmer} h-12 rounded-md`} />
+              ))}
+            </div>
+          </Panel>
+        </div>
+        <Panel title="Required integrations" subtitle="Loading">
+          <div className="space-y-2">
+            {Array.from({ length: 3 }, (_, i) => (
+              <div key={i} className={`${shimmer} h-11 rounded-md`} />
+            ))}
+          </div>
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
 export function ExecutionDetailSkeleton() {
   return (
     <div className="space-y-4 lg:space-y-5" aria-hidden>
