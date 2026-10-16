@@ -401,3 +401,66 @@ export function ExecutionDetailSkeleton() {
     </div>
   );
 }
+
+export function CredentialsPageSkeleton() {
+  return (
+    <div className="space-y-4 lg:space-y-5" aria-hidden>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className={`${shimmer} h-2.5 w-28`} />
+          <div className={`${shimmer} mt-3 h-8 w-44`} />
+          <div className={`${shimmer} mt-3 h-3 w-96 max-w-full`} />
+        </div>
+        <div className={`${shimmer} h-9 w-36 rounded-md`} />
+      </div>
+      <div className="flex flex-wrap items-center gap-2.5">
+        <div className={`${shimmer} h-9 w-56`} />
+        <div className={`${shimmer} h-9 w-36`} />
+        <div className={`${shimmer} h-9 w-40`} />
+        <div className={`${shimmer} h-9 w-36`} />
+        <div className={`${shimmer} ml-auto h-9 w-28`} />
+      </div>
+      <Panel title="Stored credentials" subtitle="Loading" bodyClassName="p-0">
+        <div className="divide-y divide-line/50">
+          {Array.from({ length: 5 }, (_, i) => (
+            <div key={i} className="flex items-center gap-4 px-5 py-3.5">
+              <div className="min-w-0 flex-1">
+                <div className={`${shimmer} h-3 w-44`} />
+                <div className={`${shimmer} mt-1.5 h-2.5 w-64`} />
+              </div>
+              <div className={`${shimmer} h-4 w-20`} />
+              <div className={`${shimmer} h-3 w-24`} />
+              <div className={`${shimmer} h-3 w-16`} />
+              <div className={`${shimmer} h-3 w-20`} />
+              <div className={`${shimmer} h-7 w-20 rounded-md`} />
+            </div>
+          ))}
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+export function CredentialDetailSkeleton() {
+  return (
+    <div className="space-y-4 lg:space-y-5" aria-hidden>
+      <div className={`${shimmer} h-8 w-40`} />
+      <div>
+        <div className={`${shimmer} h-2.5 w-32`} />
+        <div className={`${shimmer} mt-3 h-8 w-64`} />
+        <div className={`${shimmer} mt-3 h-3 w-96 max-w-full`} />
+      </div>
+      <Panel title="Overview" subtitle="Loading">
+        <div className={`${shimmer} h-40 rounded-md`} />
+      </Panel>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Panel title="Security" subtitle="Loading">
+          <div className={`${shimmer} h-24 rounded-md`} />
+        </Panel>
+        <Panel title="Usage" subtitle="Loading">
+          <div className={`${shimmer} h-24 rounded-md`} />
+        </Panel>
+      </div>
+    </div>
+  );
+}
