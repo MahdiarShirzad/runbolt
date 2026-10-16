@@ -1,21 +1,29 @@
 import type { Metadata } from "next";
-import { RoutePlaceholder } from "@/components/dashboard/RoutePlaceholder";
+import { Suspense } from "react";
+import { MetricsSkeleton, WorkflowsListSkeleton } from "@/components/dashboard/Skeletons";
+import { WorkflowsHeader } from "@/components/dashboard/WorkflowsHeader";
+import { WorkflowsSection } from "@/components/dashboard/WorkflowsSection";
+import { WorkflowsStats } from "@/components/dashboard/WorkflowsStats";
 
 export const metadata: Metadata = {
   title: "Workflows — Runbolt",
-  description: "Design, version, and run workflows.",
+  description: "Create, manage, and monitor every workflow in your workspace.",
 };
+
+export const dynamic = "force-dynamic";
 
 export default function WorkflowsPage() {
   return (
-    <RoutePlaceholder
-      title="Workflows"
-      description="The workflow list and visual builder are the next surface shipping for Runbolt. Everything on the dashboard already reads from the same workflow model."
-      planned={[
-        "List, search, and filter workflows by status and trigger",
-        "Visual node editor with versioning and environments",
-        "Per-workflow run history, schedules, and one-off runs",
-      ]}
-    />
+    <div className="space-y-4 lg:space-y-5">
+      <WorkflowsHeader />
+
+      <Suspense fallback={<MetricsSkeleton />}>
+        <WorkflowsStats />
+      </Suspense>
+
+      <Suspense fallback={<WorkflowsListSkeleton />}>
+        <WorkflowsSection />
+      </Suspense>
+    </div>
   );
 }

@@ -30,6 +30,7 @@ import type {
  *   getActivitySeries      → `GET /v1/executions/stats?range=…`
  *   getMetrics             → derived from the stats endpoint
  *   getRecentExecutions    → `GET /v1/executions?limit=10`
+ *   getWorkflowExecutions  → `GET /v1/executions?workflow_id=…&limit=…`
  *   getWorkflows           → `GET /v1/workflows?sort=-updated_at`
  *   getNotifications       → `GET /v1/notifications?limit=5`
  */
@@ -231,18 +232,19 @@ const WORKFLOW_SEEDS: {
   lastRunMinutesAgo: number | null;
   lastRunStatus: ExecutionStatus | null;
   runsLast30d: number;
+  updatedAtMinutesAgo: number;
 }[] = [
-  { name: "Order fulfillment", slug: "order-fulfillment", status: "active", trigger: "webhook", lastRunMinutesAgo: 3, lastRunStatus: "success", runsLast30d: 1840 },
-  { name: "Customer sync", slug: "customer-sync", status: "active", trigger: "schedule", lastRunMinutesAgo: 11, lastRunStatus: "success", runsLast30d: 730 },
-  { name: "Lead enrichment", slug: "lead-enrichment", status: "active", trigger: "api", lastRunMinutesAgo: 2, lastRunStatus: "running", runsLast30d: 412 },
-  { name: "Nightly invoice export", slug: "nightly-invoice-export", status: "active", trigger: "schedule", lastRunMinutesAgo: 48, lastRunStatus: "failed", runsLast30d: 30 },
-  { name: "Slack alert triage", slug: "slack-alert-triage", status: "active", trigger: "webhook", lastRunMinutesAgo: 95, lastRunStatus: "success", runsLast30d: 2890 },
-  { name: "GitHub issue triage", slug: "github-issue-triage", status: "active", trigger: "webhook", lastRunMinutesAgo: 140, lastRunStatus: "success", runsLast30d: 640 },
-  { name: "Stripe dunning emails", slug: "stripe-dunning-emails", status: "active", trigger: "schedule", lastRunMinutesAgo: 210, lastRunStatus: "success", runsLast30d: 92 },
-  { name: "DB backup verification", slug: "db-backup-verify", status: "paused", trigger: "schedule", lastRunMinutesAgo: 320, lastRunStatus: "failed", runsLast30d: 30 },
-  { name: "Abandoned cart reminder", slug: "abandoned-cart-reminder", status: "active", trigger: "schedule", lastRunMinutesAgo: 480, lastRunStatus: "success", runsLast30d: 210 },
-  { name: "CRM contact import", slug: "crm-contact-import", status: "active", trigger: "manual", lastRunMinutesAgo: 720, lastRunStatus: "cancelled", runsLast30d: 18 },
-  { name: "Legacy Zendesk bridge", slug: "legacy-zendesk-bridge", status: "paused", trigger: "webhook", lastRunMinutesAgo: null, lastRunStatus: null, runsLast30d: 0 },
+  { name: "Order fulfillment", slug: "order-fulfillment", status: "active", trigger: "webhook", lastRunMinutesAgo: 3, lastRunStatus: "success", runsLast30d: 1840, updatedAtMinutesAgo: 5 },
+  { name: "Customer sync", slug: "customer-sync", status: "active", trigger: "schedule", lastRunMinutesAgo: 11, lastRunStatus: "success", runsLast30d: 730, updatedAtMinutesAgo: 20 },
+  { name: "Lead enrichment", slug: "lead-enrichment", status: "active", trigger: "api", lastRunMinutesAgo: 2, lastRunStatus: "running", runsLast30d: 412, updatedAtMinutesAgo: 6 },
+  { name: "Nightly invoice export", slug: "nightly-invoice-export", status: "active", trigger: "schedule", lastRunMinutesAgo: 48, lastRunStatus: "failed", runsLast30d: 30, updatedAtMinutesAgo: 60 },
+  { name: "Slack alert triage", slug: "slack-alert-triage", status: "active", trigger: "webhook", lastRunMinutesAgo: 95, lastRunStatus: "success", runsLast30d: 2890, updatedAtMinutesAgo: 120 },
+  { name: "GitHub issue triage", slug: "github-issue-triage", status: "active", trigger: "webhook", lastRunMinutesAgo: 140, lastRunStatus: "success", runsLast30d: 640, updatedAtMinutesAgo: 180 },
+  { name: "Stripe dunning emails", slug: "stripe-dunning-emails", status: "active", trigger: "schedule", lastRunMinutesAgo: 210, lastRunStatus: "success", runsLast30d: 92, updatedAtMinutesAgo: 260 },
+  { name: "DB backup verification", slug: "db-backup-verify", status: "paused", trigger: "schedule", lastRunMinutesAgo: 320, lastRunStatus: "failed", runsLast30d: 30, updatedAtMinutesAgo: 400 },
+  { name: "Abandoned cart reminder", slug: "abandoned-cart-reminder", status: "active", trigger: "schedule", lastRunMinutesAgo: 480, lastRunStatus: "success", runsLast30d: 210, updatedAtMinutesAgo: 520 },
+  { name: "CRM contact import", slug: "crm-contact-import", status: "active", trigger: "manual", lastRunMinutesAgo: 720, lastRunStatus: "cancelled", runsLast30d: 18, updatedAtMinutesAgo: 800 },
+  { name: "Legacy Zendesk bridge", slug: "legacy-zendesk-bridge", status: "paused", trigger: "webhook", lastRunMinutesAgo: null, lastRunStatus: null, runsLast30d: 0, updatedAtMinutesAgo: 6000 },
 ];
 
 export async function getWorkflows(limit?: number): Promise<WorkflowSummary[]> {
@@ -261,8 +263,69 @@ export async function getWorkflows(limit?: number): Promise<WorkflowSummary[]> {
             at: new Date(now - seed.lastRunMinutesAgo * 60_000).toISOString(),
           },
     runsLast30d: seed.runsLast30d,
+    updatedAt: new Date(now - seed.updatedAtMinutesAgo * 60_000).toISOString(),
   }));
   return limit == null ? all : all.slice(0, limit);
+}
+
+function hashString(value: string): number {
+  let hash = 5381;
+  for (let i = 0; i < value.length; i++) {
+    hash = ((hash << 5) + hash + value.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+/**
+ * Deterministic recent-run history for one workflow. The newest run always
+ * matches the workflow's own `lastRun`; older runs are seeded per workflow so
+ * the history is stable across requests. Step detail stays with
+ * `getRecentExecutions` until the real endpoint exists.
+ */
+export async function getWorkflowExecutions(
+  workflowId: string,
+  limit = 8,
+): Promise<Execution[]> {
+  const workflow = WORKFLOW_SEEDS.find((seed) => `wf_${seed.slug}` === workflowId);
+  if (!workflow || workflow.lastRunMinutesAgo == null) return [];
+
+  const seed = hashString(workflowId);
+  const rand = mulberry32(seed);
+  const count = Math.min(
+    limit,
+    Math.max(1, Math.floor(workflow.runsLast30d / 90) + 1),
+  );
+  const now = Date.now();
+  const newestAt = now - workflow.lastRunMinutesAgo * 60_000;
+  const gapMs = 3_600_000 + Math.floor(rand() * 3 * 3_600_000);
+  const runs: Execution[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const startedAtMs = newestAt - i * gapMs;
+    const status: ExecutionStatus =
+      i === 0
+        ? (workflow.lastRunStatus as ExecutionStatus)
+        : rand() < 0.15
+          ? "failed"
+          : "success";
+    const durationMs = status === "running" ? null : 400 + Math.round(rand() * 4200);
+    runs.push({
+      id: `run_${(seed + i * 0x1d37).toString(16)}`,
+      workflowId,
+      workflowName: workflow.name,
+      status,
+      trigger: workflow.trigger,
+      startedAt: new Date(startedAtMs).toISOString(),
+      finishedAt:
+        durationMs == null
+          ? null
+          : new Date(startedAtMs + durationMs).toISOString(),
+      durationMs,
+      steps: [],
+    });
+  }
+
+  return runs;
 }
 
 export async function getNotifications(): Promise<AppNotification[]> {

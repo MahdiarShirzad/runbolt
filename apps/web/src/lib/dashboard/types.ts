@@ -79,6 +79,8 @@ export interface WorkflowSummary {
   trigger: TriggerType;
   lastRun: { status: ExecutionStatus; at: string } | null;
   runsLast30d: number;
+  /** ISO timestamp of the last configuration change (`updated_at` in the API). */
+  updatedAt: string;
 }
 
 export type NotificationKind = "error" | "warning" | "info" | "success";

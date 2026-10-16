@@ -70,6 +70,54 @@ export function WorkflowsSkeleton() {
   );
 }
 
+export function WorkflowsListSkeleton() {
+  return (
+    <Panel title="All workflows" subtitle="Loading" bodyClassName="p-0">
+      <div className="border-b border-line/70 px-5 py-3" aria-hidden>
+        <div className="flex items-center gap-2.5">
+          <div className={`${shimmer} h-9 w-56`} />
+          <div className={`${shimmer} h-9 w-40`} />
+          <div className={`${shimmer} h-9 w-36`} />
+        </div>
+      </div>
+      <div className="divide-y divide-line/50" aria-hidden>
+        {Array.from({ length: 6 }, (_, i) => (
+          <div key={i} className="flex items-center gap-4 px-5 py-3.5">
+            <div className="min-w-0 flex-1">
+              <div className={`${shimmer} h-3 w-44`} />
+              <div className={`${shimmer} mt-1.5 h-2.5 w-32`} />
+            </div>
+            <div className={`${shimmer} h-3 w-16`} />
+            <div className={`${shimmer} hidden h-3 w-20 sm:block`} />
+            <div className={`${shimmer} h-3 w-24`} />
+            <div className={`${shimmer} h-8 w-20 rounded-md`} />
+          </div>
+        ))}
+      </div>
+    </Panel>
+  );
+}
+
+export function WorkflowsPageSkeleton() {
+  return (
+    <div className="space-y-4 lg:space-y-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" aria-hidden>
+        <div>
+          <div className={`${shimmer} h-2.5 w-36`} />
+          <div className={`${shimmer} mt-3 h-8 w-52`} />
+          <div className={`${shimmer} mt-3 h-3 w-80 max-w-full`} />
+        </div>
+        <div className="flex gap-2.5">
+          <div className={`${shimmer} h-9 w-36 rounded-md`} />
+          <div className={`${shimmer} h-9 w-40 rounded-md`} />
+        </div>
+      </div>
+      <MetricsSkeleton />
+      <WorkflowsListSkeleton />
+    </div>
+  );
+}
+
 export function WelcomeHeaderSkeleton() {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" aria-hidden>
