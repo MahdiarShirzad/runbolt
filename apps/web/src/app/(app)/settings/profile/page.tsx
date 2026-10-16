@@ -1,21 +1,18 @@
 import type { Metadata } from "next";
-import { RoutePlaceholder } from "@/components/dashboard/RoutePlaceholder";
+import { SettingsRoute } from "@/components/dashboard/SettingsRoute";
 
 export const metadata: Metadata = {
   title: "Profile — Runbolt",
   description: "Manage your account and workspace settings.",
 };
 
-export default function ProfileSettingsPage() {
-  return (
-    <RoutePlaceholder
-      title="Profile & settings"
-      description="Account preferences, team members, API keys, and workspace settings will live here. Sign out is already available from the account menu."
-      planned={[
-        "Profile, notifications, and appearance preferences",
-        "Workspace members, roles, and invitations",
-        "API keys and active session management",
-      ]}
-    />
-  );
+export const dynamic = "force-dynamic";
+
+/** Profile is a section of the cohesive /settings page (legacy path kept). */
+export default async function ProfileSettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  return <SettingsRoute searchParams={searchParams} fallbackSection="profile" />;
 }

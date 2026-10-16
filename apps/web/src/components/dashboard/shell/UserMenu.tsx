@@ -72,7 +72,7 @@ export function UserMenu({ user }: { user: SessionUser | null }) {
           <ul className="p-1.5">
             <li>
               <Link
-                href="/settings/profile"
+                href="/settings"
                 onClick={close}
                 className="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-[13px] text-muted transition-colors hover:bg-hover hover:text-fg"
               >

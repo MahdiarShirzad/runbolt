@@ -46,7 +46,7 @@ export const appNavSections: NavSection[] = [
   {
     label: "Account",
     items: [
-      { label: "Settings", href: "/settings/profile", icon: <SettingsIcon width={15} height={15} />, soon: true, exact: false },
+      { label: "Settings", href: "/settings", icon: <SettingsIcon width={15} height={15} /> },
     ],
   },
 ];
@@ -55,9 +55,6 @@ export const allNavItems: NavItem[] = appNavSections.flatMap((s) => s.items);
 
 export function isNavActive(pathname: string, item: NavItem): boolean {
   if (item.exact || item.href === "/dashboard") return pathname === item.href;
-  if (item.href === "/settings/profile") {
-    return pathname === item.href || pathname.startsWith("/settings");
-  }
   return pathname === item.href || pathname.startsWith(`${item.href}/`);
 }
 

@@ -464,3 +464,41 @@ export function CredentialDetailSkeleton() {
     </div>
   );
 }
+
+export function SettingsPageSkeleton() {
+  return (
+    <div className="space-y-4 lg:space-y-5" aria-hidden>
+      <div>
+        <div className={`${shimmer} h-2.5 w-24`} />
+        <div className={`${shimmer} mt-3 h-8 w-40`} />
+        <div className={`${shimmer} mt-3 h-3 w-96 max-w-full`} />
+      </div>
+      <div className="flex gap-1 border-b border-line/70">
+        {Array.from({ length: 6 }, (_, i) => (
+          <div key={i} className={`${shimmer} h-9 w-24 shrink-0`} />
+        ))}
+      </div>
+      <Panel title="Profile" subtitle="Loading">
+        <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            <div className={`${shimmer} h-14 w-14 rounded-lg`} />
+            <div className="min-w-0 flex-1">
+              <div className={`${shimmer} h-3.5 w-40`} />
+              <div className={`${shimmer} mt-2 h-3 w-56`} />
+            </div>
+          </div>
+          <div className={`${shimmer} h-9 rounded-md`} />
+          <div className={`${shimmer} h-9 rounded-md`} />
+        </div>
+      </Panel>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Panel title="Preferences" subtitle="Loading">
+          <div className={`${shimmer} h-44 rounded-md`} />
+        </Panel>
+        <Panel title="Notifications" subtitle="Loading">
+          <div className={`${shimmer} h-44 rounded-md`} />
+        </Panel>
+      </div>
+    </div>
+  );
+}
