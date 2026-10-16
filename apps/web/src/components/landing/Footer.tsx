@@ -11,9 +11,9 @@ const columns: FooterColumn[] = [
   {
     title: "Product",
     links: [
-      { label: "Workflow Builder", href: "/features" },
-      { label: "Background Workers", href: "/features" },
-      { label: "Observability", href: "/features" },
+      { label: "Workflow Builder", href: "/features#builder" },
+      { label: "Background Workers", href: "/features#capabilities" },
+      { label: "Observability", href: "/features#observability" },
       { label: "Pricing", href: "/pricing" },
     ],
   },
@@ -22,8 +22,8 @@ const columns: FooterColumn[] = [
     links: [
       { label: "Documentation", href: "/docs" },
       { label: "API Reference", href: "/docs/api" },
-      { label: "CLI", href: "/docs/sdks" },
-      { label: "Changelog", href: "/docs/getting-started" },
+      { label: "SDKs & CLI", href: "/docs/sdks" },
+      { label: "Getting Started", href: "/docs/getting-started" },
     ],
   },
   {

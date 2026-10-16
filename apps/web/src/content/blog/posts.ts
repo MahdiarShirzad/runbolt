@@ -10,17 +10,19 @@ export interface Post {
   slug: string;
   title: string;
   date: string;
+  author: string;
   tag: "Engineering" | "Product";
   readingTime: string;
   excerpt: string;
   blocks: Block[];
 }
 
-export const posts: Post[] = [
+const rawPosts: Post[] = [
   {
     slug: "workflow-versions-are-immutable",
     title: "Why workflow versions never change",
     date: "2026-09-16",
+    author: "Ana Petrova",
     tag: "Engineering",
     readingTime: "5 min read",
     excerpt:
@@ -49,6 +51,7 @@ export const posts: Post[] = [
     slug: "idempotency-keys",
     title: "Retries that don't double-charge",
     date: "2026-08-28",
+    author: "Sam Reed",
     tag: "Engineering",
     readingTime: "6 min read",
     excerpt:
@@ -76,6 +79,7 @@ export const posts: Post[] = [
     slug: "anatomy-of-a-run",
     title: "The anatomy of a run",
     date: "2026-09-24",
+    author: "Ana Petrova",
     tag: "Product",
     readingTime: "4 min read",
     excerpt:
@@ -98,6 +102,11 @@ export const posts: Post[] = [
     ],
   },
 ];
+
+/** Newest first — list order and prev/next neighbor labels depend on this. */
+export const posts: Post[] = [...rawPosts].sort((a, b) =>
+  b.date.localeCompare(a.date)
+);
 
 export function getPost(slug: string): Post | undefined {
   return posts.find((post) => post.slug === slug);

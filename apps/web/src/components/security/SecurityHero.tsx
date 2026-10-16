@@ -168,7 +168,7 @@ export function SecurityHero() {
       </div>
 
       <div className="relative mx-auto max-w-6xl px-5 pb-20 sm:px-8 sm:pb-24">
-        <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <div>
             <Reveal>
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">

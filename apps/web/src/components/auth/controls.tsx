@@ -37,9 +37,20 @@ export function AuthHeader({
   );
 }
 
-export function AuthFooter({ text, label, href }: { text: string; label: string; href: string }) {
+export function AuthFooter({
+  text,
+  label,
+  href,
+  className = "",
+}: {
+  text: string;
+  label: string;
+  href: string;
+  /** card-level switch links duplicate the AuthLayout header switch on sm+ */
+  className?: string;
+}) {
   return (
-    <p className="mt-6 text-center text-[13.5px] text-muted">
+    <p className={`mt-6 text-center text-[13.5px] text-muted ${className}`}>
       {text}{" "}
       <Link
         href={href}

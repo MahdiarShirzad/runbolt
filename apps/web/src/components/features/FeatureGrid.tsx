@@ -241,7 +241,7 @@ function GlobeIconSmall() {
 
 export function FeatureGrid() {
   return (
-    <section className="py-24 sm:py-32" aria-labelledby="capabilities-heading">
+    <section id="capabilities" className="py-24 sm:py-32" aria-labelledby="capabilities-heading">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <Reveal>
           <SectionHeader

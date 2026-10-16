@@ -114,6 +114,7 @@ export function LoginForm() {
         text="Don't have a Runbolt account?"
         label="Create one"
         href="/register"
+        className="sm:hidden"
       />
     </AuthCard>
   );

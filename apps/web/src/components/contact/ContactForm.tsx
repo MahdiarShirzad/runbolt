@@ -138,9 +138,6 @@ export function ContactForm() {
           runbolt<span className="text-line-strong">/</span>
           <span className="text-fg">contact</span>
         </p>
-        <span className="ml-auto rounded border border-line bg-code px-2 py-0.5 font-mono text-[10px] text-muted">
-          static · demo
-        </span>
       </div>
 
       <form onSubmit={handleSubmit} noValidate className="space-y-5 p-5 sm:p-7">
@@ -207,7 +204,7 @@ export function ContactForm() {
           disabled={status === "loading"}
         />
 
-        <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:gap-5">
           <button
             type="submit"
             disabled={status === "loading"}
@@ -333,7 +330,7 @@ export function ContactFormSection() {
           </h2>
           <p className="mt-4 text-pretty leading-relaxed text-muted">
             Questions, support, integrations, feedback — pick a topic and send
-            a message. This form is a frontend demo and does not deliver mail.
+            a message.
           </p>
         </Reveal>
 

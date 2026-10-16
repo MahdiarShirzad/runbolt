@@ -131,7 +131,7 @@ function PricingCard({ plan }: { plan: Plan }) {
 export function PricingCards() {
   return (
     <section id="plans" className="pb-24 sm:pb-32" aria-label="Pricing plans">
-      <div className="mx-auto grid max-w-5xl gap-5 px-5 sm:px-8 lg:grid-cols-3 lg:gap-6">
+      <div className="mx-auto grid max-w-6xl gap-5 px-5 sm:px-8 lg:grid-cols-3 lg:gap-6">
         {plans.map((plan, i) => (
           <Reveal key={plan.name} delay={i * 100} className="h-full">
             <PricingCard plan={plan} />

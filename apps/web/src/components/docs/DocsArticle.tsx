@@ -7,6 +7,7 @@ import {
 } from "@/content/docs/content";
 import { CodeBlock } from "./CodeBlock";
 import { Callout } from "./Callout";
+import { ScrollArea } from "../ui/ScrollArea";
 
 /** Inline formatting: [label](href), `code`, **bold**. */
 export function InlineText({ text }: { text: string }) {
@@ -83,7 +84,10 @@ function ApiEndpoint({ endpoint }: { endpoint: ApiEndpointDoc }) {
         </p>
 
         {endpoint.params && endpoint.params.length > 0 && (
-          <div className="scroll-slim overflow-x-auto rounded-md border border-line/70">
+          <ScrollArea
+            className="rounded-md border border-line/70"
+            label={`${endpoint.path} parameters`}
+          >
             <table className="w-full min-w-[480px] border-collapse text-left text-[13px]">
               <thead>
                 <tr className="border-b border-line/70 bg-raised/50">
@@ -109,11 +113,15 @@ function ApiEndpoint({ endpoint }: { endpoint: ApiEndpointDoc }) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </ScrollArea>
         )}
 
         {(endpoint.request || endpoint.response) && (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div
+            className={`grid gap-3 ${
+              endpoint.request && endpoint.response ? "sm:grid-cols-2" : ""
+            }`}
+          >
             {endpoint.request && (
               <CodeBlock code={endpoint.request} language="json" title="Request" />
             )}

@@ -55,6 +55,9 @@
   --color-primary: #c7f04e;
   --color-primary-strong: #d9fb72;
   --color-primary-deep: #a9d13c;
+  /* volt — brand accent token (alias of primary): used by eyebrow ticks,
+     power lines, and execution signals across the site. */
+  --color-volt: #c7f04e;
   --color-accent: #a08bf0;
   --color-highlight: #5cc9ee;
   --color-fg: #e9edf4;

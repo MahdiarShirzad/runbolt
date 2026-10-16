@@ -133,9 +133,17 @@ export function RegisterForm() {
       </p>
 
       <Divider />
-      <SocialButton provider="GitHub" />
+      <div className="space-y-2.5">
+        <SocialButton provider="GitHub" />
+        <SocialButton provider="Google" />
+      </div>
 
-      <AuthFooter text="Already have an account?" label="Sign in" href="/login" />
+      <AuthFooter
+        text="Already have an account?"
+        label="Sign in"
+        href="/login"
+        className="sm:hidden"
+      />
     </AuthCard>
   );
 }

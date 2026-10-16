@@ -31,16 +31,16 @@ export function ResponsibleDisclosure() {
 
               <div className="md:ml-auto">
                 <a
-                  href="mailto:security@your-domain.example"
+                  href="mailto:security@runbolt.dev"
                   className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-line bg-raised px-6 text-sm font-medium text-fg transition-colors duration-200 hover:border-line-strong hover:bg-hover"
                 >
                   <MailIcon width={15} height={15} className="text-info" />
                   Contact Security
                 </a>
                 <p className="mt-2.5 font-mono text-[10px] leading-relaxed text-muted/60">
-                  security@your-domain.example
-                  <span className="ml-1.5 rounded border border-warn/30 bg-warn/10 px-1 py-0.5 text-warn">
-                    placeholder — update before launch
+                  security@runbolt.dev
+                  <span className="ml-1.5 rounded border border-info/30 bg-info/10 px-1 py-0.5 text-info">
+                    acknowledged within 24h
                   </span>
                 </p>
               </div>

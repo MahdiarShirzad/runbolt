@@ -27,20 +27,20 @@ type CanvasNode = {
 };
 
 const nodes: CanvasNode[] = [
-  { id: "hook_in", label: "Webhook", sub: "trigger · /hooks/customers", kind: "webhook", icon: <WebhookIcon width={14} height={14} />, x: 95, y: 110, status: "success" },
-  { id: "check_valid", label: "Condition", sub: "source.trusted", kind: "condition", icon: <FilterIcon width={14} height={14} />, x: 300, y: 110, status: "success", selected: true },
-  { id: "sync_api", label: "HTTP Request", sub: "POST crm.example.com", kind: "http", icon: <GlobeIcon width={14} height={14} />, x: 545, y: 60, status: "success" },
-  { id: "persist", label: "PostgreSQL", sub: "customers · upsert", kind: "db", icon: <DbIcon width={14} height={14} />, x: 770, y: 60, status: "success" },
-  { id: "enqueue", label: "Worker", sub: "queue: crm-sync", kind: "worker", icon: <WorkerIcon width={14} height={14} />, x: 940, y: 110, status: "running" },
-  { id: "retry", label: "Retry", sub: "backoff · 3 attempts", kind: "worker", icon: <RetryIcon width={14} height={14} />, x: 545, y: 205, dashed: true },
+  { id: "hook_in", label: "Webhook", sub: "trigger · /hooks/crm", kind: "webhook", icon: <WebhookIcon width={14} height={14} />, x: 118, y: 110, status: "success" },
+  { id: "check_valid", label: "Condition", sub: "source.trusted", kind: "condition", icon: <FilterIcon width={14} height={14} />, x: 325, y: 110, status: "success", selected: true },
+  { id: "sync_api", label: "HTTP Request", sub: "POST crm.example.com", kind: "http", icon: <GlobeIcon width={14} height={14} />, x: 530, y: 60, status: "success" },
+  { id: "persist", label: "PostgreSQL", sub: "customers · upsert", kind: "db", icon: <DbIcon width={14} height={14} />, x: 760, y: 60, status: "success" },
+  { id: "enqueue", label: "Worker", sub: "queue: crm-sync", kind: "worker", icon: <WorkerIcon width={14} height={14} />, x: 985, y: 110, status: "running" },
+  { id: "retry", label: "Retry", sub: "backoff · 3 attempts", kind: "worker", icon: <RetryIcon width={14} height={14} />, x: 530, y: 205, dashed: true },
 ];
 
 const edges = [
-  { d: "M95 110 H300", delay: "0s" },
-  { d: "M300 110 C370 110 465 60 545 60", delay: "0.6s" },
-  { d: "M300 110 C370 110 465 205 545 205", delay: "0.6s", dim: true },
-  { d: "M545 60 H770", delay: "1.2s" },
-  { d: "M770 60 C860 60 870 110 940 110", delay: "1.8s" },
+  { d: "M118 110 H325", delay: "0s" },
+  { d: "M325 110 C395 110 465 60 530 60", delay: "0.6s" },
+  { d: "M325 110 C395 110 465 205 530 205", delay: "0.6s", dim: true },
+  { d: "M530 60 H760", delay: "1.2s" },
+  { d: "M760 60 C850 60 875 110 985 110", delay: "1.8s" },
 ];
 
 const inspectorRows: [string, string][] = [
@@ -144,13 +144,13 @@ function ShowcaseCanvas() {
 
           <span
             className="absolute -translate-x-1/2 -translate-y-1/2 rounded border border-line bg-active px-1.5 py-0.5 font-mono text-[10px] text-muted"
-            style={{ left: "38%", top: "20%" }}
+            style={{ left: "39%", top: "16.35%" }}
           >
             true
           </span>
           <span
             className="absolute -translate-x-1/2 -translate-y-1/2 rounded border border-line bg-active px-1.5 py-0.5 font-mono text-[10px] text-warn/90"
-            style={{ left: "38%", top: "37.5%" }}
+            style={{ left: "39%", top: "30.3%" }}
           >
             false
           </span>
@@ -159,7 +159,7 @@ function ShowcaseCanvas() {
             <div
               key={node.id}
               className="absolute -translate-x-1/2 -translate-y-1/2"
-              style={{ left: `${node.x / 11}%`, top: `${node.y / 4.2}%` }}
+              style={{ left: `${node.x / 11}%`, top: `${node.y / 5.2}%` }}
             >
               <CanvasNodeCard node={node} />
             </div>
@@ -208,7 +208,7 @@ function ShowcaseCanvas() {
 
 export function BuilderShowcase() {
   return (
-    <section className="py-24 sm:py-32" aria-labelledby="builder-heading">
+    <section id="builder" className="py-24 sm:py-32" aria-labelledby="builder-heading">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <Reveal>
           <SectionHeader

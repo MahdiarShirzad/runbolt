@@ -91,6 +91,7 @@ const capabilities: Capability[] = [
 export function ReliabilitySection() {
   return (
     <section
+      id="reliability"
       className="border-y border-line/70 bg-surface/40 py-24 sm:py-32"
       aria-labelledby="reliability-heading"
     >

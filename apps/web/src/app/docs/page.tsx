@@ -74,7 +74,7 @@ function BoltGlyph() {
 
 const popularLinks = [
   { label: "Quickstart", href: "/docs/getting-started" },
-  { label: "Build your first workflow", href: "/docs/getting-started" },
+  { label: "Build your first workflow", href: "/docs/workflows" },
   { label: "API Reference", href: "/docs/api" },
   { label: "Workflow concepts", href: "/docs/core-concepts" },
 ];
@@ -91,16 +91,16 @@ function CommunityArea() {
             Runbolt is built for developers.
           </h2>
           <p className="mt-1.5 max-w-md text-sm leading-relaxed text-muted">
-            Read the source, file issues, and ship workflows with a community of
+            Read the guides, explore the API, and ship workflows alongside
             engineers automating serious infrastructure.
           </p>
         </div>
         <ul className="flex flex-wrap gap-2.5 md:ml-auto">
           {[
-            ["GitHub", "#"],
             ["Documentation", "/docs"],
-            ["Changelog", "#"],
-            ["Community", "#"],
+            ["API reference", "/docs/api"],
+            ["Blog", "/blog"],
+            ["Contact", "/contact"],
           ].map(([label, href]) => (
             <li key={label}>
               <Link
@@ -125,7 +125,7 @@ export default function DocsHomePage() {
           <div className="bg-grid mask-fade-radial absolute inset-0 opacity-50" />
         </div>
 
-        <div className="relative mx-auto max-w-[1100px] px-4 pb-14 pt-16 sm:px-6 sm:pt-20">
+        <div className="relative mx-auto max-w-[1100px] px-4 pb-10 pt-16 sm:px-6 sm:pb-14 sm:pt-20">
           <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
             <span className="relative mr-2.5 inline-flex h-[7px] w-[7px] items-center justify-center align-middle" aria-hidden>
               <span className="absolute inset-0 border border-volt/60" />
@@ -150,7 +150,7 @@ export default function DocsHomePage() {
           >
             <SearchIcon width={15} height={15} className="shrink-0 text-muted" />
             <span className="text-sm text-muted/70">Search documentation…</span>
-            <kbd className="ml-auto rounded border border-line bg-raised px-1.5 py-0.5 font-mono text-[10.5px] text-muted">
+            <kbd className="ml-auto hidden rounded border border-line bg-raised px-1.5 py-0.5 font-mono text-[10.5px] text-muted sm:block">
               ⌘ K
             </kbd>
           </button>
@@ -170,7 +170,7 @@ export default function DocsHomePage() {
         </div>
       </section>
 
-      <section className="py-14" aria-label="Documentation categories">
+      <section className="py-12 sm:py-14" aria-label="Documentation categories">
         <div className="mx-auto max-w-[1100px] px-4 sm:px-6">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {categories.map((category) => (

@@ -80,7 +80,7 @@ export function AuthLayout({
             className="h-7 w-auto"
           />
         </Link>
-        <p className="text-[13.5px] text-muted">
+        <p className="hidden text-[13.5px] text-muted sm:block">
           {switchText}{" "}
           <Link
             href={switchHref}
@@ -93,7 +93,7 @@ export function AuthLayout({
 
       <main className="mx-auto grid w-full max-w-[1200px] flex-1 lg:grid-cols-2">
         <BrandVisual />
-        <div className="flex items-start justify-center px-5 pb-16 pt-6 sm:px-8 lg:pt-16 xl:pt-20">
+        <div className="flex items-center justify-center px-5 pb-16 pt-6 sm:px-8 lg:items-start lg:pt-16 xl:pt-20">
           <div className="w-full max-w-[400px]">{children}</div>
         </div>
       </main>

@@ -12,7 +12,7 @@ const steps: { label: string; detail: string; dur: string; status: NodeStatus }[
 ];
 
 const logs: [string, string, string][] = [
-  ["12:31:04", "INFO", "run #2210 started · trigger webhook"],
+  ["12:31:04", "INFO", "run #2214 started · trigger webhook"],
   ["12:31:04", " OK ", "validate passed · customer.v2"],
   ["12:31:05", " OK ", "http.sync → 200 OK (204ms)"],
   ["12:31:05", "WARN", "db.upsert retry 1/2 · row lock wait"],
@@ -58,7 +58,7 @@ function RunPanel() {
         <div className="mt-4 grid grid-cols-3 gap-3 border-t border-line/70 pt-4 font-mono text-[10.5px]">
           <div>
             <p className="text-muted/60">duration</p>
-            <p className="mt-0.5 text-fg">2m 14s</p>
+            <p className="mt-0.5 text-fg">2.4s</p>
           </div>
           <div>
             <p className="text-muted/60">started</p>
@@ -121,8 +121,8 @@ function RunPanel() {
 
 export function ExecutionPreview() {
   return (
-    <section className="py-24 sm:py-32" aria-labelledby="observability-heading">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
+    <section id="observability" className="py-24 sm:py-32" aria-labelledby="observability-heading">
+      <div className="mx-auto grid grid-cols-1 max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
         <Reveal className="lg:order-1">
           <SectionHeader
             id="observability-heading"

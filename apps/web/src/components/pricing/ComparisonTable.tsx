@@ -1,6 +1,7 @@
 import { Reveal } from "../landing/Reveal";
 import { SectionHeader } from "../ui/kit";
 import { CheckIcon } from "../landing/icons";
+import { ScrollArea } from "../ui/ScrollArea";
 
 type CellValue = { type: "check" } | { type: "none" } | { type: "text"; value: string };
 
@@ -51,7 +52,7 @@ function Cell({ value, strong }: { value: CellValue; strong?: boolean }) {
 export function ComparisonTable() {
   return (
     <section className="py-24 sm:py-32" aria-labelledby="compare-heading">
-      <div className="mx-auto max-w-5xl px-5 sm:px-8">
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <Reveal>
           <SectionHeader
             id="compare-heading"
@@ -61,14 +62,17 @@ export function ComparisonTable() {
         </Reveal>
 
         <Reveal delay={120} className="mt-10">
-          <div className="scroll-slim overflow-x-auto rounded-xl border border-line bg-surface/60">
+          <ScrollArea
+            className="rounded-xl border border-line bg-surface/60"
+            label="Plan capability comparison"
+          >
             <table className="w-full min-w-[600px] border-collapse text-left">
               <caption className="sr-only">
                 Feature comparison across Developer, Team, and Enterprise plans
               </caption>
               <thead>
                 <tr className="border-b border-line bg-raised/50">
-                  <th scope="col" className="px-5 py-3.5 text-[13px] font-medium text-muted">
+                  <th scope="col" className="sticky left-0 z-10 bg-[#121821] px-5 py-3.5 text-[13px] font-medium text-muted after:absolute after:right-0 after:top-0 after:h-full after:w-px after:bg-line">
                     Capability
                   </th>
                   <th scope="col" className="px-4 py-3.5 text-center text-[13px] font-medium text-muted">
@@ -88,7 +92,12 @@ export function ComparisonTable() {
                     key={row.capability}
                     className={i % 2 === 1 ? "bg-code/40" : undefined}
                   >
-                    <th scope="row" className="px-5 py-3.5 text-[13.5px] font-normal text-fg">
+                    <th
+                      scope="row"
+                      className={`sticky left-0 z-10 px-5 py-3.5 text-[13.5px] font-normal text-fg after:absolute after:right-0 after:top-0 after:h-full after:w-px after:bg-line/60 ${
+                        i % 2 === 1 ? "bg-[#0d1118]" : "bg-[#0e1219]"
+                      }`}
+                    >
                       {row.capability}
                     </th>
                     {row.values.map((value, j) => (
@@ -103,7 +112,7 @@ export function ComparisonTable() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </ScrollArea>
         </Reveal>
       </div>
     </section>

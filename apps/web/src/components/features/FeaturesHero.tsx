@@ -2,7 +2,6 @@ import { Reveal } from "../landing/Reveal";
 import { ButtonAnchor } from "../ui/kit";
 import {
   BookIcon,
-  CheckIcon,
   DbIcon,
   FilterIcon,
   GlobeIcon,
@@ -110,18 +109,6 @@ function PipelinePreview() {
                   </div>
                 </li>
               ))}
-              <li className="relative pl-7 pt-1">
-                <span
-                  className="absolute left-0 top-1/2 flex h-[15px] w-[15px] -translate-y-1/2 items-center justify-center rounded-full bg-ok/20 text-ok"
-                  aria-hidden
-                >
-                  <CheckIcon width={9} height={9} />
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-md border border-ok/40 bg-ok/10 px-3 py-1 text-[11px] font-medium text-ok">
-                  <CheckIcon width={11} height={11} />
-                  Success
-                </span>
-              </li>
             </ol>
           </div>
         </div>

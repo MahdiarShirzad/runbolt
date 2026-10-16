@@ -77,7 +77,7 @@ export function ForgotPasswordForm() {
         </div>
       </form>
 
-      <AuthFooter text="Remembered it?" label="Back to sign in" href="/login" />
+      <AuthFooter text="Remembered it?" label="Back to sign in" href="/login" className="sm:hidden" />
     </AuthCard>
   );
 }

@@ -99,7 +99,7 @@ function WorkflowStoryPanel() {
                 <span className="mt-3 text-[13px] font-medium text-fg">
                   {stage.name}
                 </span>
-                <span className="mt-1 font-mono text-[9.5px] leading-snug text-muted/80">
+                <span className="mt-1 block min-h-[28px] font-mono text-[9.5px] leading-snug text-muted/80">
                   {stage.detail}
                 </span>
                 <span
@@ -191,7 +191,7 @@ export function AboutHero() {
       </div>
 
       <div className="relative mx-auto max-w-6xl px-5 pb-16 sm:px-8 sm:pb-20">
-        <div className="grid items-center gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14">
           <div>
             <Reveal>
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">

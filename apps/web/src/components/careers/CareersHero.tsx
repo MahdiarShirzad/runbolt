@@ -6,7 +6,7 @@ const facts: [string, string, string][] = [
   ["open roles", "3", "text-fg"],
   ["locations", "remote", "text-fg"],
   ["stage", "early product", "text-muted"],
-  ["interview loop", "4 steps · 2 weeks", "text-fg"],
+  ["interview loop", "5 stages · 2 weeks", "text-fg"],
 ];
 
 function TeamPanel() {
@@ -69,7 +69,7 @@ export function CareersHero() {
       </div>
 
       <div className="relative mx-auto max-w-6xl px-5 pb-20 sm:px-8 sm:pb-24">
-        <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
               <span className="relative mr-2.5 inline-flex h-[7px] w-[7px] items-center justify-center align-middle" aria-hidden>
@@ -90,7 +90,7 @@ export function CareersHero() {
             <p className="mt-5 max-w-xl text-pretty text-base leading-relaxed text-muted sm:text-lg">
               Runbolt is workflow execution infrastructure — queues, state
               machines, and observability that teams trust with serious work.
-              It2019s early, the surface is wide, and the problems are real.
+              It’s early, the surface is wide, and the problems are real.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">

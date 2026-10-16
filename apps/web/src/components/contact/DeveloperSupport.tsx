@@ -65,13 +65,21 @@ function DxVisual() {
         </div>
 
         <Reveal delay={320}>
-          <div className="relative rounded-lg border border-primary/40 bg-primary/10 px-4 py-4 text-center">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-primary">
-              result
-            </p>
-            <p className="mt-1.5 text-lg font-semibold tracking-tight text-fg">
-              Developer Experience
-            </p>
+          <div className="flex items-center gap-3 rounded-lg border border-primary/40 bg-primary/10 px-4 py-3">
+            <span
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-primary/40 bg-primary/15 font-mono text-[12px] text-primary"
+              aria-hidden
+            >
+              =
+            </span>
+            <div className="min-w-0">
+              <p className="font-mono text-[9.5px] uppercase tracking-widest text-primary">
+                result
+              </p>
+              <p className="text-sm font-semibold tracking-tight text-fg">
+                Developer Experience
+              </p>
+            </div>
           </div>
         </Reveal>
       </div>

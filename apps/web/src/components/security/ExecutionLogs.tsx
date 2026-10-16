@@ -56,7 +56,7 @@ function LogsPanel() {
 export function ExecutionLogs() {
   return (
     <section id="observability" className="py-20 sm:py-28" aria-labelledby="observability-heading">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
+      <div className="mx-auto grid grid-cols-1 max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
         <Reveal>
           <p className="font-mono text-xs text-highlight">Observability</p>
           <h2

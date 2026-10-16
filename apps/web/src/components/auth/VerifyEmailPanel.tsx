@@ -53,19 +53,15 @@ export function VerifyEmailPanel() {
       </PrimaryButton>
 
       <p className="mt-6 text-center text-[13.5px] text-muted">
-        Didn&apos;t receive the email?{" "}
-        <button
-          type="button"
-          onClick={onResend}
-          className="font-medium text-fg underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary"
-        >
-          Resend email
-        </button>
-      </p>
-      <p className="mt-1.5 text-center text-[13.5px] text-muted">
         Wrong address?{" "}
         <Link href="/register" className="font-medium text-fg underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary">
           Change email
+        </Link>
+      </p>
+      <p className="mt-1.5 text-center text-[13.5px] text-muted sm:hidden">
+        Already verified?{" "}
+        <Link href="/login" className="font-medium text-fg underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary">
+          Sign in
         </Link>
       </p>
     </AuthCard>

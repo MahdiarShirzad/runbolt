@@ -1,6 +1,7 @@
 import { Reveal } from "../landing/Reveal";
 import { CheckIcon } from "../landing/icons";
 import { UsersIcon } from "./icons";
+import { ScrollArea } from "../ui/ScrollArea";
 
 type Role = {
   name: string;
@@ -35,7 +36,7 @@ function AccessPanel() {
         </div>
 
         {/* Members strip: user / team / role / permission */}
-        <div className="scroll-slim overflow-x-auto">
+        <ScrollArea label="Workspace members">
           <table className="w-full min-w-[420px] text-left text-xs">
             <thead>
               <tr className="border-b border-line/60 font-mono text-[10px] uppercase tracking-wider text-muted/60">
@@ -63,11 +64,11 @@ function AccessPanel() {
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollArea>
 
         {/* Permission matrix */}
         <div className="border-t border-line/80 bg-code/60">
-          <div className="scroll-slim overflow-x-auto">
+          <ScrollArea fadeFrom="code" label="Permission matrix">
             <table className="w-full min-w-[460px] text-left text-xs">
               <caption className="sr-only">
                 Illustrative permission matrix: capabilities granted per role
@@ -117,9 +118,9 @@ function AccessPanel() {
                     ))}
                   </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
+            </tbody>
+          </table>
+          </ScrollArea>
         </div>
       </div>
       <p className="mt-3 font-mono text-[10.5px] text-muted/60">
@@ -132,7 +133,7 @@ function AccessPanel() {
 export function AccessControlPreview() {
   return (
     <section id="access" className="py-20 sm:py-28" aria-labelledby="access-heading">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
+      <div className="mx-auto grid grid-cols-1 max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16">
         <Reveal delay={120} className="lg:order-1">
           <AccessPanel />
         </Reveal>

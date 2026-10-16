@@ -51,9 +51,10 @@ export default function BlogPage() {
                       href={`/blog/${post.slug}`}
                       className="group grid gap-2 py-7 transition-colors sm:grid-cols-[130px_1fr_auto] sm:gap-8 sm:py-8"
                     >
-                      <div className="font-mono text-xs leading-6 text-faint">
+                      <div className="font-mono text-xs leading-6 text-muted">
                         <p>{formatDate(post.date)}</p>
-                        <p className="text-muted/70">{post.readingTime}</p>
+                        <p className="text-faint">{post.readingTime}</p>
+                        <p className="text-faint">{post.author}</p>
                       </div>
                       <div className="max-w-2xl">
                         <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted/70">
@@ -80,19 +81,19 @@ export default function BlogPage() {
             </Reveal>
 
             <Reveal delay={120} className="mt-10">
-              <p className="flex items-center gap-2.5 font-mono text-xs text-faint">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2.5">
                 <Eyebrow>More soon</Eyebrow>
-                <span>
+                <p className="text-sm leading-relaxed text-muted">
                   New posts land with major platform changes — the{" "}
                   <Link
                     href="/docs/getting-started"
-                    className="text-muted underline decoration-line-strong underline-offset-4 transition-colors hover:text-fg hover:decoration-primary"
+                    className="text-fg underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-primary"
                   >
                     changelog
                   </Link>{" "}
                   tracks the rest.
-                </span>
-              </p>
+                </p>
+              </div>
             </Reveal>
           </div>
         </section>
