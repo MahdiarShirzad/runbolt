@@ -21,6 +21,8 @@ import type {
   SettingsSectionId,
 } from "@/lib/dashboard/settings";
 import type { SessionUser, WorkspaceSummary } from "@/lib/dashboard/types";
+import type { ApiKeyDisplayRow } from "@/lib/dashboard/api-keys";
+import { ApiKeysSection } from "./ApiKeysSection";
 import { EmptyState } from "./EmptyState";
 import { Panel } from "./Panel";
 import { SampleDataBadge } from "./SampleDataBadge";
@@ -40,6 +42,7 @@ const SECTIONS: { id: SettingsSectionId; label: string }[] = [
   { id: "workspace", label: "Workspace" },
   { id: "preferences", label: "Preferences" },
   { id: "security", label: "Security" },
+  { id: "api-keys", label: "API Keys" },
   { id: "notifications", label: "Notifications" },
   { id: "plan", label: "Plan & usage" },
 ];
@@ -228,10 +231,12 @@ export function SettingsPage({
   user,
   workspace,
   initialSection,
+  apiKeyRows,
 }: {
   user: SessionUser | null;
   workspace: WorkspaceSummary;
   initialSection: SettingsSectionId;
+  apiKeyRows: ApiKeyDisplayRow[];
 }) {
   const pathname = usePathname();
   const [section, setSection] = useState<SettingsSectionId>(initialSection);
@@ -288,8 +293,13 @@ export function SettingsPage({
   }, [prefs.timezone, prefs.clockFormat]);
 
   // Keep the address bar shareable, matching the integrations ?tab= pattern.
+  // Aliased paths (/settings/profile, /settings/api-keys) already name the
+  // section, so the query must not be appended there.
   useEffect(() => {
-    const search = section === "profile" ? "" : `?section=${section}`;
+    const search =
+      section === "profile" || pathname === `/settings/${section}`
+        ? ""
+        : `?section=${section}`;
     window.history.replaceState(
       null,
       "",
@@ -766,6 +776,17 @@ export function SettingsPage({
               ))}
             </ul>
           </Panel>
+        </div>
+      )}
+
+      {section === "api-keys" && (
+        <div
+          role="tabpanel"
+          id="settings-panel-api-keys"
+          aria-labelledby="settings-tab-api-keys"
+          className="space-y-4"
+        >
+          <ApiKeysSection rows={apiKeyRows} />
         </div>
       )}
 

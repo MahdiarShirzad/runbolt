@@ -43,6 +43,7 @@ export const SETTINGS_SECTION_IDS = [
   "workspace",
   "preferences",
   "security",
+  "api-keys",
   "notifications",
   "plan",
 ] as const;
