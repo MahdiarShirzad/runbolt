@@ -302,6 +302,80 @@ export function TemplateDetailSkeleton() {
   );
 }
 
+export function WebhooksPageSkeleton() {
+  return (
+    <div className="space-y-4 lg:space-y-5" aria-hidden>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className={`${shimmer} h-2.5 w-28`} />
+          <div className={`${shimmer} mt-3 h-8 w-40`} />
+          <div className={`${shimmer} mt-3 h-3 w-96 max-w-full`} />
+        </div>
+        <div className={`${shimmer} h-9 w-48`} />
+      </div>
+      <MetricsSkeleton />
+      <Panel title="Endpoints" subtitle="Loading" bodyClassName="p-0">
+        <div className="border-b border-line/70 px-5 py-3">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className={`${shimmer} h-9 w-56`} />
+            <div className={`${shimmer} h-9 w-36`} />
+            <div className={`${shimmer} h-9 w-40`} />
+            <div className={`${shimmer} h-9 w-36`} />
+          </div>
+        </div>
+        <div className="divide-y divide-line/50">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div key={i} className="flex items-center gap-4 px-5 py-3.5">
+              <div className="min-w-0 flex-1">
+                <div className={`${shimmer} h-3 w-48`} />
+                <div className={`${shimmer} mt-1.5 h-2.5 w-64`} />
+              </div>
+              <div className={`${shimmer} h-7 w-40 rounded-md`} />
+              <div className={`${shimmer} h-3 w-16`} />
+              <div className={`${shimmer} h-7 w-16 rounded-md`} />
+            </div>
+          ))}
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+export function WebhookDetailSkeleton() {
+  return (
+    <div className="space-y-4 lg:space-y-5" aria-hidden>
+      <div className={`${shimmer} h-8 w-40`} />
+      <div>
+        <div className={`${shimmer} h-2.5 w-32`} />
+        <div className={`${shimmer} mt-3 h-8 w-64`} />
+        <div className={`${shimmer} mt-3 h-3 w-96 max-w-full`} />
+      </div>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
+        <div className="space-y-4">
+          <Panel title="Delivery history" subtitle="Loading" bodyClassName="p-0">
+            <div className="space-y-0">
+              {Array.from({ length: 6 }, (_, i) => (
+                <div key={i} className={`${shimmer} h-12 border-b border-line/40`} />
+              ))}
+            </div>
+          </Panel>
+          <Panel title="Request inspection" subtitle="Loading">
+            <div className={`${shimmer} h-40 rounded-md`} />
+          </Panel>
+        </div>
+        <div className="space-y-4">
+          <Panel title="Endpoint" subtitle="Loading">
+            <div className={`${shimmer} h-48 rounded-md`} />
+          </Panel>
+          <Panel title="Authentication" subtitle="Loading">
+            <div className={`${shimmer} h-20 rounded-md`} />
+          </Panel>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ExecutionDetailSkeleton() {
   return (
     <div className="space-y-4 lg:space-y-5" aria-hidden>

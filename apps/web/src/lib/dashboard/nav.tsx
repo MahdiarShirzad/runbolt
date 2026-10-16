@@ -39,7 +39,7 @@ export const appNavSections: NavSection[] = [
   {
     label: "Develop",
     items: [
-      { label: "Webhooks", href: "/webhooks", icon: <WebhookIcon width={15} height={15} />, soon: true },
+      { label: "Webhooks", href: "/webhooks", icon: <WebhookIcon width={15} height={15} /> },
       { label: "Credentials", href: "/credentials", icon: <EyeOffIcon width={15} height={15} />, soon: true },
     ],
   },
