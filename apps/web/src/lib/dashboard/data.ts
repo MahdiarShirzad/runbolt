@@ -4,8 +4,10 @@ import type {
   ActivitySeries,
   AppNotification,
   Execution,
+  ExecutionLogEntry,
   ExecutionStep,
   ExecutionStatus,
+  LogLevel,
   MetricSnapshot,
   SessionUser,
   TimeRange,
@@ -29,6 +31,9 @@ import type {
  *   getWorkspaceSummary    → `GET /v1/workspace/summary`
  *   getActivitySeries      → `GET /v1/executions/stats?range=…`
  *   getMetrics             → derived from the stats endpoint
+ *   getExecutions          → `GET /v1/executions?range=…`
+ *   getExecutionById       → `GET /v1/executions/:id`
+ *   getExecutionLogs       → `GET /v1/executions/:id/logs`
  *   getRecentExecutions    → `GET /v1/executions?limit=10`
  *   getWorkflowExecutions  → `GET /v1/executions?workflow_id=…&limit=…`
  *   getWorkflows           → `GET /v1/workflows?sort=-updated_at`
@@ -162,66 +167,174 @@ const EXECUTION_SEEDS: {
   { workflowName: "CRM contact import", slug: "crm-contact-import", status: "cancelled", trigger: "manual", minutesAgo: 720, durationMs: 15_200 },
 ];
 
-function buildSteps(
-  seed: (typeof EXECUTION_SEEDS)[number],
+const STEP_PLANS: Record<string, string[]> = {
+  "order-fulfillment": ["receive-order", "charge-card", "reserve-inventory", "print-label", "notify-customer"],
+  "customer-sync": ["pull-changes", "map-fields", "upsert-contacts"],
+  "lead-enrichment": ["lookup-domain", "enrich-firmographics", "score-lead", "write-crm"],
+  "nightly-invoice-export": ["query-invoices", "build-csv", "upload-to-s3", "slack-recap"],
+  "slack-alert-triage": ["receive-event", "classify", "post-thread"],
+  "github-issue-triage": ["receive-webhook", "label-issue", "assign-reviewer"],
+  "stripe-dunning-emails": ["list-delinquent", "render-email", "send", "record-event"],
+  "db-backup-verify": ["snapshot", "restore-check", "validate-schema", "compare-checksums"],
+  "abandoned-cart-reminder": ["find-carts", "render-email", "send"],
+  "crm-contact-import": ["parse-upload", "dedupe", "upsert"],
+};
+
+function buildStepsFor(
+  slug: string,
+  status: ExecutionStatus,
+  durationMs: number | null,
+  failingStep: number | null,
   rand: () => number,
 ): ExecutionStep[] {
-  const plan: Record<string, string[]> = {
-    "order-fulfillment": ["receive-order", "charge-card", "reserve-inventory", "print-label", "notify-customer"],
-    "customer-sync": ["pull-changes", "map-fields", "upsert-contacts"],
-    "lead-enrichment": ["lookup-domain", "enrich-firmographics", "score-lead", "write-crm"],
-    "nightly-invoice-export": ["query-invoices", "build-csv", "upload-to-s3", "slack-recap"],
-    "slack-alert-triage": ["receive-event", "classify", "post-thread"],
-    "github-issue-triage": ["receive-webhook", "label-issue", "assign-reviewer"],
-    "stripe-dunning-emails": ["list-delinquent", "render-email", "send", "record-event"],
-    "db-backup-verify": ["snapshot", "restore-check", "validate-schema", "compare-checksums"],
-    "abandoned-cart-reminder": ["find-carts", "render-email", "send"],
-    "crm-contact-import": ["parse-upload", "dedupe", "upsert"],
-  };
-  const names = plan[seed.slug] ?? ["step-1", "step-2", "step-3"];
+  const names = STEP_PLANS[slug] ?? ["step-1", "step-2", "step-3"];
   return names.map((name, i) => {
-    const isFailing = seed.failingStep === i;
+    const isFailing = failingStep === i;
     const isLast = i === names.length - 1;
-    const status: ExecutionStatus = isFailing
+    const stepStatus: ExecutionStatus = isFailing
       ? "failed"
-      : seed.status === "running" && isLast
+      : status === "running" && isLast
         ? "running"
-        : seed.status === "cancelled" && i >= names.length - 2
+        : status === "cancelled" && i >= names.length - 2
           ? "cancelled"
           : "success";
-    const durationMs =
-      status === "running"
+    const stepDuration =
+      stepStatus === "running"
         ? null
-        : Math.max(12, Math.round((seed.durationMs ?? 600) / names.length + (rand() - 0.5) * 180));
+        : Math.max(12, Math.round((durationMs ?? 600) / names.length + (rand() - 0.5) * 180));
     return {
       name,
-      status,
-      durationMs,
+      status: stepStatus,
+      durationMs: stepDuration,
       ...(isFailing ? { detail: "HTTP 502 from upstream after 3 attempts" } : {}),
     };
   });
 }
 
+const HISTORY_WINDOW_MS = 30 * 86_400_000;
+
+function makeRun(
+  seed: (typeof EXECUTION_SEEDS)[number],
+  status: ExecutionStatus,
+  durationMs: number | null,
+  failingStep: number | null,
+  startedAtMs: number,
+  runIndex: number,
+  rand: () => number,
+): Execution {
+  const running = status === "running";
+  return {
+    id: `run_${hashString(`${seed.slug}#${runIndex}`).toString(16)}`,
+    workflowId: `wf_${seed.slug}`,
+    workflowName: seed.workflowName,
+    status,
+    trigger: seed.trigger,
+    startedAt: new Date(startedAtMs).toISOString(),
+    finishedAt: running
+      ? null
+      : new Date(startedAtMs + (durationMs ?? 0)).toISOString(),
+    durationMs: running ? null : durationMs,
+    steps: buildStepsFor(seed.slug, status, durationMs, failingStep, rand),
+  };
+}
+
+/**
+ * Deterministic execution history for the whole workspace — the single
+ * source every executions fetcher reads. The newest run of each seed matches
+ * its workflow's `lastRun`; older runs are generated per workflow so the
+ * history is stable across requests.
+ */
+function buildExecutionHistory(nowMs: number): Execution[] {
+  const executions: Execution[] = [];
+
+  for (const seed of EXECUTION_SEEDS) {
+    const rand = mulberry32(hashString(seed.slug) ^ 0x3c1f);
+    let startedAtMs = nowMs - seed.minutesAgo * 60_000;
+
+    executions.push(
+      makeRun(seed, seed.status, seed.durationMs, seed.failingStep ?? null, startedAtMs, 0, rand),
+    );
+
+    const olderRuns = 4 + Math.floor(rand() * 5);
+    for (let i = 1; i <= olderRuns; i++) {
+      startedAtMs -= (4 + rand() * 40) * 3_600_000;
+      if (nowMs - startedAtMs > HISTORY_WINDOW_MS) break;
+      const roll = rand();
+      const status: ExecutionStatus =
+        roll < 0.15 ? "failed" : roll < 0.19 ? "cancelled" : "success";
+      const durationMs = 300 + Math.round(rand() * 9000);
+      const failingStep =
+        status === "failed" ? Math.floor(rand() * STEP_PLANS[seed.slug]!.length) : null;
+      executions.push(makeRun(seed, status, durationMs, failingStep, startedAtMs, i, rand));
+    }
+  }
+
+  executions.sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+  return executions;
+}
+
+/** All executions in the sample window (newest first). */
+export async function getExecutions(): Promise<Execution[]> {
+  return buildExecutionHistory(Date.now());
+}
+
+export async function getExecutionById(id: string): Promise<Execution | null> {
+  return buildExecutionHistory(Date.now()).find((execution) => execution.id === id) ?? null;
+}
+
+/**
+ * Sample log stream for one execution, derived deterministically from the
+ * execution's own step data (timestamps follow step durations).
+ *
+ * TODO(api): replace with `GET /v1/executions/:id/logs`.
+ */
+export async function getExecutionLogs(executionId: string): Promise<ExecutionLogEntry[]> {
+  const execution = await getExecutionById(executionId);
+  if (!execution) return [];
+
+  const entries: ExecutionLogEntry[] = [];
+  let seq = 0;
+  let cursorMs = new Date(execution.startedAt).getTime();
+  const push = (level: LogLevel, source: string, message: string) => {
+    entries.push({
+      id: `${executionId}.log_${seq++}`,
+      at: new Date(cursorMs).toISOString(),
+      level,
+      source,
+      message,
+    });
+  };
+
+  push("info", "runner", `Execution started (${execution.trigger} trigger)`);
+  for (const step of execution.steps) {
+    push("info", step.name, `Step "${step.name}" started`);
+    const durationMs = step.durationMs ?? 0;
+    cursorMs += durationMs;
+    if (step.status === "success") {
+      push("info", step.name, `Step completed in ${durationMs}ms`);
+    } else if (step.status === "failed") {
+      push("error", step.name, step.detail ?? "Step failed");
+    } else if (step.status === "cancelled") {
+      push("warn", step.name, "Step cancelled");
+    } else {
+      push("info", step.name, "Step is still running");
+    }
+  }
+  if (execution.status === "success") {
+    push("info", "runner", "Execution finished successfully");
+  } else if (execution.status === "failed") {
+    push("error", "runner", "Execution aborted: a step failed");
+  } else if (execution.status === "cancelled") {
+    push("warn", "runner", "Execution cancelled");
+  } else {
+    push("info", "runner", "Execution still running");
+  }
+  return entries;
+}
+
 export async function getRecentExecutions(limit = 10): Promise<Execution[]> {
-  const rand = mulberry32(0xec91);
-  const now = Date.now();
-  return EXECUTION_SEEDS.slice(0, limit).map((seed, index) => {
-    const startedAt = new Date(now - seed.minutesAgo * 60_000);
-    const running = seed.status === "running";
-    return {
-      id: `run_${(0x9f2000 + index * 0x1d37).toString(16)}`,
-      workflowId: `wf_${seed.slug}`,
-      workflowName: seed.workflowName,
-      status: seed.status,
-      trigger: seed.trigger,
-      startedAt: startedAt.toISOString(),
-      finishedAt: running
-        ? null
-        : new Date(startedAt.getTime() + (seed.durationMs ?? 0)).toISOString(),
-      durationMs: seed.durationMs,
-      steps: buildSteps(seed, rand),
-    };
-  });
+  const executions = await getExecutions();
+  return executions.slice(0, limit);
 }
 
 const WORKFLOW_SEEDS: {
@@ -277,55 +390,17 @@ function hashString(value: string): number {
 }
 
 /**
- * Deterministic recent-run history for one workflow. The newest run always
- * matches the workflow's own `lastRun`; older runs are seeded per workflow so
- * the history is stable across requests. Step detail stays with
- * `getRecentExecutions` until the real endpoint exists.
+ * Recent run history for one workflow, taken from the unified sample history
+ * (newest run matches the workflow's `lastRun`).
  */
 export async function getWorkflowExecutions(
   workflowId: string,
   limit = 8,
 ): Promise<Execution[]> {
-  const workflow = WORKFLOW_SEEDS.find((seed) => `wf_${seed.slug}` === workflowId);
-  if (!workflow || workflow.lastRunMinutesAgo == null) return [];
-
-  const seed = hashString(workflowId);
-  const rand = mulberry32(seed);
-  const count = Math.min(
-    limit,
-    Math.max(1, Math.floor(workflow.runsLast30d / 90) + 1),
-  );
-  const now = Date.now();
-  const newestAt = now - workflow.lastRunMinutesAgo * 60_000;
-  const gapMs = 3_600_000 + Math.floor(rand() * 3 * 3_600_000);
-  const runs: Execution[] = [];
-
-  for (let i = 0; i < count; i++) {
-    const startedAtMs = newestAt - i * gapMs;
-    const status: ExecutionStatus =
-      i === 0
-        ? (workflow.lastRunStatus as ExecutionStatus)
-        : rand() < 0.15
-          ? "failed"
-          : "success";
-    const durationMs = status === "running" ? null : 400 + Math.round(rand() * 4200);
-    runs.push({
-      id: `run_${(seed + i * 0x1d37).toString(16)}`,
-      workflowId,
-      workflowName: workflow.name,
-      status,
-      trigger: workflow.trigger,
-      startedAt: new Date(startedAtMs).toISOString(),
-      finishedAt:
-        durationMs == null
-          ? null
-          : new Date(startedAtMs + durationMs).toISOString(),
-      durationMs,
-      steps: [],
-    });
-  }
-
-  return runs;
+  const executions = await getExecutions();
+  return executions
+    .filter((execution) => execution.workflowId === workflowId)
+    .slice(0, limit);
 }
 
 export async function getNotifications(): Promise<AppNotification[]> {

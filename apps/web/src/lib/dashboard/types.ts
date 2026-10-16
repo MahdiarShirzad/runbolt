@@ -59,6 +59,16 @@ export interface ExecutionStep {
   detail?: string;
 }
 
+export type LogLevel = "info" | "warn" | "error";
+
+export interface ExecutionLogEntry {
+  id: string;
+  at: string;
+  level: LogLevel;
+  source: string;
+  message: string;
+}
+
 export interface Execution {
   id: string;
   workflowId: string;

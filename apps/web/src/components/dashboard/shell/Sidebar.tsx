@@ -3,7 +3,6 @@ import Link from "next/link";
 import { SidebarNav } from "./SidebarNav";
 import { SidebarFooter } from "./SidebarFooter";
 
-/** Persistent desktop sidebar — a server shell around the active-link island. */
 export function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-line bg-ink lg:flex">

@@ -22,6 +22,7 @@ export async function ExecutionsSection({ limit = 10 }: { limit?: number }) {
     }));
     return {
       id: execution.id,
+      workflowId: execution.workflowId,
       workflowName: execution.workflowName,
       status: execution.status,
       trigger: execution.trigger,
@@ -31,6 +32,7 @@ export async function ExecutionsSection({ limit = 10 }: { limit?: number }) {
       finishedAt: execution.finishedAt,
       finishedLabel: execution.finishedAt ? formatRelativeTime(execution.finishedAt, now) : null,
       finishedAbsolute: execution.finishedAt ? formatAbsoluteTime(execution.finishedAt) : null,
+      durationMs: execution.durationMs,
       durationLabel: formatDuration(execution.durationMs),
       steps,
     };

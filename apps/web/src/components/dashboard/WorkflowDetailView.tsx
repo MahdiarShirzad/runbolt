@@ -361,7 +361,12 @@ export function WorkflowDetailView({
                   className="border-b border-line/40 transition-colors last:border-b-0 hover:bg-hover/40"
                 >
                   <td className="px-5 py-3 font-mono text-[12px] text-muted">
-                    {run.id}
+                    <Link
+                      href={`/executions/${run.id}`}
+                      className="transition-colors hover:text-primary-strong"
+                    >
+                      {run.id}
+                    </Link>
                   </td>
                   <td className="px-4 py-3">
                     <StatusBadge status={run.status} />

@@ -20,6 +20,12 @@ const fullDateFormatter = new Intl.DateTimeFormat("en-US", {
   dateStyle: "medium",
   timeStyle: "medium",
 });
+const clockFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false,
+});
 
 export function formatCount(value: number): string {
   return numberFormatter.format(value);
@@ -56,6 +62,11 @@ export function formatRelativeTime(iso: string, nowMs = Date.now()): string {
 
 export function formatAbsoluteTime(iso: string): string {
   return fullDateFormatter.format(new Date(iso));
+}
+
+/** Wall-clock time only (HH:MM:SS) — used by log streams. */
+export function formatClockTime(iso: string): string {
+  return clockFormatter.format(new Date(iso));
 }
 
 export function formatBucketLabel(date: Date, bucket: "hour" | "day"): string {

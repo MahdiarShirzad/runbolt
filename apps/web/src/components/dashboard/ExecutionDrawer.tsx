@@ -156,11 +156,11 @@ export function ExecutionDrawer({
 
         <div className="flex items-center justify-between gap-3 border-t border-line px-5 py-3.5">
           <Link
-            href="/executions"
+            href={`/executions/${execution.id}`}
             onClick={onClose}
             className="inline-flex h-9 items-center rounded-md border border-line px-3.5 text-[13px] text-fg transition-colors hover:border-line-strong hover:bg-hover"
           >
-            Open in Executions
+            Open execution
           </Link>
           <button
             type="button"
