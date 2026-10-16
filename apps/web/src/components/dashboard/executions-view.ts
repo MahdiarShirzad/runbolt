@@ -35,6 +35,8 @@ export interface ExecutionRow {
   finishedAbsolute: string | null;
   durationMs: number | null;
   durationLabel: string;
+  /** Failure detail surfaced from the failing step, when the run failed. */
+  errorMessage?: string | null;
   steps: ExecutionStepRow[];
 }
 

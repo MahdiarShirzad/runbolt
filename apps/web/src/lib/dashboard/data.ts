@@ -1,11 +1,14 @@
+import { getAnalyticsExecutionById } from "./analytics/execution";
+import { buildExecutionSteps, stepCount } from "./execution-build";
 import { formatRelativeTime } from "./format";
+import { hashString, mulberry32 } from "./random";
+import { WORKFLOW_SEEDS } from "./seeds";
 import type {
   ActivityPoint,
   ActivitySeries,
   AppNotification,
   Execution,
   ExecutionLogEntry,
-  ExecutionStep,
   ExecutionStatus,
   LogLevel,
   MetricSnapshot,
@@ -13,7 +16,6 @@ import type {
   TimeRange,
   TriggerType,
   WorkflowSummary,
-  WorkflowStatus,
   WorkspaceSummary,
 } from "./types";
 
@@ -45,17 +47,6 @@ const RANGE_LABELS: Record<TimeRange, string> = {
   "7d": "Last 7 days",
   "30d": "Last 30 days",
 };
-
-function mulberry32(seed: number) {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 const HOUR_SHAPE = [
   0.35, 0.28, 0.24, 0.22, 0.26, 0.4, 0.65, 0.95, 1.15, 1.25, 1.2, 1.1, 1.05,
@@ -167,50 +158,6 @@ const EXECUTION_SEEDS: {
   { workflowName: "CRM contact import", slug: "crm-contact-import", status: "cancelled", trigger: "manual", minutesAgo: 720, durationMs: 15_200 },
 ];
 
-const STEP_PLANS: Record<string, string[]> = {
-  "order-fulfillment": ["receive-order", "charge-card", "reserve-inventory", "print-label", "notify-customer"],
-  "customer-sync": ["pull-changes", "map-fields", "upsert-contacts"],
-  "lead-enrichment": ["lookup-domain", "enrich-firmographics", "score-lead", "write-crm"],
-  "nightly-invoice-export": ["query-invoices", "build-csv", "upload-to-s3", "slack-recap"],
-  "slack-alert-triage": ["receive-event", "classify", "post-thread"],
-  "github-issue-triage": ["receive-webhook", "label-issue", "assign-reviewer"],
-  "stripe-dunning-emails": ["list-delinquent", "render-email", "send", "record-event"],
-  "db-backup-verify": ["snapshot", "restore-check", "validate-schema", "compare-checksums"],
-  "abandoned-cart-reminder": ["find-carts", "render-email", "send"],
-  "crm-contact-import": ["parse-upload", "dedupe", "upsert"],
-};
-
-function buildStepsFor(
-  slug: string,
-  status: ExecutionStatus,
-  durationMs: number | null,
-  failingStep: number | null,
-  rand: () => number,
-): ExecutionStep[] {
-  const names = STEP_PLANS[slug] ?? ["step-1", "step-2", "step-3"];
-  return names.map((name, i) => {
-    const isFailing = failingStep === i;
-    const isLast = i === names.length - 1;
-    const stepStatus: ExecutionStatus = isFailing
-      ? "failed"
-      : status === "running" && isLast
-        ? "running"
-        : status === "cancelled" && i >= names.length - 2
-          ? "cancelled"
-          : "success";
-    const stepDuration =
-      stepStatus === "running"
-        ? null
-        : Math.max(12, Math.round((durationMs ?? 600) / names.length + (rand() - 0.5) * 180));
-    return {
-      name,
-      status: stepStatus,
-      durationMs: stepDuration,
-      ...(isFailing ? { detail: "HTTP 502 from upstream after 3 attempts" } : {}),
-    };
-  });
-}
-
 const HISTORY_WINDOW_MS = 30 * 86_400_000;
 
 function makeRun(
@@ -234,7 +181,7 @@ function makeRun(
       ? null
       : new Date(startedAtMs + (durationMs ?? 0)).toISOString(),
     durationMs: running ? null : durationMs,
-    steps: buildStepsFor(seed.slug, status, durationMs, failingStep, rand),
+    steps: buildExecutionSteps(seed.slug, status, durationMs, failingStep, rand),
   };
 }
 
@@ -264,7 +211,7 @@ function buildExecutionHistory(nowMs: number): Execution[] {
         roll < 0.15 ? "failed" : roll < 0.19 ? "cancelled" : "success";
       const durationMs = 300 + Math.round(rand() * 9000);
       const failingStep =
-        status === "failed" ? Math.floor(rand() * STEP_PLANS[seed.slug]!.length) : null;
+        status === "failed" ? Math.floor(rand() * stepCount(seed.slug)) : null;
       executions.push(makeRun(seed, status, durationMs, failingStep, startedAtMs, i, rand));
     }
   }
@@ -279,7 +226,12 @@ export async function getExecutions(): Promise<Execution[]> {
 }
 
 export async function getExecutionById(id: string): Promise<Execution | null> {
-  return buildExecutionHistory(Date.now()).find((execution) => execution.id === id) ?? null;
+  const curated = buildExecutionHistory(Date.now()).find(
+    (execution) => execution.id === id,
+  );
+  // Dashboard rows come from the analytics dataset; resolve those ids too so
+  // the detail route and logs work for every run the UI links to.
+  return curated ?? getAnalyticsExecutionById(id);
 }
 
 /**
@@ -337,29 +289,6 @@ export async function getRecentExecutions(limit = 10): Promise<Execution[]> {
   return executions.slice(0, limit);
 }
 
-const WORKFLOW_SEEDS: {
-  name: string;
-  slug: string;
-  status: WorkflowStatus;
-  trigger: TriggerType;
-  lastRunMinutesAgo: number | null;
-  lastRunStatus: ExecutionStatus | null;
-  runsLast30d: number;
-  updatedAtMinutesAgo: number;
-}[] = [
-  { name: "Order fulfillment", slug: "order-fulfillment", status: "active", trigger: "webhook", lastRunMinutesAgo: 3, lastRunStatus: "success", runsLast30d: 1840, updatedAtMinutesAgo: 5 },
-  { name: "Customer sync", slug: "customer-sync", status: "active", trigger: "schedule", lastRunMinutesAgo: 11, lastRunStatus: "success", runsLast30d: 730, updatedAtMinutesAgo: 20 },
-  { name: "Lead enrichment", slug: "lead-enrichment", status: "active", trigger: "api", lastRunMinutesAgo: 2, lastRunStatus: "running", runsLast30d: 412, updatedAtMinutesAgo: 6 },
-  { name: "Nightly invoice export", slug: "nightly-invoice-export", status: "active", trigger: "schedule", lastRunMinutesAgo: 48, lastRunStatus: "failed", runsLast30d: 30, updatedAtMinutesAgo: 60 },
-  { name: "Slack alert triage", slug: "slack-alert-triage", status: "active", trigger: "webhook", lastRunMinutesAgo: 95, lastRunStatus: "success", runsLast30d: 2890, updatedAtMinutesAgo: 120 },
-  { name: "GitHub issue triage", slug: "github-issue-triage", status: "active", trigger: "webhook", lastRunMinutesAgo: 140, lastRunStatus: "success", runsLast30d: 640, updatedAtMinutesAgo: 180 },
-  { name: "Stripe dunning emails", slug: "stripe-dunning-emails", status: "active", trigger: "schedule", lastRunMinutesAgo: 210, lastRunStatus: "success", runsLast30d: 92, updatedAtMinutesAgo: 260 },
-  { name: "DB backup verification", slug: "db-backup-verify", status: "paused", trigger: "schedule", lastRunMinutesAgo: 320, lastRunStatus: "failed", runsLast30d: 30, updatedAtMinutesAgo: 400 },
-  { name: "Abandoned cart reminder", slug: "abandoned-cart-reminder", status: "active", trigger: "schedule", lastRunMinutesAgo: 480, lastRunStatus: "success", runsLast30d: 210, updatedAtMinutesAgo: 520 },
-  { name: "CRM contact import", slug: "crm-contact-import", status: "active", trigger: "manual", lastRunMinutesAgo: 720, lastRunStatus: "cancelled", runsLast30d: 18, updatedAtMinutesAgo: 800 },
-  { name: "Legacy Zendesk bridge", slug: "legacy-zendesk-bridge", status: "paused", trigger: "webhook", lastRunMinutesAgo: null, lastRunStatus: null, runsLast30d: 0, updatedAtMinutesAgo: 6000 },
-];
-
 export async function getWorkflows(limit?: number): Promise<WorkflowSummary[]> {
   const now = Date.now();
   const all = WORKFLOW_SEEDS.map((seed) => ({
@@ -379,14 +308,6 @@ export async function getWorkflows(limit?: number): Promise<WorkflowSummary[]> {
     updatedAt: new Date(now - seed.updatedAtMinutesAgo * 60_000).toISOString(),
   }));
   return limit == null ? all : all.slice(0, limit);
-}
-
-function hashString(value: string): number {
-  let hash = 5381;
-  for (let i = 0; i < value.length; i++) {
-    hash = ((hash << 5) + hash + value.charCodeAt(i)) >>> 0;
-  }
-  return hash;
 }
 
 /**
