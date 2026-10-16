@@ -32,7 +32,7 @@ export const appNavSections: NavSection[] = [
       { label: "Dashboard", href: "/dashboard", icon: <PulseIcon width={15} height={15} /> },
       { label: "Workflows", href: "/workflows", icon: <NodeGraphIcon width={15} height={15} /> },
       { label: "Executions", href: "/executions", icon: <RetryIcon width={15} height={15} /> },
-      { label: "Integrations", href: "/integrations", icon: <GlobeIcon width={15} height={15} />, soon: true },
+      { label: "Integrations", href: "/integrations", icon: <GlobeIcon width={15} height={15} /> },
       { label: "Templates", href: "/templates", icon: <BookIcon width={15} height={15} />, soon: true },
     ],
   },

@@ -178,6 +178,63 @@ export function ExecutionsPageSkeleton() {
   );
 }
 
+export function IntegrationsPageSkeleton() {
+  return (
+    <div className="space-y-4 lg:space-y-5" aria-hidden>
+      <div>
+        <div className={`${shimmer} h-2.5 w-32`} />
+        <div className={`${shimmer} mt-3 h-8 w-44`} />
+        <div className={`${shimmer} mt-3 h-3 w-96 max-w-full`} />
+      </div>
+      <div className={`${shimmer} h-9 w-56`} />
+      <Panel title="Connection" subtitle="Loading">
+        <div className="space-y-2.5">
+          {Array.from({ length: 6 }, (_, i) => (
+            <div key={i} className={`${shimmer} h-28 rounded-md`} />
+          ))}
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+export function IntegrationDetailSkeleton() {
+  return (
+    <div className="space-y-4 lg:space-y-5" aria-hidden>
+      <div className={`${shimmer} h-8 w-40`} />
+      <div className="flex items-start gap-4">
+        <div className={`${shimmer} h-9 w-9 rounded-md`} />
+        <div className="min-w-0 flex-1">
+          <div className={`${shimmer} h-2.5 w-28`} />
+          <div className={`${shimmer} mt-3 h-8 w-52`} />
+          <div className={`${shimmer} mt-3 h-3 w-96 max-w-full`} />
+        </div>
+      </div>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
+        <div className="space-y-4">
+          <Panel title="Capabilities" subtitle="Loading">
+            <div className="space-y-2">
+              {Array.from({ length: 4 }, (_, i) => (
+                <div key={i} className={`${shimmer} h-11 rounded-md`} />
+              ))}
+            </div>
+          </Panel>
+          <Panel title="Setup" subtitle="Loading">
+            <div className="space-y-3">
+              {Array.from({ length: 3 }, (_, i) => (
+                <div key={i} className={`${shimmer} h-4 rounded`} />
+              ))}
+            </div>
+          </Panel>
+        </div>
+        <Panel title="Connection" subtitle="Loading">
+          <div className={`${shimmer} h-52 rounded-md`} />
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
 export function ExecutionDetailSkeleton() {
   return (
     <div className="space-y-4 lg:space-y-5" aria-hidden>
