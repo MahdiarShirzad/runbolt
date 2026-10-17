@@ -91,6 +91,7 @@ function createdToWorkflowItem(
   workflow: LocalWorkflow,
   nowMs: number,
 ): WorkflowItem {
+  const updatedAt = workflow.updatedAt ?? workflow.createdAt;
   return {
     id: workflow.id,
     name: workflow.name,
@@ -103,9 +104,9 @@ function createdToWorkflowItem(
     lastRunAbsolute: null,
     runs: 0,
     runsLabel: "0",
-    updatedAt: workflow.createdAt,
-    updatedLabel: formatRelativeTime(workflow.createdAt, nowMs),
-    updatedAbsolute: formatAbsoluteTime(workflow.createdAt),
+    updatedAt,
+    updatedLabel: formatRelativeTime(updatedAt, nowMs),
+    updatedAbsolute: formatAbsoluteTime(updatedAt),
   };
 }
 
@@ -118,11 +119,23 @@ export function mergeWorkflowItems(
   const deleted = new Set(state.deletedMockIds);
   const merged = base
     .filter((item) => !deleted.has(item.id))
-    .map((item) =>
-      state.statusOverrides[item.id]
-        ? { ...item, status: state.statusOverrides[item.id] }
-        : item,
-    );
+    .map((item) => {
+      const override = state.graphOverrides[item.id];
+      const status = state.statusOverrides[item.id] ?? item.status;
+      if (!override && status === item.status) return item;
+      return {
+        ...item,
+        status,
+        name: override?.name ?? item.name,
+        ...(override
+          ? {
+              updatedAt: override.updatedAt,
+              updatedLabel: formatRelativeTime(override.updatedAt, nowMs),
+              updatedAbsolute: formatAbsoluteTime(override.updatedAt),
+            }
+          : {}),
+      };
+    });
   const created = state.created.map((workflow) =>
     createdToWorkflowItem(workflow, nowMs),
   );

@@ -31,10 +31,18 @@ import type { WorkflowDetailData, WorkflowRunRow } from "./workflows-view";
 type ResolvedView =
   | { kind: "pending" }
   | { kind: "missing" }
-  | { kind: "mock"; status: WorkflowStatus }
+  | {
+      kind: "mock";
+      status: WorkflowStatus;
+      name: string;
+      updatedAt: string;
+      updatedLabel: string;
+      updatedAbsolute: string;
+    }
   | {
       kind: "local";
       workflow: LocalWorkflow;
+      updatedAt: string;
       updatedLabel: string;
       updatedAbsolute: string;
     };
@@ -64,7 +72,16 @@ export function WorkflowDetailView({
 }) {
   const router = useRouter();
   const [view, setView] = useState<ResolvedView>(() =>
-    mock ? { kind: "mock", status: mock.status } : { kind: "pending" },
+    mock
+      ? {
+          kind: "mock",
+          status: mock.status,
+          name: mock.name,
+          updatedAt: mock.updatedAt,
+          updatedLabel: mock.updatedLabel,
+          updatedAbsolute: mock.updatedAbsolute,
+        }
+      : { kind: "pending" },
   );
   const [notice, setNotice] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -83,18 +100,26 @@ export function WorkflowDetailView({
         (workflow) => workflow.slug === paramSlug || workflow.id === paramSlug,
       );
       if (local && !(mock && local.slug === mock.slug)) {
+        const updatedAt = local.updatedAt ?? local.createdAt;
         setView({
           kind: "local",
           workflow: local,
-          updatedLabel: formatRelativeTime(local.createdAt, currentTimestamp()),
-          updatedAbsolute: formatAbsoluteTime(local.createdAt),
+          updatedAt,
+          updatedLabel: formatRelativeTime(updatedAt, currentTimestamp()),
+          updatedAbsolute: formatAbsoluteTime(updatedAt),
         });
         return;
       }
       if (mock) {
+        const override = state.graphOverrides[mock.id];
+        const updatedAt = override?.updatedAt ?? mock.updatedAt;
         setView({
           kind: "mock",
           status: state.statusOverrides[mock.id] ?? mock.status,
+          name: override?.name ?? mock.name,
+          updatedAt,
+          updatedLabel: formatRelativeTime(updatedAt, currentTimestamp()),
+          updatedAbsolute: formatAbsoluteTime(updatedAt),
         });
         return;
       }
@@ -159,15 +184,15 @@ export function WorkflowDetailView({
   }
 
   const isMock = view.kind === "mock";
-  const name = isMock ? mock!.name : view.workflow.name;
+  const name = isMock ? view.name : view.workflow.name;
   const slug = isMock ? mock!.slug : view.workflow.slug;
   const trigger = isMock ? mock!.trigger : view.workflow.trigger;
   const status = view.kind === "mock" ? view.status : view.workflow.status;
   const triggerDetail = isMock ? null : view.workflow.triggerDetail;
   const steps = isMock ? null : view.workflow.steps;
-  const updatedAt = isMock ? mock!.updatedAt : view.workflow.createdAt;
-  const updatedLabel = isMock ? mock!.updatedLabel : view.updatedLabel;
-  const updatedAbsolute = isMock ? mock!.updatedAbsolute : view.updatedAbsolute;
+  const updatedAt = view.updatedAt;
+  const updatedLabel = view.updatedLabel;
+  const updatedAbsolute = view.updatedAbsolute;
 
   const toggleStatus = () => {
     const next: WorkflowStatus = status === "active" ? "paused" : "active";
@@ -187,6 +212,12 @@ export function WorkflowDetailView({
       ...state.created.map((workflow) => workflow.slug),
       slug,
     ]);
+    const graph =
+      view.kind === "local"
+        ? view.workflow.graph
+        : mock
+          ? state.graphOverrides[mock.id]?.graph
+          : undefined;
     const copy: LocalWorkflow = {
       id: `local_${copySlug}`,
       name: `${name} (copy)`,
@@ -196,6 +227,7 @@ export function WorkflowDetailView({
       steps: steps ?? [],
       triggerDetail,
       createdAt: new Date(currentTimestamp()).toISOString(),
+      ...(graph ? { graph } : {}),
     };
     addCreatedWorkflow(copy);
     router.push(`/workflows/${copySlug}`);
@@ -233,6 +265,9 @@ export function WorkflowDetailView({
           </div>
         </div>
         <div className="flex shrink-0 flex-wrap gap-2.5">
+          <Link href={`/workflows/${slug}/edit`} className={primaryActionCls}>
+            Edit graph
+          </Link>
           <Link href="/executions" className={secondaryActionCls}>
             View executions
           </Link>

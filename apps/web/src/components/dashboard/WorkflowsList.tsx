@@ -557,6 +557,14 @@ export function WorkflowsList({ items: initialItems }: { items: WorkflowItem[] }
                                   Open workflow
                                 </Link>
                                 <Link
+                                  href={`/workflows/${item.slug}/edit`}
+                                  role="menuitem"
+                                  onClick={() => setOpenMenuId(null)}
+                                  className={menuItemCls}
+                                >
+                                  Edit graph
+                                </Link>
+                                <Link
                                   href="/executions"
                                   role="menuitem"
                                   onClick={() => setOpenMenuId(null)}

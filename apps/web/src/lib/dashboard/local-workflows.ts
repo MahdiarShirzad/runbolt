@@ -1,11 +1,18 @@
+import { parseWorkflowGraph } from "./workflow-graph";
+import type { WorkflowGraph } from "./workflow-graph";
 import type { TriggerType, WorkflowStatus } from "./types";
 
 /**
  * Browser-local workflow layer (localStorage).
  *
  * The Runbolt API is not connected yet, so workflows created here and every
- * action taken on sample workflows (pause/activate, duplicate, delete) are
- * persisted in this browser on top of the deterministic mock baseline.
+ * action taken on sample workflows (pause/activate, duplicate, delete, edit
+ * the graph) are persisted in this browser on top of the deterministic mock
+ * baseline.
+ *
+ * Workflows are graph-based: each record can carry a `graph` (nodes + edges).
+ * Legacy records with only `steps` remain valid and are migrated to a linear
+ * graph on read, so existing data keeps working.
  *
  * TODO(api): replace these reads/writes with real requests
  *   addCreatedWorkflow      → POST   /v1/workflows
@@ -13,6 +20,7 @@ import type { TriggerType, WorkflowStatus } from "./types";
  *   removeCreatedWorkflow   → DELETE /v1/workflows/:id
  *   markMockDeleted         → DELETE /v1/workflows/:id
  *   setMockStatusOverride   → PATCH  /v1/workflows/:id { status }
+ *   setMockGraphOverride    → PUT    /v1/workflows/:id/definition
  */
 
 const STORAGE_KEY = "runbolt.workflows.local.v1";
@@ -26,19 +34,41 @@ export interface LocalWorkflow {
   steps: string[];
   triggerDetail: string | null;
   createdAt: string;
+  /** Optional free-text description edited in the builder. */
+  description?: string;
+  /** Graph definition. When absent, the workflow migrates from `steps`. */
+  graph?: WorkflowGraph;
+  /** Bumped on every saved graph change — used for stale-edit detection. */
+  version?: number;
+  /** ISO timestamp of the last edit; falls back to `createdAt`. */
+  updatedAt?: string;
+}
+
+/** A saved graph (and optional metadata) for a baseline/mock workflow. */
+export interface MockWorkflowOverride {
+  graph: WorkflowGraph;
+  name?: string;
+  description?: string;
+  version?: number;
+  updatedAt: string;
 }
 
 export interface LocalWorkflowState {
   created: LocalWorkflow[];
   deletedMockIds: string[];
   statusOverrides: Record<string, WorkflowStatus>;
+  graphOverrides: Record<string, MockWorkflowOverride>;
 }
 
-const EMPTY_STATE: LocalWorkflowState = {
-  created: [],
-  deletedMockIds: [],
-  statusOverrides: {},
-};
+/** A fresh empty state — never share this object, callers mutate what they get. */
+function emptyState(): LocalWorkflowState {
+  return {
+    created: [],
+    deletedMockIds: [],
+    statusOverrides: {},
+    graphOverrides: {},
+  };
+}
 
 const listeners = new Set<() => void>();
 
@@ -46,7 +76,9 @@ export function isLocalWorkflow(id: string): boolean {
   return id.startsWith("local_");
 }
 
-function isLocalWorkflowShape(value: unknown): value is LocalWorkflow {
+function isLocalWorkflowShape(value: unknown): value is Omit<LocalWorkflow, "graph"> & {
+  graph?: unknown;
+} {
   if (typeof value !== "object" || value == null) return false;
   const w = value as Record<string, unknown>;
   return (
@@ -60,17 +92,65 @@ function isLocalWorkflowShape(value: unknown): value is LocalWorkflow {
   );
 }
 
+function normalizeCreated(value: unknown): LocalWorkflow | null {
+  if (!isLocalWorkflowShape(value)) return null;
+  const record = value as Record<string, unknown>;
+  const graph =
+    record.graph == null ? undefined : parseWorkflowGraph(record.graph) ?? undefined;
+  return {
+    id: record.id as string,
+    name: record.name as string,
+    slug: record.slug as string,
+    status: record.status as WorkflowStatus,
+    trigger: (typeof record.trigger === "string" ? record.trigger : "manual") as TriggerType,
+    steps: (record.steps as unknown[]).filter((s): s is string => typeof s === "string"),
+    triggerDetail: typeof record.triggerDetail === "string" ? record.triggerDetail : null,
+    createdAt: record.createdAt as string,
+    ...(typeof record.description === "string" ? { description: record.description } : {}),
+    ...(graph ? { graph } : {}),
+    ...(typeof record.version === "number" ? { version: record.version } : {}),
+    ...(typeof record.updatedAt === "string" ? { updatedAt: record.updatedAt } : {}),
+  };
+}
+
+function normalizeOverride(value: unknown): MockWorkflowOverride | null {
+  if (typeof value !== "object" || value == null) return null;
+  const record = value as Record<string, unknown>;
+  const graph = parseWorkflowGraph(record.graph);
+  if (!graph) return null;
+  return {
+    graph,
+    ...(typeof record.name === "string" ? { name: record.name } : {}),
+    ...(typeof record.description === "string" ? { description: record.description } : {}),
+    ...(typeof record.version === "number" ? { version: record.version } : {}),
+    updatedAt: typeof record.updatedAt === "string" ? record.updatedAt : new Date(0).toISOString(),
+  };
+}
+
 export function loadLocalState(): LocalWorkflowState {
-  if (typeof window === "undefined") return EMPTY_STATE;
+  if (typeof window === "undefined") return emptyState();
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return EMPTY_STATE;
+    if (!raw) return emptyState();
     const parsed: unknown = JSON.parse(raw);
-    if (typeof parsed !== "object" || parsed == null) return EMPTY_STATE;
+    if (typeof parsed !== "object" || parsed == null) return emptyState();
     const state = parsed as Record<string, unknown>;
+
+    const graphOverrides: Record<string, MockWorkflowOverride> = {};
+    if (typeof state.graphOverrides === "object" && state.graphOverrides != null) {
+      for (const [id, rawOverride] of Object.entries(
+        state.graphOverrides as Record<string, unknown>,
+      )) {
+        const override = normalizeOverride(rawOverride);
+        if (override) graphOverrides[id] = override;
+      }
+    }
+
     return {
       created: Array.isArray(state.created)
-        ? state.created.filter(isLocalWorkflowShape)
+        ? state.created
+            .map(normalizeCreated)
+            .filter((workflow): workflow is LocalWorkflow => workflow != null)
         : [],
       deletedMockIds: Array.isArray(state.deletedMockIds)
         ? state.deletedMockIds.filter((id): id is string => typeof id === "string")
@@ -79,9 +159,10 @@ export function loadLocalState(): LocalWorkflowState {
         typeof state.statusOverrides === "object" && state.statusOverrides != null
           ? (state.statusOverrides as Record<string, WorkflowStatus>)
           : {},
+      graphOverrides,
     };
   } catch {
-    return EMPTY_STATE;
+    return emptyState();
   }
 }
 
@@ -111,10 +192,24 @@ export function addCreatedWorkflow(workflow: LocalWorkflow): void {
 
 export function updateCreatedWorkflow(
   id: string,
-  patch: Partial<Pick<LocalWorkflow, "status" | "name" | "steps" | "triggerDetail">>,
+  patch: Partial<
+    Pick<
+      LocalWorkflow,
+      "status" | "name" | "steps" | "triggerDetail" | "description" | "graph" | "version"
+    >
+  >,
 ): void {
   const state = loadLocalState();
-  state.created = state.created.map((w) => (w.id === id ? { ...w, ...patch } : w));
+  const now = new Date(Date.now()).toISOString();
+  state.created = state.created.map((w) =>
+    w.id === id
+      ? {
+          ...w,
+          ...patch,
+          ...(patch.graph || patch.name !== undefined ? { updatedAt: now } : {}),
+        }
+      : w,
+  );
   saveAndNotify(state);
 }
 
@@ -136,6 +231,41 @@ export function setMockStatusOverride(id: string, status: WorkflowStatus): void 
   const state = loadLocalState();
   state.statusOverrides = { ...state.statusOverrides, [id]: status };
   saveAndNotify(state);
+}
+
+export function getMockOverride(id: string): MockWorkflowOverride | null {
+  return loadLocalState().graphOverrides[id] ?? null;
+}
+
+/** Upserts the saved graph (and metadata) for a baseline/mock workflow. */
+export function setMockGraphOverride(
+  id: string,
+  patch: Partial<Omit<MockWorkflowOverride, "updatedAt">> & { graph: WorkflowGraph },
+): void {
+  const state = loadLocalState();
+  const previous = state.graphOverrides[id];
+  state.graphOverrides = {
+    ...state.graphOverrides,
+    [id]: {
+      graph: patch.graph,
+      name: patch.name ?? previous?.name,
+      description: patch.description ?? previous?.description,
+      version: patch.version ?? (previous?.version ?? 0) + 1,
+      updatedAt: new Date(Date.now()).toISOString(),
+    },
+  };
+  saveAndNotify(state);
+}
+
+export function findCreatedWorkflow(
+  state: LocalWorkflowState,
+  idOrSlug: string,
+): LocalWorkflow | null {
+  return (
+    state.created.find(
+      (workflow) => workflow.id === idOrSlug || workflow.slug === idOrSlug,
+    ) ?? null
+  );
 }
 
 export function makeSlug(name: string): string {
