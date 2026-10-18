@@ -67,6 +67,10 @@ export interface ExecutionLogEntry {
   level: LogLevel;
   source: string;
   message: string;
+  /** Graph node this line belongs to, when known. */
+  nodeId?: string;
+  /** Optional structured context (never contains secrets). */
+  metadata?: Record<string, unknown>;
 }
 
 export interface Execution {
@@ -78,6 +82,8 @@ export interface Execution {
   startedAt: string;
   finishedAt: string | null;
   durationMs: number | null;
+  /** 1 for the first attempt; >1 when the run was retried. */
+  attempt?: number;
   steps: ExecutionStep[];
 }
 

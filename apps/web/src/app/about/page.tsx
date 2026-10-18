@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { AboutNavbar } from "@/components/about/AboutNavbar";
 import { AboutHero } from "@/components/about/AboutHero";
 import { StorySection } from "@/components/about/StorySection";
@@ -12,11 +12,12 @@ import { TransparencySection } from "@/components/about/TransparencySection";
 import { CTASection } from "@/components/landing/CTASection";
 import { Footer } from "@/components/landing/Footer";
 
-export const metadata: Metadata = {
-  title: "About — Runbolt",
+export const metadata = pageMetadata({
+  title: "About",
   description:
     "Why Runbolt exists, the philosophy behind the product, the principles it is built around, and where the platform is heading.",
-};
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (

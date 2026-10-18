@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { CTASection } from "@/components/landing/CTASection";
@@ -13,11 +13,12 @@ import { SecurityRoadmap } from "@/components/security/SecurityRoadmap";
 import { ResponsibleDisclosure } from "@/components/security/ResponsibleDisclosure";
 import { SecurityFAQ } from "@/components/security/SecurityFAQ";
 
-export const metadata: Metadata = {
-  title: "Security — Runbolt",
+export const metadata = pageMetadata({
+  title: "Security",
   description:
     "How Runbolt approaches security: developer control over workflows, credentials, and executions, with visibility into what happens at every step — and a clear roadmap of what comes next.",
-};
+  path: "/security",
+});
 
 export default function SecurityPage() {
   return (

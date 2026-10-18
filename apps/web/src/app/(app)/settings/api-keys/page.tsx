@@ -1,10 +1,12 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { SettingsRoute } from "@/components/dashboard/SettingsRoute";
 
-export const metadata: Metadata = {
-  title: "API Keys — Runbolt",
+export const metadata = pageMetadata({
+  title: "API Keys",
   description: "Manage API keys for programmatic access to Runbolt.",
-};
+  path: "/settings/api-keys",
+  noIndex: true,
+});
 
 export const dynamic = "force-dynamic";
 

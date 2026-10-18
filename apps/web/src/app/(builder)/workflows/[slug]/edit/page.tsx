@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import {
   WorkflowBuilder,
   type BuilderExecution,
@@ -28,10 +29,12 @@ export async function generateMetadata({
     (candidate) => candidate.slug === slug || candidate.id === slug,
   );
   const name = workflow?.name ?? humanizeSlug(slug);
-  return {
-    title: `${name} — Editor — Runbolt`,
+  return pageMetadata({
+    title: `${name} — Editor`,
     description: `Edit the ${name} workflow as a graph.`,
-  };
+    path: `/workflows/${slug}/edit`,
+    noIndex: true,
+  });
 }
 
 /**

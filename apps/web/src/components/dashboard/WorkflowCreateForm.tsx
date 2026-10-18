@@ -168,7 +168,7 @@ export function WorkflowCreateForm({ existingSlugs }: { existingSlugs: string[] 
       triggerDetail: trigger === "schedule" ? schedulePreset : null,
       createdAt: new Date(currentTimestamp()).toISOString(),
     });
-    router.push(`/workflows/${finalSlug}`);
+    router.push(`/workflows/${finalSlug}/edit`);
   };
 
   return (
@@ -182,8 +182,8 @@ export function WorkflowCreateForm({ existingSlugs }: { existingSlugs: string[] 
             Create workflow
           </h1>
           <p className="mt-1.5 text-sm text-muted">
-            Pick a trigger, add the steps you need, and save — new workflows
-            start paused until you activate them.
+            Pick a trigger and rough steps, then finish the flow in the visual
+            editor. New workflows start paused until you activate them.
           </p>
         </div>
         <Link href="/workflows" className={secondaryActionCls}>
@@ -388,7 +388,7 @@ export function WorkflowCreateForm({ existingSlugs }: { existingSlugs: string[] 
 
       <div className="flex flex-wrap items-center gap-3">
         <button type="submit" className={primaryActionCls}>
-          Create workflow
+          Create &amp; open editor
         </button>
         <Link href="/workflows" className={secondaryActionCls}>
           Back to workflows

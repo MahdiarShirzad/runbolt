@@ -1,15 +1,17 @@
-import type { Metadata } from "next";
 import { Suspense } from "react";
+import { pageMetadata } from "@/lib/seo";
 import { TemplatesView } from "@/components/dashboard/TemplatesView";
 import { TemplatesPageSkeleton } from "@/components/dashboard/Skeletons";
 import { INTEGRATIONS } from "@/lib/dashboard/integrations";
 import { TEMPLATES, TEMPLATE_CATEGORY_LABELS } from "@/lib/dashboard/templates";
 import type { TemplateCategory } from "@/lib/dashboard/templates";
 
-export const metadata: Metadata = {
-  title: "Templates — Runbolt",
+export const metadata = pageMetadata({
+  title: "Templates",
   description: "Start from prebuilt workflow templates.",
-};
+  path: "/templates",
+  noIndex: true,
+});
 
 function first(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;

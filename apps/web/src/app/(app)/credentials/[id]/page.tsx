@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { CredentialDetailView } from "@/components/dashboard/CredentialDetailView";
 import { currentTimestamp } from "@/lib/dashboard/format";
 import { getSampleCredentials } from "@/lib/dashboard/credentials";
@@ -16,15 +17,19 @@ export async function generateMetadata({
     (candidate) => candidate.id === id || candidate.name === id,
   );
   if (!credential) {
-    return {
-      title: "Credential — Runbolt",
+    return pageMetadata({
+      title: "Credential",
       description: "Credential metadata, security notes, and usage.",
-    };
+      path: `/credentials/${id}`,
+      noIndex: true,
+    });
   }
-  return {
-    title: `${credential.name} — Credentials — Runbolt`,
+  return pageMetadata({
+    title: `${credential.name} — Credentials`,
     description: `Inspect ${credential.name}, its type, and security handling.`,
-  };
+    path: `/credentials/${id}`,
+    noIndex: true,
+  });
 }
 
 export const dynamic = "force-dynamic";

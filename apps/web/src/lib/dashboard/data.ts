@@ -1,4 +1,6 @@
 import { getAnalyticsExecutionById } from "./analytics/execution";
+import { buildExecutionDebug, buildExecutionLogs } from "./execution-debug";
+import type { ExecutionDebug } from "./execution-debug";
 import { buildExecutionSteps, stepCount } from "./execution-build";
 import { formatRelativeTime } from "./format";
 import { hashString, mulberry32 } from "./random";
@@ -10,7 +12,6 @@ import type {
   Execution,
   ExecutionLogEntry,
   ExecutionStatus,
-  LogLevel,
   MetricSnapshot,
   SessionUser,
   TimeRange,
@@ -35,6 +36,7 @@ import type {
  *   getMetrics             → derived from the stats endpoint
  *   getExecutions          → `GET /v1/executions?range=…`
  *   getExecutionById       → `GET /v1/executions/:id`
+ *   getExecutionDebug      → `GET /v1/executions/:id` + `/graph` + `/nodes`
  *   getExecutionLogs       → `GET /v1/executions/:id/logs`
  *   getRecentExecutions    → `GET /v1/executions?limit=10`
  *   getWorkflowExecutions  → `GET /v1/executions?workflow_id=…&limit=…`
@@ -145,15 +147,17 @@ const EXECUTION_SEEDS: {
   minutesAgo: number;
   durationMs: number | null;
   failingStep?: number;
+  /** Present when the latest run was retried (drives the debugger's attempts view). */
+  attempt?: number;
 }[] = [
   { workflowName: "Order fulfillment", slug: "order-fulfillment", status: "success", trigger: "webhook", minutesAgo: 3, durationMs: 1240 },
   { workflowName: "Customer sync", slug: "customer-sync", status: "success", trigger: "schedule", minutesAgo: 11, durationMs: 890 },
   { workflowName: "Lead enrichment", slug: "lead-enrichment", status: "running", trigger: "api", minutesAgo: 2, durationMs: null },
-  { workflowName: "Invoice export", slug: "nightly-invoice-export", status: "failed", trigger: "schedule", minutesAgo: 48, durationMs: 3410, failingStep: 2 },
+  { workflowName: "Invoice export", slug: "nightly-invoice-export", status: "failed", trigger: "schedule", minutesAgo: 48, durationMs: 3410, failingStep: 2, attempt: 3 },
   { workflowName: "Slack alert triage", slug: "slack-alert-triage", status: "success", trigger: "webhook", minutesAgo: 95, durationMs: 320 },
   { workflowName: "GitHub issue triage", slug: "github-issue-triage", status: "success", trigger: "webhook", minutesAgo: 140, durationMs: 2150 },
   { workflowName: "Stripe dunning emails", slug: "stripe-dunning-emails", status: "success", trigger: "schedule", minutesAgo: 210, durationMs: 4680 },
-  { workflowName: "DB backup verification", slug: "db-backup-verify", status: "failed", trigger: "schedule", minutesAgo: 320, durationMs: 8420, failingStep: 3 },
+  { workflowName: "DB backup verification", slug: "db-backup-verify", status: "failed", trigger: "schedule", minutesAgo: 320, durationMs: 8420, failingStep: 3, attempt: 2 },
   { workflowName: "Abandoned cart reminder", slug: "abandoned-cart-reminder", status: "success", trigger: "schedule", minutesAgo: 480, durationMs: 610 },
   { workflowName: "CRM contact import", slug: "crm-contact-import", status: "cancelled", trigger: "manual", minutesAgo: 720, durationMs: 15_200 },
 ];
@@ -168,6 +172,7 @@ function makeRun(
   startedAtMs: number,
   runIndex: number,
   rand: () => number,
+  attempt = 1,
 ): Execution {
   const running = status === "running";
   return {
@@ -181,6 +186,7 @@ function makeRun(
       ? null
       : new Date(startedAtMs + (durationMs ?? 0)).toISOString(),
     durationMs: running ? null : durationMs,
+    attempt,
     steps: buildExecutionSteps(seed.slug, status, durationMs, failingStep, rand),
   };
 }
@@ -199,7 +205,16 @@ function buildExecutionHistory(nowMs: number): Execution[] {
     let startedAtMs = nowMs - seed.minutesAgo * 60_000;
 
     executions.push(
-      makeRun(seed, seed.status, seed.durationMs, seed.failingStep ?? null, startedAtMs, 0, rand),
+      makeRun(
+        seed,
+        seed.status,
+        seed.durationMs,
+        seed.failingStep ?? null,
+        startedAtMs,
+        0,
+        rand,
+        seed.attempt ?? 1,
+      ),
     );
 
     const olderRuns = 4 + Math.floor(rand() * 5);
@@ -212,7 +227,11 @@ function buildExecutionHistory(nowMs: number): Execution[] {
       const durationMs = 300 + Math.round(rand() * 9000);
       const failingStep =
         status === "failed" ? Math.floor(rand() * stepCount(seed.slug)) : null;
-      executions.push(makeRun(seed, status, durationMs, failingStep, startedAtMs, i, rand));
+      const attempt =
+        status === "failed" && rand() < 0.4 ? 2 + Math.floor(rand() * 2) : 1;
+      executions.push(
+        makeRun(seed, status, durationMs, failingStep, startedAtMs, i, rand, attempt),
+      );
     }
   }
 
@@ -236,52 +255,26 @@ export async function getExecutionById(id: string): Promise<Execution | null> {
 
 /**
  * Sample log stream for one execution, derived deterministically from the
- * execution's own step data (timestamps follow step durations).
+ * same node projections the debugger renders (timestamps follow node timings).
  *
  * TODO(api): replace with `GET /v1/executions/:id/logs`.
  */
 export async function getExecutionLogs(executionId: string): Promise<ExecutionLogEntry[]> {
   const execution = await getExecutionById(executionId);
   if (!execution) return [];
+  return buildExecutionLogs(execution);
+}
 
-  const entries: ExecutionLogEntry[] = [];
-  let seq = 0;
-  let cursorMs = new Date(execution.startedAt).getTime();
-  const push = (level: LogLevel, source: string, message: string) => {
-    entries.push({
-      id: `${executionId}.log_${seq++}`,
-      at: new Date(cursorMs).toISOString(),
-      level,
-      source,
-      message,
-    });
-  };
-
-  push("info", "runner", `Execution started (${execution.trigger} trigger)`);
-  for (const step of execution.steps) {
-    push("info", step.name, `Step "${step.name}" started`);
-    const durationMs = step.durationMs ?? 0;
-    cursorMs += durationMs;
-    if (step.status === "success") {
-      push("info", step.name, `Step completed in ${durationMs}ms`);
-    } else if (step.status === "failed") {
-      push("error", step.name, step.detail ?? "Step failed");
-    } else if (step.status === "cancelled") {
-      push("warn", step.name, "Step cancelled");
-    } else {
-      push("info", step.name, "Step is still running");
-    }
-  }
-  if (execution.status === "success") {
-    push("info", "runner", "Execution finished successfully");
-  } else if (execution.status === "failed") {
-    push("error", "runner", "Execution aborted: a step failed");
-  } else if (execution.status === "cancelled") {
-    push("warn", "runner", "Execution cancelled");
-  } else {
-    push("info", "runner", "Execution still running");
-  }
-  return entries;
+/**
+ * Everything the execution debugger needs for one run: the graph, per-node
+ * execution details, derived counts, the failing node and the error summary.
+ *
+ * TODO(api): replace with `GET /v1/executions/:id` + `/graph` + `/nodes`.
+ */
+export async function getExecutionDebug(executionId: string): Promise<ExecutionDebug | null> {
+  const execution = await getExecutionById(executionId);
+  if (!execution) return null;
+  return buildExecutionDebug(execution);
 }
 
 export async function getRecentExecutions(limit = 10): Promise<Execution[]> {

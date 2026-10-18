@@ -10,8 +10,8 @@ import {
   SearchIcon,
 } from "@/components/landing/icons";
 import { ChevronRightIcon } from "./icons";
-import { formatCount } from "@/lib/dashboard/format";
-import type { ExecutionStatus } from "@/lib/dashboard/types";
+import { formatCount, formatDuration, formatPercent } from "@/lib/dashboard/format";
+import type { ExecutionStatus, TriggerType } from "@/lib/dashboard/types";
 import { EmptyState } from "./EmptyState";
 import { Panel } from "./Panel";
 import { StatusBadge, TriggerBadge } from "./StatusBadge";
@@ -23,6 +23,7 @@ import {
 import type {
   ExecutionListState,
   ExecutionRow,
+  ExecutionTriggerOption,
   ExecutionWorkflowOption,
 } from "./executions-view";
 
@@ -114,11 +115,13 @@ function SortHeader({
 export function ExecutionsBrowser({
   rows,
   workflowOptions,
+  triggerOptions,
   initial,
   nowIso,
 }: {
   rows: ExecutionRow[];
   workflowOptions: ExecutionWorkflowOption[];
+  triggerOptions: ExecutionTriggerOption[];
   initial: ExecutionListState;
   nowIso: string;
 }) {
@@ -135,6 +138,7 @@ export function ExecutionsBrowser({
     if (state.range !== "7d") params.set("range", state.range);
     if (state.status !== "all") params.set("status", state.status);
     if (state.workflowId !== "all") params.set("workflow", state.workflowId);
+    if (state.trigger !== "all") params.set("trigger", state.trigger);
     if (state.q.trim() !== "") params.set("q", state.q.trim());
     if (state.sort !== "started") params.set("sort", state.sort);
     if (state.page > 1) params.set("page", String(state.page));
@@ -161,10 +165,19 @@ export function ExecutionsBrowser({
     state.range !== "7d" ||
     state.status !== "all" ||
     state.workflowId !== "all" ||
+    state.trigger !== "all" ||
     state.q.trim() !== "";
 
   const clearFilters = () => {
-    setState({ range: "7d", status: "all", workflowId: "all", q: "", sort: "started", page: 1 });
+    setState({
+      range: "7d",
+      status: "all",
+      workflowId: "all",
+      trigger: "all",
+      q: "",
+      sort: "started",
+      page: 1,
+    });
     searchRef.current?.focus();
   };
 
@@ -174,21 +187,36 @@ export function ExecutionsBrowser({
       const startedMs = new Date(row.startedAt).getTime();
       return (
         startedMs >= cutoff &&
-        (state.workflowId === "all" || row.workflowId === state.workflowId)
+        (state.workflowId === "all" || row.workflowId === state.workflowId) &&
+        (state.trigger === "all" || row.trigger === state.trigger)
       );
     });
-  }, [rows, nowMs, state.range, state.workflowId]);
+  }, [rows, nowMs, state.range, state.workflowId, state.trigger]);
 
   const stats = useMemo(() => {
     let success = 0;
     let failed = 0;
     let running = 0;
+    let durationSum = 0;
+    let durationCount = 0;
     for (const row of inPeriod) {
       if (row.status === "success") success += 1;
       else if (row.status === "failed") failed += 1;
       else if (row.status === "running") running += 1;
+      if (row.durationMs != null) {
+        durationSum += row.durationMs;
+        durationCount += 1;
+      }
     }
-    return { total: inPeriod.length, success, failed, running };
+    const finished = success + failed;
+    return {
+      total: inPeriod.length,
+      success,
+      failed,
+      running,
+      successRate: finished === 0 ? null : success / finished,
+      avgDurationMs: durationCount === 0 ? null : durationSum / durationCount,
+    };
   }, [inPeriod]);
 
   const filtered = useMemo(() => {
@@ -220,7 +248,7 @@ export function ExecutionsBrowser({
 
   return (
     <div className="space-y-4 lg:space-y-5">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <MetricCard
           label="Total executions"
           value={formatCount(stats.total)}
@@ -249,6 +277,25 @@ export function ExecutionsBrowser({
           value={formatCount(stats.running)}
           context="in progress right now"
           valueCls="text-volt"
+        />
+        <MetricCard
+          label="Success rate"
+          value={stats.successRate == null ? "—" : formatPercent(stats.successRate)}
+          context="of finished runs in view"
+          valueCls={
+            stats.successRate == null
+              ? "text-fg"
+              : stats.successRate >= 0.9
+                ? "text-ok"
+                : stats.successRate >= 0.7
+                  ? "text-warn"
+                  : "text-bad"
+          }
+        />
+        <MetricCard
+          label="Avg duration"
+          value={stats.avgDurationMs == null ? "—" : formatDuration(stats.avgDurationMs)}
+          context="mean run time in view"
         />
       </div>
 
@@ -331,6 +378,35 @@ export function ExecutionsBrowser({
             />
           </div>
 
+          {triggerOptions.length > 0 && (
+            <div className="relative">
+              <label htmlFor="executions-trigger" className="sr-only">
+                Filter by trigger
+              </label>
+              <select
+                id="executions-trigger"
+                value={state.trigger}
+                onChange={(event) =>
+                  patch({ trigger: event.target.value as TriggerType | "all" })
+                }
+                className={selectCls}
+              >
+                <option value="all">All triggers</option>
+                {triggerOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <ChevronDownIcon
+                width={13}
+                height={13}
+                aria-hidden
+                className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-faint"
+              />
+            </div>
+          )}
+
           <div
             role="group"
             aria-label="Time range"
@@ -401,7 +477,7 @@ export function ExecutionsBrowser({
         ) : (
           <>
             <ScrollArea fadeFrom="surface" label="Executions table">
-              <table className="w-full min-w-[880px] border-collapse text-left">
+              <table className="w-full min-w-[1000px] border-collapse text-left">
                 <thead>
                   <tr className="border-b border-line/70">
                     <th scope="col" className="px-5 py-2.5 font-mono text-[10px] font-normal uppercase tracking-[0.12em] text-faint">
@@ -412,6 +488,9 @@ export function ExecutionsBrowser({
                     </th>
                     <th scope="col" className="px-4 py-2.5 font-mono text-[10px] font-normal uppercase tracking-[0.12em] text-faint">
                       Trigger
+                    </th>
+                    <th scope="col" className="px-4 py-2.5 font-mono text-[10px] font-normal uppercase tracking-[0.12em] text-faint">
+                      Nodes
                     </th>
                     <SortHeader
                       label="Started"
@@ -457,6 +536,19 @@ export function ExecutionsBrowser({
                       </td>
                       <td className="px-4 py-3">
                         <TriggerBadge trigger={row.trigger} />
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="font-mono text-[12px] tabular-nums text-muted">
+                          <span className="text-ok">{row.successCount}</span>
+                          {row.failedCount > 0 && (
+                            <>
+                              {" / "}
+                              <span className="text-bad">{row.failedCount}</span>
+                            </>
+                          )}
+                          {" of "}
+                          {row.nodeCount}
+                        </span>
                       </td>
                       <td className="px-4 py-3">
                         <time

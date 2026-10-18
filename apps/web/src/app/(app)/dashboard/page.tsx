@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { AnalyticsHeader } from "@/components/dashboard/analytics/AnalyticsHeader";
 import { ExecutionDurationChart } from "@/components/dashboard/analytics/ExecutionDurationChart";
 import { ExecutionHeatmap } from "@/components/dashboard/analytics/ExecutionHeatmap";
@@ -21,10 +21,12 @@ import { TIME_RANGES, type TimeRange } from "@/lib/dashboard/types";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Dashboard — Runbolt",
+export const metadata = pageMetadata({
+  title: "Dashboard",
   description: "Workflow activity, executions, and workspace analytics.",
-};
+  path: "/dashboard",
+  noIndex: true,
+});
 
 export default async function DashboardPage({
   searchParams,

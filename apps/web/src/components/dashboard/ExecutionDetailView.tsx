@@ -2,37 +2,55 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { CopyButton } from "@/components/ui/copy-button";
 import { ArrowLeftIcon, RetryIcon } from "@/components/landing/icons";
-import { formatCount } from "@/lib/dashboard/format";
-import { EmptyState } from "./EmptyState";
+import { hashString } from "@/lib/dashboard/random";
+import { formatDuration } from "@/lib/dashboard/format";
+import { runWorkflowGraph, type GraphRunStatus } from "@/lib/dashboard/workflow-run";
+import type { NodeExecution } from "@/lib/dashboard/execution-debug";
 import { ExecutionLogsViewer } from "./ExecutionLogsViewer";
-import { JsonBlock } from "./JsonBlock";
 import { Panel } from "./Panel";
+import { SampleDataBadge } from "./SampleDataBadge";
 import { StatusBadge, TriggerBadge } from "./StatusBadge";
-import { secondaryActionCls } from "./actions";
-import {
-  EXECUTIONS_LIST_QUERY_KEY,
-} from "./executions-view";
-import type { ExecutionDetailData, ExecutionLogRow, ExecutionStepDetailRow } from "./executions-view";
+import { primaryActionCls, secondaryActionCls } from "./actions";
+import { EXECUTIONS_LIST_QUERY_KEY } from "./executions-view";
+import type { ExecutionDebugData, ExecutionLogRow } from "./executions-view";
+import { ErrorPanel } from "./executions/ErrorPanel";
+import { ExecutionGraph } from "./executions/ExecutionGraph";
+import { ExecutionSummary } from "./executions/ExecutionSummary";
+import { ExecutionTimeline } from "./executions/ExecutionTimeline";
+import { NodeInspector } from "./executions/NodeInspector";
+import { NodeStatusBadge } from "./executions/NodeStatusBadge";
+import { ReplayDialog } from "./executions/ReplayDialog";
 
-type TabId = "overview" | "logs";
+interface SimulatedRun {
+  runId: string;
+  statuses: Record<string, GraphRunStatus>;
+  details: Record<string, string>;
+  counts: { success: number; failed: number; skipped: number; running: number };
+  durationMs: number | null;
+}
 
-const stepDotCls: Record<string, string> = {
-  success: "bg-ok",
-  failed: "bg-bad",
-  running: "bg-volt blink",
-  queued: "bg-state-queued",
-  cancelled: "bg-state-cancelled",
-};
+function nodeDetail(node: NodeExecution): string {
+  switch (node.status) {
+    case "running":
+      return "running…";
+    case "failed":
+      return "failed";
+    case "skipped":
+      return "skipped";
+    case "pending":
+      return "not executed";
+    default:
+      return formatDuration(node.durationMs);
+  }
+}
 
 function MetaCard({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="rounded-lg border border-line bg-surface/60 px-4 py-3.5">
-      <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-faint">
-        {label}
-      </p>
+      <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-faint">{label}</p>
       <div className="mt-2 text-[13.5px] text-fg">{children}</div>
     </div>
   );
@@ -55,191 +73,86 @@ function BackToExecutions() {
   );
 }
 
-function Timeline({
-  steps,
-  selectedIndex,
-  onSelect,
-}: {
-  steps: ExecutionStepDetailRow[];
-  selectedIndex: number;
-  onSelect: (index: number) => void;
-}) {
-  const listRef = useRef<HTMLOListElement>(null);
-
-  const onKeyDown = (event: React.KeyboardEvent<HTMLOListElement>) => {
-    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-    const buttons = Array.from(
-      listRef.current?.querySelectorAll<HTMLElement>("[data-step-button]") ?? [],
-    );
-    if (buttons.length === 0) return;
-    event.preventDefault();
-    const current = buttons.indexOf(document.activeElement as HTMLElement);
-    const delta = event.key === "ArrowDown" ? 1 : -1;
-    const next = current < 0 ? 0 : (current + delta + buttons.length) % buttons.length;
-    buttons[next]?.focus();
-  };
-
-  return (
-    <ol ref={listRef} onKeyDown={onKeyDown} className="space-y-2">
-      {steps.map((step, index) => {
-        const selected = index === selectedIndex;
-        return (
-          <li key={`${step.name}-${index}`}>
-            <button
-              type="button"
-              data-step-button
-              onClick={() => onSelect(index)}
-              aria-pressed={selected}
-              className={`flex w-full items-start gap-3 rounded-md border px-3.5 py-3 text-left transition-colors ${
-                selected
-                  ? "border-primary bg-primary/[0.05]"
-                  : "border-line bg-ink hover:border-line-strong"
-              } ${step.status === "failed" && !selected ? "border-bad/50" : ""}`}
-            >
-              <span
-                aria-hidden
-                className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${stepDotCls[step.status] ?? "bg-muted"}`}
-              />
-              <span className="min-w-0 flex-1">
-                <span className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                  <span className="font-mono text-[12.5px] text-fg">
-                    {step.index + 1}. {step.name}
-                  </span>
-                  <span className="shrink-0 font-mono text-[11px] tabular-nums text-muted">
-                    {step.durationLabel}
-                  </span>
-                </span>
-                <span className="mt-1 flex flex-wrap items-center gap-2">
-                  <StatusBadge status={step.status} />
-                  {step.startedClock && (
-                    <span className="font-mono text-[11px] text-faint">
-                      started {step.startedClock}
-                    </span>
-                  )}
-                </span>
-                {step.detail && (
-                  <span className="mt-1.5 block text-[11.5px] leading-relaxed text-bad/90">
-                    {step.detail}
-                  </span>
-                )}
-              </span>
-            </button>
-          </li>
-        );
-      })}
-    </ol>
-  );
-}
-
-function StepInspector({ step }: { step: ExecutionStepDetailRow | null }) {
-  if (!step) {
-    return (
-      <EmptyState
-        title="Select a step"
-        description="Pick a step in the timeline to inspect its status, timing, and captured data."
-      />
-    );
-  }
-
-  const payload = {
-    index: step.index,
-    name: step.name,
-    status: step.status,
-    startedAt: step.startedAt,
-    durationMs: step.durationMs,
-    ...(step.detail ? { error: step.detail } : {}),
-  };
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <StatusBadge status={step.status} />
-        <p className="mt-2 font-mono text-[13.5px] text-fg">{step.name}</p>
-      </div>
-
-      <dl className="divide-y divide-line/50 rounded-md border border-line bg-ink px-3.5">
-        <div className="flex items-center justify-between gap-3 py-2">
-          <dt className="font-mono text-[10.5px] uppercase tracking-[0.12em] text-faint">
-            Step
-          </dt>
-          <dd className="font-mono text-[12px] tabular-nums text-fg">
-            {step.index + 1}
-          </dd>
-        </div>
-        <div className="flex items-center justify-between gap-3 py-2">
-          <dt className="font-mono text-[10.5px] uppercase tracking-[0.12em] text-faint">
-            Started
-          </dt>
-          <dd className="text-[12.5px] text-fg">
-            {step.startedAt ? (
-              <time dateTime={step.startedAt} title={step.startedAbsolute ?? undefined}>
-                {step.startedClock}
-              </time>
-            ) : (
-              <span className="text-muted">—</span>
-            )}
-          </dd>
-        </div>
-        <div className="flex items-center justify-between gap-3 py-2">
-          <dt className="font-mono text-[10.5px] uppercase tracking-[0.12em] text-faint">
-            Duration
-          </dt>
-          <dd className="font-mono text-[12px] tabular-nums text-fg">
-            {step.durationLabel}
-          </dd>
-        </div>
-      </dl>
-
-      {step.detail && (
-        <div className="rounded-md border border-bad/30 bg-bad/[0.06] px-3.5 py-3">
-          <p className="font-mono text-[10.5px] uppercase tracking-[0.12em] text-bad">
-            Error
-          </p>
-          <p className="mt-1.5 break-words text-[12.5px] leading-relaxed text-bad/90">
-            {step.detail}
-          </p>
-        </div>
-      )}
-
-      <div>
-        <p className="mb-1.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-faint">
-          Step data
-        </p>
-        <JsonBlock value={payload} label={`step-${step.index + 1}.json`} />
-        <p className="mt-1.5 text-[11.5px] leading-relaxed text-faint">
-          Input and output payloads are not captured by the API yet — only the
-          recorded step metadata is shown.
-        </p>
-      </div>
-    </div>
-  );
-}
-
+/**
+ * Execution debugger.
+ *
+ * Renders one execution as three linked surfaces — the status-annotated graph,
+ * the node inspector, and the timeline/logs — all fed from the same node-run
+ * projections so they always agree. Replay is a clearly labelled local
+ * simulation and never claims a real run occurred.
+ */
 export function ExecutionDetailView({
-  detail,
+  data,
   logs,
 }: {
-  detail: ExecutionDetailData;
+  data: ExecutionDebugData;
   logs: ExecutionLogRow[];
 }) {
   const router = useRouter();
-  const failedStepIndex = detail.steps.findIndex((step) => step.status === "failed");
-  const [tab, setTab] = useState<TabId>("overview");
-  const [selectedStep, setSelectedStep] = useState(
-    failedStepIndex >= 0 ? failedStepIndex : 0,
+  const graphRef = useRef<HTMLDivElement>(null);
+  const { debug } = data;
+  const defaultSelected =
+    debug.failedNode?.nodeId ?? debug.nodes[0]?.nodeId ?? null;
+
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(defaultSelected);
+  const [focus, setFocus] = useState<{ id: string | null; nonce: number }>({
+    id: null,
+    nonce: 0,
+  });
+  const [replayOpen, setReplayOpen] = useState(false);
+  const [simulated, setSimulated] = useState<SimulatedRun | null>(null);
+
+  const recordedStatuses = useMemo(
+    () => Object.fromEntries(debug.nodes.map((node) => [node.nodeId, node.status])),
+    [debug],
+  );
+  const recordedDetails = useMemo(
+    () => Object.fromEntries(debug.nodes.map((node) => [node.nodeId, nodeDetail(node)])),
+    [debug],
   );
 
-  const onTabsKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-      event.preventDefault();
-      setTab((prev) => (prev === "overview" ? "logs" : "overview"));
-    },
-    [],
+  const statuses = simulated?.statuses ?? recordedStatuses;
+  const details = simulated?.details ?? recordedDetails;
+  const selectedNode = debug.nodes.find((node) => node.nodeId === selectedNodeId) ?? null;
+
+  const nodeLogs = useMemo(
+    () => logs.filter((entry) => entry.nodeId === selectedNodeId),
+    [logs, selectedNodeId],
+  );
+  const nodeOptions = useMemo(
+    () => debug.nodes.map((node) => ({ value: node.nodeId, label: node.name })),
+    [debug],
   );
 
-  const stepsSucceeded = detail.counts.success;
-  const step = detail.steps[selectedStep] ?? null;
+  function focusNode(id: string | null, scroll = false) {
+    if (!id) return;
+    setSelectedNodeId(id);
+    setFocus((prev) => ({ id, nonce: prev.nonce + 1 }));
+    if (scroll) {
+      graphRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function confirmReplay() {
+    const result = runWorkflowGraph(debug.graph, {
+      seed: hashString(`${data.id}:replay`),
+    });
+    const simStatuses: Record<string, GraphRunStatus> = {};
+    const simDetails: Record<string, string> = {};
+    for (const step of result.steps) {
+      simStatuses[step.nodeId] = step.status;
+      simDetails[step.nodeId] =
+        step.durationMs == null ? "" : formatDuration(step.durationMs);
+    }
+    setSimulated({
+      runId: `replay_${hashString(data.id).toString(16)}`,
+      statuses: simStatuses,
+      details: simDetails,
+      counts: { ...result.counts },
+      durationMs: result.durationMs,
+    });
+    setReplayOpen(false);
+  }
 
   return (
     <div className="space-y-4 lg:space-y-5">
@@ -247,203 +160,214 @@ export function ExecutionDetailView({
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-faint">
-            Execution
-          </p>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-faint">
+              Execution
+            </p>
+            <SampleDataBadge />
+          </div>
           <h1 className="mt-2 font-display text-2xl font-semibold tracking-[-0.015em] text-fg sm:text-[28px]">
-            {detail.workflowName}
+            {data.workflowName}
           </h1>
           <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-2">
-            <StatusBadge status={detail.status} />
-            <TriggerBadge trigger={detail.trigger} />
+            <StatusBadge status={data.status} />
+            <TriggerBadge trigger={data.trigger} />
+            {data.attempt > 1 && (
+              <span className="rounded border border-warn/40 bg-warn/10 px-1.5 py-0.5 font-mono text-[9.5px] uppercase tracking-[0.1em] text-warn">
+                retry attempt {data.attempt}
+              </span>
+            )}
             <span className="flex items-center gap-1">
-              <span className="font-mono text-[11px] text-faint">{detail.id}</span>
-              <CopyButton text={detail.id} label="Copy execution ID" />
+              <span className="font-mono text-[11px] text-faint">{data.id}</span>
+              <CopyButton text={data.id} label="Copy execution ID" />
             </span>
           </div>
         </div>
+
         <div className="flex shrink-0 flex-wrap gap-2.5">
-          <Link href={`/workflows/${detail.workflowId}`} className={secondaryActionCls}>
-            Open workflow
-          </Link>
-          <button
-            type="button"
-            onClick={() => router.refresh()}
-            className={secondaryActionCls}
-          >
-            <RetryIcon width={13} height={13} aria-hidden />
-            Refresh
+          <button type="button" onClick={() => focusNode(defaultSelected, true)} className={secondaryActionCls}>
+            Inspect execution
           </button>
+          <CopyButton
+            text={data.id}
+            label="Copy execution ID"
+            className="h-9 rounded-md border border-line px-3"
+          />
+          <button type="button" onClick={() => setReplayOpen(true)} className={primaryActionCls}>
+            <RetryIcon width={13} height={13} aria-hidden />
+            Simulate replay
+          </button>
+          {data.workflowHref ? (
+            <Link href={data.workflowHref} className={secondaryActionCls}>
+              Open workflow
+            </Link>
+          ) : (
+            <button
+              type="button"
+              disabled
+              title="No matching workflow exists in the local dataset."
+              className={`${secondaryActionCls} cursor-not-allowed opacity-50`}
+            >
+              Open workflow
+            </button>
+          )}
         </div>
       </div>
 
-      <div
-        role="tablist"
-        aria-label="Execution sections"
-        onKeyDown={onTabsKeyDown}
-        className="flex gap-1 border-b border-line/70"
-      >
-        {(
-          [
-            { id: "overview" as TabId, label: "Overview" },
-            { id: "logs" as TabId, label: `Logs (${logs.length})` },
-          ]
-        ).map((item) => {
-          const active = tab === item.id;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              role="tab"
-              id={`execution-tab-${item.id}`}
-              aria-selected={active}
-              aria-controls={`execution-panel-${item.id}`}
-              onClick={() => setTab(item.id)}
-              className={`-mb-px border-b-2 px-3.5 py-2.5 text-[13px] transition-colors ${
-                active
-                  ? "border-primary font-medium text-fg"
-                  : "border-transparent text-muted hover:text-fg"
-              }`}
-            >
-              {item.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {tab === "overview" ? (
-        <div
-          role="tabpanel"
-          id="execution-panel-overview"
-          aria-labelledby="execution-tab-overview"
-          className="space-y-4 lg:space-y-5"
-        >
-          {detail.status === "failed" && detail.errorStepName && (
-            <div className="rounded-lg border border-bad/30 bg-bad/[0.06] px-4 py-3.5">
-              <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-bad">
-                Failed at step
-              </p>
-              <p className="mt-1.5 font-mono text-[13px] text-fg">
-                {detail.errorStepName}
-              </p>
-              <p className="mt-1 break-words text-[13px] leading-relaxed text-bad/90">
-                {detail.errorMessage}
-              </p>
-              <p className="mt-2 text-[12px] leading-relaxed text-muted">
-                This is the error recorded by the step — select it in the
-                timeline below to inspect the full context.
-              </p>
-            </div>
-          )}
-
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <MetaCard label="Result">
-              <StatusBadge status={detail.status} />
-            </MetaCard>
-            <MetaCard label="Started">
-              <time dateTime={detail.startedAt} title={detail.startedAbsolute}>
-                {detail.startedLabel}
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <MetaCard label="Started">
+          <time dateTime={data.startedAt} title={data.startedAbsolute}>
+            {data.startedLabel}
+          </time>
+          <p className="mt-0.5 font-mono text-[11px] text-faint">{data.startedAbsolute}</p>
+        </MetaCard>
+        <MetaCard label="Finished">
+          {data.finishedAt ? (
+            <>
+              <time dateTime={data.finishedAt} title={data.finishedAbsolute ?? undefined}>
+                {data.finishedLabel}
               </time>
               <p className="mt-0.5 font-mono text-[11px] text-faint">
-                {detail.startedAbsolute}
+                {data.finishedAbsolute}
               </p>
-            </MetaCard>
-            <MetaCard label="Finished">
-              {detail.finishedAt ? (
-                <>
-                  <time dateTime={detail.finishedAt} title={detail.finishedAbsolute ?? undefined}>
-                    {detail.finishedLabel}
-                  </time>
-                  <p className="mt-0.5 font-mono text-[11px] text-faint">
-                    {detail.finishedAbsolute}
-                  </p>
-                </>
-              ) : (
-                <span className="text-muted">Not finished yet</span>
-              )}
-            </MetaCard>
-            <MetaCard label="Duration">
-              <span className="font-mono tabular-nums">{detail.durationLabel}</span>
-            </MetaCard>
-          </div>
+            </>
+          ) : (
+            <span className="text-muted">Not finished yet</span>
+          )}
+        </MetaCard>
+        <MetaCard label="Total duration">
+          <span className="font-mono tabular-nums">{data.durationLabel}</span>
+        </MetaCard>
+        <MetaCard label="Failed node">
+          {debug.failedNode ? (
+            <span className="flex items-center gap-2">
+              <span className="truncate text-bad">{debug.failedNode.name}</span>
+              <NodeStatusBadge status="failed" />
+            </span>
+          ) : (
+            <span className="text-muted">None</span>
+          )}
+        </MetaCard>
+      </div>
 
-          <div className="rounded-lg border border-line bg-surface/60 px-4 py-3.5">
-            <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-faint">
-              Steps
-            </p>
-            <p className="mt-2 text-[13.5px] text-fg">
-              <span className="font-mono tabular-nums">{stepsSucceeded}</span> of{" "}
-              <span className="font-mono tabular-nums">{detail.counts.total}</span>{" "}
-              succeeded
-              {detail.counts.failed > 0 && (
-                <>
-                  {" · "}
-                  <span className="font-mono tabular-nums text-bad">
-                    {detail.counts.failed}
-                  </span>{" "}
-                  failed
-                </>
-              )}
-              {detail.counts.running > 0 && (
-                <>
-                  {" · "}
-                  <span className="font-mono tabular-nums text-volt">
-                    {detail.counts.running}
-                  </span>{" "}
-                  running
-                </>
-              )}
-              {detail.counts.cancelled > 0 && (
-                <>
-                  {" · "}
-                  <span className="font-mono tabular-nums text-muted">
-                    {detail.counts.cancelled}
-                  </span>{" "}
-                  cancelled
-                </>
-              )}
-            </p>
-          </div>
-
-          <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <Panel
-              title="Timeline"
-              subtitle={`Execution order · ${formatCount(detail.counts.total)} steps`}
-              headingId="execution-timeline-heading"
-            >
-              <Timeline
-                steps={detail.steps}
-                selectedIndex={selectedStep}
-                onSelect={setSelectedStep}
-              />
-            </Panel>
-            <div className="self-start xl:sticky xl:top-4">
-              <Panel
-                title="Step inspector"
-                subtitle={step ? step.name : "No step selected"}
-                headingId="execution-inspector-heading"
-              >
-                <StepInspector step={step} />
-              </Panel>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div
-          role="tabpanel"
-          id="execution-panel-logs"
-          aria-labelledby="execution-tab-logs"
-        >
-          <Panel
-            title="Logs"
-            subtitle={`Sample log stream · ${formatCount(logs.length)} lines`}
-            headingId="execution-logs-heading"
-            bodyClassName="p-0"
+      {simulated && (
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-volt/40 bg-volt/[0.08] px-4 py-3">
+          <span className="rounded border border-volt/50 bg-volt/15 px-1.5 py-0.5 font-mono text-[9.5px] uppercase tracking-[0.1em] text-volt">
+            simulated
+          </span>
+          <p className="min-w-0 flex-1 text-[12.5px] leading-relaxed text-volt/90">
+            Simulated replay <span className="font-mono">{simulated.runId}</span> ·{" "}
+            {simulated.counts.success} succeeded, {simulated.counts.failed} failed,{" "}
+            {simulated.counts.skipped} skipped · {simulated.durationMs == null ? "—" : formatDuration(simulated.durationMs)}.
+            Demo only — no workflow was executed and no run was saved.
+          </p>
+          <button
+            type="button"
+            onClick={() => setSimulated(null)}
+            className="rounded-md border border-volt/40 px-2.5 py-1 text-[11.5px] text-volt transition-colors hover:bg-volt/10"
           >
-            <ExecutionLogsViewer logs={logs} />
-          </Panel>
+            Clear
+          </button>
         </div>
       )}
+
+      <ExecutionSummary
+        status={data.status}
+        counts={debug.counts}
+        durationMs={data.durationMs}
+        failedNode={debug.failedNode}
+        errorSummary={debug.errorSummary}
+      />
+
+      <Panel
+        title="Error inspector"
+        subtitle={
+          debug.failedNode
+            ? `Failed at ${debug.failedNode.name}`
+            : "No failures recorded"
+        }
+        headingId="execution-error-heading"
+      >
+        <ErrorPanel failedNode={debug.failedNode} />
+      </Panel>
+
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_400px]">
+        <div ref={graphRef} className="scroll-mt-4">
+          <Panel
+            title="Execution graph"
+            subtitle={`${debug.counts.total} nodes · select a node to inspect`}
+            headingId="execution-graph-heading"
+            bodyClassName="p-0"
+          >
+            <ExecutionGraph
+              graph={debug.graph}
+              statuses={statuses}
+              details={details}
+              selectedNodeId={selectedNodeId}
+              onSelectNode={(id) => setSelectedNodeId(id)}
+              focusNodeId={focus.id}
+              focusNonce={focus.nonce}
+              className="h-[440px]"
+            />
+          </Panel>
+        </div>
+
+        <Panel
+          title="Node inspector"
+          subtitle={selectedNode ? selectedNode.name : "No node selected"}
+          headingId="execution-node-heading"
+          className="xl:sticky xl:top-4"
+          bodyClassName="p-0"
+        >
+          <div className="h-[492px]">
+            <NodeInspector node={selectedNode} logs={nodeLogs} />
+          </div>
+        </Panel>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-2">
+        <Panel
+          title="Timeline"
+          subtitle={`Execution order · ${debug.nodes.length} nodes`}
+          headingId="execution-timeline-heading"
+        >
+          <ExecutionTimeline
+            nodes={debug.nodes}
+            selectedNodeId={selectedNodeId}
+            onSelect={(id) => focusNode(id)}
+          />
+        </Panel>
+
+        <Panel
+          title="Logs"
+          subtitle={`Sample log stream · ${logs.length} lines`}
+          headingId="execution-logs-heading"
+          bodyClassName="p-0"
+        >
+          <ExecutionLogsViewer logs={logs} nodeOptions={nodeOptions} />
+        </Panel>
+      </div>
+
+      <ReplayDialog
+        open={replayOpen}
+        onClose={() => setReplayOpen(false)}
+        onConfirm={confirmReplay}
+      />
+
+      <div className="flex items-center justify-between gap-3 pt-1">
+        <p className="text-[11.5px] text-faint">
+          Execution data is deterministic sample data — a placeholder until the
+          Runbolt API is connected.
+        </p>
+        <button
+          type="button"
+          onClick={() => router.refresh()}
+          className={secondaryActionCls}
+        >
+          <RetryIcon width={13} height={13} aria-hidden />
+          Refresh
+        </button>
+      </div>
     </div>
   );
 }

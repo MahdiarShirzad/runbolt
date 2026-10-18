@@ -29,12 +29,16 @@ export type WorkflowNodeType =
   | "schedule_trigger"
   | "api_trigger"
   | "http_request"
+  | "send_email"
+  | "send_notification"
   | "integration_action"
   | "action"
   | "data_mapping"
+  | "set_variables"
   | "filter"
   | "if_else"
   | "switch"
+  | "merge"
   | "loop"
   | "delay"
   | "log";
@@ -111,10 +115,10 @@ export interface NodeTypeDefinition {
 
 export const CATEGORY_LABELS: Record<WorkflowNodeCategory, string> = {
   trigger: "Triggers",
-  action: "Actions & Integrations",
-  integration: "Actions & Integrations",
+  action: "Actions",
+  integration: "Actions",
   transform: "Data Transformation",
-  condition: "Conditions & Control Flow",
+  condition: "Logic",
   utility: "Utilities",
 };
 
@@ -333,6 +337,73 @@ export const NODE_DEFINITIONS: Record<WorkflowNodeType, NodeTypeDefinition> = {
       retries: 2,
     },
   },
+  send_email: {
+    type: "send_email",
+    label: "Send Email",
+    category: "action",
+    description: "Send a transactional email through a connected provider.",
+    executable: true,
+    fields: [
+      {
+        key: "to",
+        label: "To",
+        type: "text",
+        placeholder: "customer@example.com",
+        required: true,
+      },
+      {
+        key: "subject",
+        label: "Subject",
+        type: "text",
+        placeholder: "Your order {{ steps.trigger.data.id }} is confirmed",
+        required: true,
+      },
+      {
+        key: "body",
+        label: "Message",
+        type: "textarea",
+        placeholder: "Thanks for your order!",
+      },
+      { key: "credentialId", label: "SMTP credential", type: "credential" },
+    ],
+    defaultConfig: { to: "", subject: "", body: "", credentialId: "" },
+  },
+  send_notification: {
+    type: "send_notification",
+    label: "Send Notification",
+    category: "action",
+    description: "Post a message to a channel such as Slack or email.",
+    executable: true,
+    fields: [
+      {
+        key: "channel",
+        label: "Channel",
+        type: "select",
+        options: [
+          { value: "email", label: "Email" },
+          { value: "slack", label: "Slack" },
+          { value: "teams", label: "Microsoft Teams" },
+          { value: "webhook", label: "Generic webhook" },
+        ],
+      },
+      {
+        key: "target",
+        label: "Destination",
+        type: "text",
+        placeholder: "#orders or ops@example.com",
+        required: true,
+      },
+      {
+        key: "message",
+        label: "Message",
+        type: "textarea",
+        placeholder: "Order {{ steps.trigger.data.id }} was fulfilled.",
+        required: true,
+      },
+      { key: "credentialId", label: "Credential", type: "credential" },
+    ],
+    defaultConfig: { channel: "email", target: "", message: "", credentialId: "" },
+  },
   integration_action: {
     type: "integration_action",
     label: "Integration action",
@@ -383,7 +454,7 @@ export const NODE_DEFINITIONS: Record<WorkflowNodeType, NodeTypeDefinition> = {
   },
   data_mapping: {
     type: "data_mapping",
-    label: "Data mapping",
+    label: "Transform Data",
     category: "transform",
     description: "Reshape data — rename, pick, or build a new payload.",
     executable: true,
@@ -407,9 +478,25 @@ export const NODE_DEFINITIONS: Record<WorkflowNodeType, NodeTypeDefinition> = {
     ],
     defaultConfig: { mode: "map", mappings: [] },
   },
+  set_variables: {
+    type: "set_variables",
+    label: "Set Variables",
+    category: "transform",
+    description: "Define reusable values that later steps can reference.",
+    executable: true,
+    fields: [
+      {
+        key: "variables",
+        label: "Variables",
+        type: "key_value",
+        help: "Left is the variable name, right is its value or expression.",
+      },
+    ],
+    defaultConfig: { variables: [] },
+  },
   filter: {
     type: "filter",
-    label: "Filter",
+    label: "Filter Data",
     category: "transform",
     description: "Continue only when a condition is met; otherwise stop the branch.",
     executable: true,
@@ -450,6 +537,26 @@ export const NODE_DEFINITIONS: Record<WorkflowNodeType, NodeTypeDefinition> = {
       },
     ],
     defaultConfig: { expression: "", cases: "case_a\ncase_b" },
+  },
+  merge: {
+    type: "merge",
+    label: "Merge",
+    category: "condition",
+    description: "Join two or more branches back into a single path.",
+    executable: true,
+    fields: [
+      {
+        key: "mode",
+        label: "Mode",
+        type: "select",
+        options: [
+          { value: "append", label: "Append payloads" },
+          { value: "combine", label: "Combine fields" },
+          { value: "wait_all", label: "Wait for all branches" },
+        ],
+      },
+    ],
+    defaultConfig: { mode: "append" },
   },
   loop: {
     type: "loop",

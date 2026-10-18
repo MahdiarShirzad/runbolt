@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { LegalArticle } from "@/components/legal/LegalArticle";
 import { legalDocs } from "@/content/legal/documents";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy — Runbolt",
+export const metadata = pageMetadata({
+  title: "Privacy Policy",
   description: legalDocs.privacy.description,
-};
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

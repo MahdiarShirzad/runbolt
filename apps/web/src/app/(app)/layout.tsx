@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/dashboard/shell/AppShell";
 import type { NotificationItem } from "@/components/dashboard/shell/NotificationsMenu";
@@ -6,6 +7,11 @@ import {
   getUser,
   notificationTimeLabel,
 } from "@/lib/dashboard/data";
+
+/** Authenticated app routes stay out of search indexes. */
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 /**
  * Authenticated application area. The demo auth flow has no server session

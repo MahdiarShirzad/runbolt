@@ -1,14 +1,16 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Suspense } from "react";
 import { MetricsSkeleton, WorkflowsListSkeleton } from "@/components/dashboard/Skeletons";
 import { WorkflowsHeader } from "@/components/dashboard/WorkflowsHeader";
 import { WorkflowsSection } from "@/components/dashboard/WorkflowsSection";
 import { WorkflowsStats } from "@/components/dashboard/WorkflowsStats";
 
-export const metadata: Metadata = {
-  title: "Workflows — Runbolt",
+export const metadata = pageMetadata({
+  title: "Workflows",
   description: "Create, manage, and monitor every workflow in your workspace.",
-};
+  path: "/workflows",
+  noIndex: true,
+});
 
 export const dynamic = "force-dynamic";
 

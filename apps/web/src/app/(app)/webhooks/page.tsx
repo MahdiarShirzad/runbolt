@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import { Suspense } from "react";
+import { pageMetadata } from "@/lib/seo";
 import {
   WebhooksBrowser,
   type WebhookEndpointRow,
@@ -15,10 +15,12 @@ import {
 } from "@/lib/dashboard/format";
 import { getWebhookDeliveries, getWebhookEndpoints } from "@/lib/dashboard/webhooks";
 
-export const metadata: Metadata = {
-  title: "Webhooks — Runbolt",
+export const metadata = pageMetadata({
+  title: "Webhooks",
   description: "Manage inbound webhook endpoints and deliveries.",
-};
+  path: "/webhooks",
+  noIndex: true,
+});
 
 export const dynamic = "force-dynamic";
 

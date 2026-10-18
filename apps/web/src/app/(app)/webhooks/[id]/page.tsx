@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { pageMetadata } from "@/lib/seo";
 import {
   WebhookDetailView,
   type WebhookDetailData,
@@ -22,15 +23,19 @@ export async function generateMetadata({
   const { id } = await params;
   const endpoint = await getWebhookEndpoint(id);
   if (!endpoint) {
-    return {
-      title: "Webhook — Runbolt",
+    return pageMetadata({
+      title: "Webhook",
       description: "Webhook endpoint details and delivery history.",
-    };
+      path: `/webhooks/${id}`,
+      noIndex: true,
+    });
   }
-  return {
-    title: `${endpoint.name} — Webhooks — Runbolt`,
+  return pageMetadata({
+    title: `${endpoint.name} — Webhooks`,
     description: endpoint.description,
-  };
+    path: `/webhooks/${id}`,
+    noIndex: true,
+  });
 }
 
 export const dynamic = "force-dynamic";

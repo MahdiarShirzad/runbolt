@@ -6,6 +6,7 @@ import {
 } from "@/lib/dashboard/format";
 import { getRecentExecutions } from "@/lib/dashboard/data";
 import { ExecutionsTable } from "./ExecutionsTable";
+import { summarizeExecutionSteps } from "./executions-view";
 import type { ExecutionRow, ExecutionStepRow } from "./executions-view";
 
 /** Server boundary: fetches runs, formats labels, hands view-models to the table. */
@@ -34,6 +35,7 @@ export async function ExecutionsSection({ limit = 10 }: { limit?: number }) {
       finishedAbsolute: execution.finishedAt ? formatAbsoluteTime(execution.finishedAt) : null,
       durationMs: execution.durationMs,
       durationLabel: formatDuration(execution.durationMs),
+      ...summarizeExecutionSteps(steps),
       steps,
     };
   });

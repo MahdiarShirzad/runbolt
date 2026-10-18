@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { CTASection } from "@/components/landing/CTASection";
@@ -6,11 +6,12 @@ import { CareersHero } from "@/components/careers/CareersHero";
 import { OpenRoles } from "@/components/careers/OpenRoles";
 import { HiringProcess } from "@/components/careers/HiringProcess";
 
-export const metadata: Metadata = {
-  title: "Careers — Runbolt",
+export const metadata = pageMetadata({
+  title: "Careers",
   description:
     "Join Runbolt: a small team building workflow execution infrastructure — execution engines, builders, and developer tooling.",
-};
+  path: "/careers",
+});
 
 export default function CareersPage() {
   return (

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { pageMetadata } from "@/lib/seo";
 import { docPages } from "@/content/docs/content";
 import { docMetas, getNeighbors } from "@/content/docs/registry";
 import { Breadcrumbs } from "@/components/docs/Breadcrumbs";
@@ -20,10 +21,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const doc = docPages[slug];
   if (!doc) return {};
-  return {
-    title: `${doc.meta.title} — Runbolt Docs`,
+  return pageMetadata({
+    title: `${doc.meta.title} — Docs`,
     description: doc.meta.description,
-  };
+    path: doc.meta.path,
+  });
 }
 
 export default async function DocPage({ params }: Props) {

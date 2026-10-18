@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/seo";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { Reveal } from "@/components/landing/Reveal";
@@ -7,11 +7,12 @@ import { Eyebrow } from "@/components/ui/kit";
 import { ArrowRightIcon } from "@/components/landing/icons";
 import { formatDate, posts } from "@/content/blog/posts";
 
-export const metadata: Metadata = {
-  title: "Blog — Runbolt",
+export const metadata = pageMetadata({
+  title: "Blog",
   description:
     "Notes from building Runbolt: execution engines, versioning, idempotency, and product decisions explained.",
-};
+  path: "/blog",
+});
 
 export default function BlogPage() {
   return (

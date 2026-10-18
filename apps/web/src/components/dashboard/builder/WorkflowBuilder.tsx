@@ -23,7 +23,13 @@ import {
   type Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { ArrowLeftIcon, BoltIcon, RetryIcon } from "@/components/landing/icons";
+import {
+  ArrowLeftIcon,
+  BoltIcon,
+  ChevronDownIcon,
+  NodeGraphIcon,
+  RetryIcon,
+} from "@/components/landing/icons";
 import {
   getSampleCredentials,
   loadLocalCredentials,
@@ -34,9 +40,19 @@ import {
   setMockGraphOverride,
   setMockStatusOverride,
   updateCreatedWorkflow,
+  type LocalWorkflowState,
 } from "@/lib/dashboard/local-workflows";
 import { hashString } from "@/lib/dashboard/random";
 import type { ExecutionStatus, TriggerType, WorkflowStatus } from "@/lib/dashboard/types";
+import { autoLayoutGraph } from "@/lib/dashboard/workflow-layout";
+import {
+  ORDER_FULFILLMENT_EXAMPLE,
+  orderFulfillmentGraph,
+} from "@/lib/dashboard/workflow-examples";
+import {
+  buildWorkflowDefinition,
+  serializeWorkflowDefinition,
+} from "@/lib/dashboard/workflow-definition";
 import {
   cloneGraph,
   createEdge,
@@ -60,9 +76,11 @@ import {
 import { defaultGraphFor, graphToStepList } from "@/lib/dashboard/workflow-source";
 import { WorkflowStatusBadge } from "../StatusBadge";
 import { primaryActionCls, secondaryActionCls } from "../actions";
+import { DefinitionPanel } from "./DefinitionPanel";
 import { ExecutionInspector, type InspectorRun, type InspectorStep } from "./ExecutionInspector";
 import { NodeConfigPanel, type CredentialOption } from "./NodeConfigPanel";
 import { NODE_DRAG_MIME, NodeLibrary } from "./NodeLibrary";
+import { ValidationBanner } from "./ValidationBanner";
 import { builderNodeTypes } from "./nodes";
 import {
   applyEdgeGraphChanges,
@@ -110,7 +128,7 @@ interface RunOverlay {
 
 type Notice = { kind: "success" | "error"; text: string } | null;
 type SaveState = "saved" | "saving" | "unsaved";
-type PanelTab = "config" | "runs";
+type PanelTab = "config" | "runs" | "definition";
 
 const MINIMAP_COLORS: Record<string, string> = {
   trigger: "#c7f04e",
@@ -127,6 +145,40 @@ function snapshotKey(name: string, description: string, graph: WorkflowGraph): s
 
 function firstMessage(issues: GraphIssue[]): string | null {
   return issues.find((issue) => issue.severity === "error")?.message ?? issues[0]?.message ?? null;
+}
+
+/**
+ * Resolves the best available draft for a workflow from the browser-local
+ * layer: the saved graph if any, else a graph migrated from the legacy step
+ * list, else a starter graph.
+ */
+function resolveDraft(workflow: BuilderWorkflow, state: LocalWorkflowState) {
+  const local =
+    findCreatedWorkflow(state, workflow.id) ?? findCreatedWorkflow(state, workflow.slug);
+  const override = state.graphOverrides[workflow.id];
+  const source = local
+    ? {
+        id: local.id,
+        slug: local.slug,
+        trigger: local.trigger,
+        triggerDetail: local.triggerDetail,
+        steps: local.steps,
+      }
+    : {
+        id: workflow.id,
+        slug: workflow.slug,
+        trigger: workflow.trigger,
+        triggerDetail: workflow.triggerDetail,
+        steps: workflow.steps,
+      };
+  return {
+    graph: local?.graph ?? override?.graph ?? defaultGraphFor(source),
+    name: local?.name ?? override?.name ?? workflow.name,
+    description: local?.description ?? override?.description ?? workflow.description,
+    version: local?.version ?? override?.version ?? workflow.version,
+    status: local?.status ?? state.statusOverrides[workflow.id] ?? workflow.status,
+    recordId: local?.id ?? workflow.id,
+  };
 }
 
 export function WorkflowBuilder(props: {
@@ -150,6 +202,7 @@ function BuilderInner({
   const router = useRouter();
   const reactFlow = useReactFlow<BuilderNode, BuilderEdge>();
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
 
   const [mounted, setMounted] = useState(false);
   const [graph, setGraph] = useState<WorkflowGraph>({ nodes: [], edges: [] });
@@ -178,44 +231,22 @@ function BuilderInner({
   const [busy, setBusy] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [credentials, setCredentials] = useState<CredentialOption[]>([]);
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
 
   /* ----- initial load from browser-local layer ----- */
   useEffect(() => {
     const load = () => {
-      const state = loadLocalState();
-      const local =
-        findCreatedWorkflow(state, workflow.id) ?? findCreatedWorkflow(state, workflow.slug);
-      const override = state.graphOverrides[workflow.id];
-      const source = local
-        ? {
-            id: local.id,
-            slug: local.slug,
-            trigger: local.trigger,
-            triggerDetail: local.triggerDetail,
-            steps: local.steps,
-          }
-        : {
-            id: workflow.id,
-            slug: workflow.slug,
-            trigger: workflow.trigger,
-            triggerDetail: workflow.triggerDetail,
-            steps: workflow.steps,
-          };
-      const initialGraph = local?.graph ?? override?.graph ?? defaultGraphFor(source);
-      const initialName = local?.name ?? override?.name ?? workflow.name;
-      const initialDescription =
-        local?.description ?? override?.description ?? workflow.description;
-      const initialVersion = local?.version ?? override?.version ?? workflow.version;
-      const initialStatus =
-        local?.status ?? state.statusOverrides[workflow.id] ?? workflow.status;
+      const draft = resolveDraft(workflow, loadLocalState());
 
-      setGraph(initialGraph);
-      setName(initialName);
-      setDescription(initialDescription);
-      setVersion(initialVersion);
-      setStatus(initialStatus);
-      setRecordId(local?.id ?? workflow.id);
-      setSavedSnapshot(snapshotKey(initialName, initialDescription, initialGraph));
+      setGraph(draft.graph);
+      setName(draft.name);
+      setDescription(draft.description);
+      setVersion(draft.version);
+      setStatus(draft.status);
+      setRecordId(draft.recordId);
+      setSavedSnapshot(snapshotKey(draft.name, draft.description, draft.graph));
       setMounted(true);
     };
     load();
@@ -293,6 +324,14 @@ function BuilderInner({
     [graph, selectedNodeId],
   );
 
+  const definitionJson = useMemo(
+    () =>
+      serializeWorkflowDefinition(
+        buildWorkflowDefinition({ name, description, status, graph }),
+      ),
+    [name, description, status, graph],
+  );
+
   const notify = useCallback((kind: "success" | "error", text: string) => {
     setNotice({ kind, text });
   }, []);
@@ -302,6 +341,25 @@ function BuilderInner({
     const timer = setTimeout(() => setNotice(null), 5000);
     return () => clearTimeout(timer);
   }, [notice]);
+
+  // Dismiss the actions menu on outside click or Escape.
+  useEffect(() => {
+    if (!actionsOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!actionsRef.current?.contains(event.target as globalThis.Node)) {
+        setActionsOpen(false);
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActionsOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [actionsOpen]);
 
   const pushHistory = useCallback(() => {
     setPast((previous) => [...previous.slice(-49), cloneGraph(graphRef.current)]);
@@ -718,9 +776,62 @@ function BuilderInner({
       reactFlow.fitView({ nodes: [{ id: nodeId }], duration: 400, maxZoom: 1.2, padding: 0.8 });
       setSelectedNodeId(nodeId);
       setSelectedEdgeId(null);
+      setPanelTab("config");
+      setInspectorOpen(true);
     },
     [reactFlow],
   );
+
+  const fitGraph = useCallback(() => {
+    reactFlow.fitView({ duration: 400, padding: 0.2 });
+  }, [reactFlow]);
+
+  const autoArrange = useCallback(() => {
+    pushHistory();
+    setGraph(autoLayoutGraph(graphRef.current));
+    window.setTimeout(() => reactFlow.fitView({ duration: 400, padding: 0.2 }), 60);
+    notify("success", "Nodes arranged automatically.");
+  }, [pushHistory, reactFlow, notify]);
+
+  const loadExample = useCallback(() => {
+    pushHistory();
+    setGraph(orderFulfillmentGraph());
+    if (!name.trim() || name === ORDER_FULFILLMENT_EXAMPLE.name) {
+      setName(ORDER_FULFILLMENT_EXAMPLE.name);
+      setDescription(ORDER_FULFILLMENT_EXAMPLE.description);
+    }
+    setSelectedNodeId(null);
+    setSelectedEdgeId(null);
+    setOverlay(null);
+    window.setTimeout(() => reactFlow.fitView({ duration: 400, padding: 0.2 }), 60);
+    notify("success", "Loaded the Order Fulfillment demo graph — sample data only.");
+  }, [pushHistory, reactFlow, notify, name]);
+
+  const discardDraft = useCallback(() => {
+    const draft = resolveDraft(workflow, loadLocalState());
+    pushHistory();
+    setGraph(draft.graph);
+    setName(draft.name);
+    setDescription(draft.description);
+    setVersion(draft.version);
+    setStatus(draft.status);
+    setSelectedNodeId(null);
+    setSelectedEdgeId(null);
+    setOverlay(null);
+    window.setTimeout(() => reactFlow.fitView({ duration: 400, padding: 0.2 }), 60);
+    notify("success", "Reverted to the last saved draft.");
+  }, [workflow, pushHistory, reactFlow, notify]);
+
+  const copyDefinition = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(definitionJson);
+      notify("success", "Workflow definition copied to the clipboard.");
+    } catch {
+      setPanelTab("definition");
+      setInspectorOpen(true);
+      notify("error", "Clipboard unavailable — showing the definition instead.");
+    }
+  }, [definitionJson, notify]);
 
   /* ----- unsaved-changes guard + shortcuts ----- */
   useEffect(() => {
@@ -816,6 +927,77 @@ function BuilderInner({
 
   const showEmptyHint = graph.nodes.length <= 1;
 
+  const renderInspector = (withClose: boolean) => (
+    <>
+      <div className="flex items-center border-b border-line/70">
+        <div className="flex flex-1" role="tablist" aria-label="Editor panels">
+          {(
+            [
+              { id: "config" as PanelTab, label: "Configure" },
+              { id: "runs" as PanelTab, label: "Runs" },
+              { id: "definition" as PanelTab, label: "Definition" },
+            ] as const
+          ).map((tab) => {
+            const active = panelTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setPanelTab(tab.id)}
+                className={`-mb-px flex-1 border-b-2 px-3 py-2.5 text-[12.5px] transition-colors ${
+                  active ? "border-primary font-medium text-fg" : "border-transparent text-muted hover:text-fg"
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+        {withClose && (
+          <button
+            type="button"
+            onClick={() => setInspectorOpen(false)}
+            aria-label="Close editor panel"
+            className="px-3 py-2.5 font-mono text-[11px] uppercase tracking-[0.1em] text-faint transition-colors hover:text-fg"
+          >
+            Close
+          </button>
+        )}
+      </div>
+      <div className="min-h-0 flex-1">
+        {panelTab === "config" && (
+          <NodeConfigPanel
+            node={selectedNode}
+            issues={selectedNodeId ? nodeIssuesById.get(selectedNodeId) ?? [] : []}
+            credentials={credentials}
+            onChange={updateSelectedNode}
+            onConfigChange={updateSelectedConfig}
+            onDelete={deleteSelected}
+            onDuplicate={duplicateSelected}
+            onClose={() => {
+              setSelectedNodeId(null);
+              if (withClose) setInspectorOpen(false);
+            }}
+          />
+        )}
+        {panelTab === "runs" && (
+          <ExecutionInspector
+            runs={inspectorRuns}
+            selectedRunId={overlay?.runId ?? null}
+            selectedSteps={overlay?.steps ?? null}
+            onSelectRun={selectRun}
+            onClearRun={clearOverlay}
+            onFocusNode={focusNode}
+            busy={busy}
+          />
+        )}
+        {panelTab === "definition" && <DefinitionPanel json={definitionJson} />}
+      </div>
+    </>
+  );
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-ink text-fg">
       {/* Header */}
@@ -851,6 +1033,12 @@ function BuilderInner({
         <div className="flex flex-wrap items-center gap-2">
           <WorkflowStatusBadge status={status} />
           <SaveStateBadge state={effectiveSaveState} />
+          <span
+            title="Edits are stored in this browser — the Runbolt API is not connected."
+            className="rounded border border-line bg-ink px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-faint"
+          >
+            local draft
+          </span>
           {!validation.runnable && (
             <span
               title={firstMessage(validation.issues) ?? undefined}
@@ -867,6 +1055,14 @@ function BuilderInner({
               <RetryIcon width={13} height={13} aria-hidden />
             </IconButton>
           </div>
+          <button
+            type="button"
+            onClick={fitGraph}
+            title="Fit graph to view"
+            className={`${secondaryActionCls} hidden sm:inline-flex`}
+          >
+            Fit
+          </button>
           <button type="button" onClick={runTest} disabled={busy} className={secondaryActionCls}>
             <BoltIcon width={12} height={12} aria-hidden />
             {busy ? "Running…" : "Test run"}
@@ -877,8 +1073,105 @@ function BuilderInner({
           <button type="button" onClick={() => save()} className={primaryActionCls}>
             Save
           </button>
+
+          <button
+            type="button"
+            onClick={() => setLibraryOpen(true)}
+            aria-label="Open node library"
+            className={`${secondaryActionCls} md:hidden`}
+          >
+            <NodeGraphIcon width={13} height={13} aria-hidden />
+            Nodes
+          </button>
+          <button
+            type="button"
+            onClick={() => setInspectorOpen(true)}
+            aria-label="Open editor panel"
+            className={`${secondaryActionCls} lg:hidden`}
+          >
+            Panel
+          </button>
+
+          <div ref={actionsRef} className="relative">
+            <button
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={actionsOpen}
+              onClick={() => setActionsOpen((value) => !value)}
+              className={secondaryActionCls}
+            >
+              Actions
+              <ChevronDownIcon
+                width={12}
+                height={12}
+                aria-hidden
+                className={`transition-transform ${actionsOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            {actionsOpen && (
+              <div
+                role="menu"
+                aria-label="Editor actions"
+                className="absolute right-0 z-40 mt-1 w-60 overflow-hidden rounded-md border border-line bg-surface py-1 shadow-2xl shadow-overlay/40"
+              >
+                <MenuItem
+                  onClick={() => {
+                    setActionsOpen(false);
+                    autoArrange();
+                  }}
+                >
+                  Auto arrange
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setActionsOpen(false);
+                    fitGraph();
+                  }}
+                >
+                  Fit to view
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setActionsOpen(false);
+                    loadExample();
+                  }}
+                >
+                  Reset to example
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setActionsOpen(false);
+                    copyDefinition();
+                  }}
+                >
+                  Copy definition JSON
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setActionsOpen(false);
+                    setPanelTab("definition");
+                    setInspectorOpen(true);
+                  }}
+                >
+                  Show definition
+                </MenuItem>
+                <div className="my-1 border-t border-line/60" />
+                <MenuItem
+                  danger
+                  onClick={() => {
+                    setActionsOpen(false);
+                    discardDraft();
+                  }}
+                >
+                  Discard changes
+                </MenuItem>
+              </div>
+            )}
+          </div>
         </div>
       </header>
+
+      <ValidationBanner issues={validation.issues} onFocusNode={focusNode} />
 
       {notice && (
         <p
@@ -935,66 +1228,68 @@ function BuilderInner({
               <div className="pointer-events-auto max-w-sm rounded-lg border border-line bg-surface/90 p-5 text-center shadow-xl shadow-overlay/40">
                 <p className="text-[13.5px] font-medium text-fg">Build your workflow</p>
                 <p className="mt-1.5 text-[12.5px] leading-relaxed text-muted">
-                  Drag nodes from the library on the left onto the canvas, or click one to add it.
-                  Connect output handles to the next node&apos;s input to define the run order.
+                  Drag nodes from the library onto the canvas, or click one to add it. Connect an
+                  output handle to the next node&apos;s input to define the run order.
                 </p>
+                <button
+                  type="button"
+                  onClick={loadExample}
+                  className={`${secondaryActionCls} mt-3.5`}
+                >
+                  Load the Order Fulfillment example
+                </button>
               </div>
             </div>
           )}
         </div>
 
         <aside className="hidden w-[336px] shrink-0 border-l border-line/70 bg-surface/40 lg:flex lg:flex-col">
-          <div className="flex border-b border-line/70" role="tablist" aria-label="Editor panels">
-            {(
-              [
-                { id: "config" as PanelTab, label: "Configure" },
-                { id: "runs" as PanelTab, label: "Runs" },
-              ]
-            ).map((tab) => {
-              const active = panelTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => setPanelTab(tab.id)}
-                  className={`-mb-px flex-1 border-b-2 px-3 py-2.5 text-[12.5px] transition-colors ${
-                    active
-                      ? "border-primary font-medium text-fg"
-                      : "border-transparent text-muted hover:text-fg"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
-          <div className="min-h-0 flex-1">
-            {panelTab === "config" ? (
-              <NodeConfigPanel
-                node={selectedNode}
-                issues={selectedNodeId ? nodeIssuesById.get(selectedNodeId) ?? [] : []}
-                credentials={credentials}
-                onChange={updateSelectedNode}
-                onConfigChange={updateSelectedConfig}
-                onDelete={deleteSelected}
-                onDuplicate={duplicateSelected}
-                onClose={() => setSelectedNodeId(null)}
-              />
-            ) : (
-              <ExecutionInspector
-                runs={inspectorRuns}
-                selectedRunId={overlay?.runId ?? null}
-                selectedSteps={overlay?.steps ?? null}
-                onSelectRun={selectRun}
-                onClearRun={clearOverlay}
-                onFocusNode={focusNode}
-                busy={busy}
-              />
-            )}
-          </div>
+          {renderInspector(false)}
         </aside>
+
+        {libraryOpen && (
+          <div className="fixed inset-0 z-50 md:hidden">
+            <div
+              className="absolute inset-0 bg-overlay/60 backdrop-blur-sm"
+              onClick={() => setLibraryOpen(false)}
+              aria-hidden
+            />
+            <div className="absolute inset-y-0 left-0 flex w-[min(18rem,85vw)] flex-col border-r border-line bg-surface">
+              <div className="flex items-center justify-between border-b border-line/70 px-3 py-2.5">
+                <p className="text-[13px] font-medium text-fg">Node library</p>
+                <button
+                  type="button"
+                  onClick={() => setLibraryOpen(false)}
+                  className="font-mono text-[11px] uppercase tracking-[0.1em] text-faint transition-colors hover:text-fg"
+                >
+                  Close
+                </button>
+              </div>
+              <div className="min-h-0 flex-1">
+                <NodeLibrary
+                  onAdd={(type) => {
+                    addNodeAt(type);
+                    setLibraryOpen(false);
+                  }}
+                  onDragStart={onDragStart}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {inspectorOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden">
+            <div
+              className="absolute inset-0 bg-overlay/60 backdrop-blur-sm"
+              onClick={() => setInspectorOpen(false)}
+              aria-hidden
+            />
+            <div className="absolute inset-y-0 right-0 flex w-[min(22rem,92vw)] flex-col border-l border-line bg-surface">
+              {renderInspector(true)}
+            </div>
+          </div>
+        )}
       </div>
 
       {confirmLeave && (
@@ -1076,6 +1371,31 @@ function IconButton({
       aria-label={label}
       title={label}
       className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-line bg-surface text-muted transition-colors hover:border-line-strong hover:text-fg disabled:cursor-not-allowed disabled:opacity-40"
+    >
+      {children}
+    </button>
+  );
+}
+
+function MenuItem({
+  onClick,
+  danger,
+  children,
+}: {
+  onClick: () => void;
+  danger?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      role="menuitem"
+      onClick={onClick}
+      className={`flex w-full items-center px-3 py-2 text-left text-[13px] transition-colors ${
+        danger
+          ? "text-bad hover:bg-bad/10"
+          : "text-muted hover:bg-hover hover:text-fg"
+      }`}
     >
       {children}
     </button>

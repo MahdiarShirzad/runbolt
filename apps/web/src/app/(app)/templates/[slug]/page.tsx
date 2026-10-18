@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { pageMetadata } from "@/lib/seo";
 import { TemplateDetailView } from "@/components/dashboard/TemplateDetailView";
 import { getWorkflows } from "@/lib/dashboard/data";
 import { getTemplate } from "@/lib/dashboard/templates";
@@ -14,15 +15,19 @@ export async function generateMetadata({
   const { slug } = await params;
   const template = getTemplate(slug);
   if (!template) {
-    return {
-      title: "Template — Runbolt",
+    return pageMetadata({
+      title: "Template",
       description: "Workflow template details.",
-    };
+      path: `/templates/${slug}`,
+      noIndex: true,
+    });
   }
-  return {
-    title: `${template.name} — Templates — Runbolt`,
+  return pageMetadata({
+    title: `${template.name} — Templates`,
     description: template.description,
-  };
+    path: `/templates/${slug}`,
+    noIndex: true,
+  });
 }
 
 export const dynamic = "force-dynamic";

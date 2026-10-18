@@ -1,11 +1,13 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { VerifyEmailPanel } from "@/components/auth/VerifyEmailPanel";
 
-export const metadata: Metadata = {
-  title: "Verify email — Runbolt",
+export const metadata = pageMetadata({
+  title: "Verify email",
   description: "Verify your email address to activate your Runbolt account.",
-};
+  path: "/verify-email",
+  noIndex: true,
+});
 
 export default function VerifyEmailPage() {
   return (

@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/seo";
 import { openSearch } from "@/components/docs/events";
 import {
   CodeIcon,
@@ -12,11 +12,12 @@ import {
   WorkerIcon,
 } from "@/components/landing/icons";
 
-export const metadata: Metadata = {
-  title: "Documentation — Runbolt",
+export const metadata = pageMetadata({
+  title: "Documentation",
   description:
     "Everything you need to build, automate, execute, and observe reliable workflows with Runbolt.",
-};
+  path: "/docs",
+});
 
 const categories = [
   {

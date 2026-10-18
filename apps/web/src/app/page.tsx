@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { Features } from "@/components/landing/Features";
@@ -6,6 +7,9 @@ import { DeveloperExperience } from "@/components/landing/DeveloperExperience";
 import { ExecutionPipeline } from "@/components/landing/ExecutionPipeline";
 import { CTASection } from "@/components/landing/CTASection";
 import { Footer } from "@/components/landing/Footer";
+
+/** Root route — title and description come from the root layout. */
+export const metadata = pageMetadata({ path: "/" });
 
 export default function Home() {
   return (

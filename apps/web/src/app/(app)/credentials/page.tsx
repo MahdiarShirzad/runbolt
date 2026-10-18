@@ -1,15 +1,17 @@
-import type { Metadata } from "next";
 import { Suspense } from "react";
+import { pageMetadata } from "@/lib/seo";
 import { CredentialsView } from "@/components/dashboard/CredentialsView";
 import { CredentialsPageSkeleton } from "@/components/dashboard/Skeletons";
 import { currentTimestamp } from "@/lib/dashboard/format";
 import { getSampleCredentials } from "@/lib/dashboard/credentials";
 import type { CredentialType } from "@/lib/dashboard/credentials";
 
-export const metadata: Metadata = {
-  title: "Credentials — Runbolt",
+export const metadata = pageMetadata({
+  title: "Credentials",
   description: "Manage credentials workflows reference instead of inlining secrets.",
-};
+  path: "/credentials",
+  noIndex: true,
+});
 
 export const dynamic = "force-dynamic";
 

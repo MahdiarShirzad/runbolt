@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { CTASection } from "@/components/landing/CTASection";
@@ -10,11 +10,12 @@ import { CodeShowcase } from "@/components/features/CodeShowcase";
 import { NodeEcosystem } from "@/components/features/NodeEcosystem";
 import { ReliabilitySection } from "@/components/features/ReliabilitySection";
 
-export const metadata: Metadata = {
-  title: "Features — Runbolt",
+export const metadata = pageMetadata({
+  title: "Features",
   description:
     "Everything Runbolt can do: visual workflow builder, real-time execution, background workers, observability, integrations, and a developer-first API.",
-};
+  path: "/features",
+});
 
 export default function FeaturesPage() {
   return (

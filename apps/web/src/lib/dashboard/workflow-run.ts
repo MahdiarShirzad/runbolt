@@ -1,6 +1,7 @@
 import { hashString, mulberry32 } from "./random";
 import type { Execution, ExecutionStatus } from "./types";
 import {
+  configKeyValues,
   configString,
   findTriggerNodes,
   getOutputHandles,
@@ -27,7 +28,11 @@ import {
  * paths that are not taken.
  */
 
-export type GraphRunStatus = ExecutionStatus | "skipped";
+export type GraphRunStatus =
+  | ExecutionStatus
+  | "skipped"
+  /** Reachable but never executed — the branch or run never got this far. */
+  | "pending";
 
 export interface GraphNodeRun {
   nodeId: string;
@@ -161,10 +166,18 @@ function sampleOutput(node: WorkflowNode, durationMs: number): unknown {
         url: configString(node, "url"),
         body: {},
       };
+    case "send_email":
+      return { sent: true, to: configString(node, "to") };
+    case "send_notification":
+      return { delivered: true, channel: configString(node, "channel") };
     case "integration_action":
       return { ok: true, operation: configString(node, "operation") };
     case "data_mapping":
       return { mapped: true };
+    case "set_variables":
+      return { variables: configKeyValues(node, "variables").length };
+    case "merge":
+      return { merged: true, mode: configString(node, "mode") };
     case "filter":
     case "if_else":
       return { evaluated: true };

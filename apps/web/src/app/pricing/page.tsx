@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { CTASection } from "@/components/landing/CTASection";
@@ -8,11 +8,12 @@ import { ComparisonTable } from "@/components/pricing/ComparisonTable";
 import { UsagePrinciples } from "@/components/pricing/UsagePrinciples";
 import { FAQ } from "@/components/pricing/FAQ";
 
-export const metadata: Metadata = {
-  title: "Pricing — Runbolt",
+export const metadata = pageMetadata({
+  title: "Pricing",
   description:
     "Simple, transparent pricing for Runbolt. Start free, upgrade to Team for production workflows, or talk to us about Enterprise.",
-};
+  path: "/pricing",
+});
 
 export default function PricingPage() {
   return (

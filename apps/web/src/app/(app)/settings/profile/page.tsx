@@ -1,10 +1,12 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { SettingsRoute } from "@/components/dashboard/SettingsRoute";
 
-export const metadata: Metadata = {
-  title: "Profile — Runbolt",
+export const metadata = pageMetadata({
+  title: "Profile",
   description: "Manage your account and workspace settings.",
-};
+  path: "/settings/profile",
+  noIndex: true,
+});
 
 export const dynamic = "force-dynamic";
 

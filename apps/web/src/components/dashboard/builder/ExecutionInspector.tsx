@@ -29,6 +29,7 @@ const dotCls: Record<GraphRunStatus, string> = {
   queued: "bg-state-queued",
   cancelled: "bg-state-cancelled",
   skipped: "bg-state-skipped",
+  pending: "bg-state-idle",
 };
 
 const stepLabel: Record<GraphRunStatus, string> = {
@@ -38,6 +39,7 @@ const stepLabel: Record<GraphRunStatus, string> = {
   queued: "Queued",
   cancelled: "Cancelled",
   skipped: "Skipped",
+  pending: "Not executed",
 };
 
 export function ExecutionInspector({

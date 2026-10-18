@@ -3,6 +3,7 @@ import type {
   LogLevel,
   TriggerType,
 } from "@/lib/dashboard/types";
+import type { ExecutionDebug } from "@/lib/dashboard/execution-debug";
 
 /** sessionStorage key holding the last `/executions` query string. */
 export const EXECUTIONS_LIST_QUERY_KEY = "runbolt.executions.list-query";
@@ -37,7 +38,26 @@ export interface ExecutionRow {
   durationLabel: string;
   /** Failure detail surfaced from the failing step, when the run failed. */
   errorMessage?: string | null;
+  /** Number of nodes that succeeded within this run. */
+  successCount: number;
+  /** Number of nodes that failed within this run. */
+  failedCount: number;
+  /** Total nodes recorded for this run. */
+  nodeCount: number;
   steps: ExecutionStepRow[];
+}
+
+/** Roll up a run's steps into the node counts shown in the history table. */
+export function summarizeExecutionSteps(
+  steps: readonly { status: ExecutionStatus }[],
+): Pick<ExecutionRow, "successCount" | "failedCount" | "nodeCount"> {
+  let successCount = 0;
+  let failedCount = 0;
+  for (const step of steps) {
+    if (step.status === "success") successCount += 1;
+    else if (step.status === "failed") failedCount += 1;
+  }
+  return { successCount, failedCount, nodeCount: steps.length };
 }
 
 export interface ExecutionWorkflowOption {
@@ -45,10 +65,16 @@ export interface ExecutionWorkflowOption {
   name: string;
 }
 
+export interface ExecutionTriggerOption {
+  value: TriggerType;
+  label: string;
+}
+
 export interface ExecutionListState {
   range: "24h" | "7d" | "30d";
   status: ExecutionStatus | "all";
   workflowId: string;
+  trigger: TriggerType | "all";
   q: string;
   sort: "started" | "duration";
   page: number;
@@ -62,6 +88,30 @@ export interface ExecutionLogRow {
   level: LogLevel;
   source: string;
   message: string;
+  /** Graph node the line belongs to, when known. */
+  nodeId?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/** Header + graph + node-run data the debugger needs for one execution. */
+export interface ExecutionDebugData {
+  id: string;
+  workflowId: string;
+  workflowName: string;
+  status: ExecutionStatus;
+  trigger: TriggerType;
+  startedAt: string;
+  startedLabel: string;
+  startedAbsolute: string;
+  finishedAt: string | null;
+  finishedLabel: string | null;
+  finishedAbsolute: string | null;
+  durationMs: number | null;
+  durationLabel: string;
+  attempt: number;
+  /** Editor route for the matching workflow, or null when none exists. */
+  workflowHref: string | null;
+  debug: ExecutionDebug;
 }
 
 export interface ExecutionStepDetailRow {

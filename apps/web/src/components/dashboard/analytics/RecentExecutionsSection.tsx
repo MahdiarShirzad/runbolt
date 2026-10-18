@@ -8,7 +8,7 @@ import type { TimeRange } from "@/lib/dashboard/types";
 import { getAnalyticsEvents, HOUR_MS } from "@/lib/dashboard/analytics/dataset";
 import { eventToExecution } from "@/lib/dashboard/analytics/execution";
 import type { ExecutionRow } from "../executions-view";
-import { EXECUTION_RANGE_MS } from "../executions-view";
+import { EXECUTION_RANGE_MS, summarizeExecutionSteps } from "../executions-view";
 import { RecentExecutionsTable } from "./RecentExecutionsTable";
 
 /**
@@ -30,6 +30,12 @@ export function RecentExecutionsSection({
     .slice(0, limit)
     .map((event) => {
       const execution = eventToExecution(event);
+      const steps = execution.steps.map((step) => ({
+        name: step.name,
+        status: step.status,
+        durationLabel: formatDuration(step.durationMs),
+        detail: step.detail,
+      }));
       return {
         id: execution.id,
         workflowId: execution.workflowId,
@@ -49,12 +55,8 @@ export function RecentExecutionsSection({
         durationMs: execution.durationMs,
         durationLabel: formatDuration(execution.durationMs),
         errorMessage: event.errorCategory,
-        steps: execution.steps.map((step) => ({
-          name: step.name,
-          status: step.status,
-          durationLabel: formatDuration(step.durationMs),
-          detail: step.detail,
-        })),
+        ...summarizeExecutionSteps(steps),
+        steps,
       };
     });
 

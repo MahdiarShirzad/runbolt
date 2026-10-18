@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { LegalArticle } from "@/components/legal/LegalArticle";
 import { legalDocs } from "@/content/legal/documents";
 
-export const metadata: Metadata = {
-  title: "Terms of Service — Runbolt",
+export const metadata = pageMetadata({
+  title: "Terms of Service",
   description: legalDocs.terms.description,
-};
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

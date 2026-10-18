@@ -6,10 +6,11 @@ import {
   BoltIcon,
   ClockIcon,
   CodeIcon,
-  DbIcon,
   FilterIcon,
   GlobeIcon,
+  MailIcon,
   NodeGraphIcon,
+  PulseIcon,
   RetryIcon,
   ShuffleIcon,
   WebhookIcon,
@@ -33,18 +34,20 @@ const NODE_ICONS: Record<WorkflowNodeType, Icon> = {
   schedule_trigger: ClockIcon,
   api_trigger: GlobeIcon,
   http_request: GlobeIcon,
+  send_email: MailIcon,
+  send_notification: PulseIcon,
   integration_action: ZapIcon,
   action: NodeGraphIcon,
   data_mapping: ShuffleIcon,
+  set_variables: CodeIcon,
   filter: FilterIcon,
   if_else: FilterIcon,
   switch: ShuffleIcon,
+  merge: ShuffleIcon,
   loop: RetryIcon,
   delay: ClockIcon,
   log: CodeIcon,
 };
-
-void DbIcon;
 
 const STATUS_LABELS: Record<GraphRunStatus, { label: string; cls: string }> = {
   success: { label: "Succeeded", cls: "text-ok" },
@@ -53,6 +56,7 @@ const STATUS_LABELS: Record<GraphRunStatus, { label: string; cls: string }> = {
   queued: { label: "Queued", cls: "text-muted" },
   cancelled: { label: "Cancelled", cls: "text-muted" },
   skipped: { label: "Skipped", cls: "text-faint" },
+  pending: { label: "Not executed", cls: "text-faint" },
 };
 
 function statusBorder(status: GraphRunStatus | undefined): string {
@@ -65,6 +69,8 @@ function statusBorder(status: GraphRunStatus | undefined): string {
       return "border-ok/50";
     case "skipped":
       return "border-line opacity-60";
+    case "pending":
+      return "border-dashed border-line/70 opacity-50";
     default:
       return "";
   }
@@ -82,6 +88,16 @@ function summaryFor(node: BuilderNode["data"]["node"]): string {
       const op = configString(node, "operation");
       return op ? `${slug} · ${op}` : `${slug} — set an operation`;
     }
+    case "send_email":
+      return configString(node, "to") || "Set a recipient";
+    case "send_notification":
+      return configString(node, "target") || "Set a destination";
+    case "set_variables": {
+      const count = Array.isArray(node.config.variables) ? node.config.variables.length : 0;
+      return count > 0 ? `${count} variable${count === 1 ? "" : "s"}` : "Define variables";
+    }
+    case "merge":
+      return "Joins branches";
     case "webhook_trigger":
       return configString(node, "path") || "Set an endpoint path";
     case "schedule_trigger":
@@ -107,7 +123,7 @@ function summaryFor(node: BuilderNode["data"]["node"]): string {
 }
 
 export function BuilderNodeCard({ data, selected }: NodeProps<BuilderNode>) {
-  const { node, label, category, runStatus, hasIssue, executable, isTrigger } = data;
+  const { node, label, category, runStatus, runDetail, hasIssue, executable, isTrigger } = data;
   const styles = CATEGORY_STYLES[category];
   const Icon = NODE_ICONS[node.type] ?? NodeGraphIcon;
   const outputHandles = getOutputHandles(node);
@@ -142,8 +158,11 @@ export function BuilderNodeCard({ data, selected }: NodeProps<BuilderNode>) {
           <p className="truncate text-[13px] font-medium text-fg" title={label}>
             {label}
           </p>
-          <p className="mt-0.5 truncate font-mono text-[10.5px] text-faint" title={summaryFor(node)}>
-            {summaryFor(node)}
+          <p
+            className="mt-0.5 truncate font-mono text-[10.5px] text-faint"
+            title={runDetail ?? summaryFor(node)}
+          >
+            {runDetail ?? summaryFor(node)}
           </p>
         </div>
       </div>

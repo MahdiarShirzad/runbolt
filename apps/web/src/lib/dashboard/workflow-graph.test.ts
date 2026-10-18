@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  ALL_NODE_TYPES,
+  NODE_DEFINITIONS,
   createEdge,
   createNode,
   createStarterGraph,
@@ -14,7 +16,7 @@ import {
   validateGraph,
   wouldCreateCycle,
 } from "./workflow-graph";
-import type { WorkflowGraph } from "./workflow-graph";
+import type { WorkflowGraph, WorkflowNodeCategory, WorkflowNodeType } from "./workflow-graph";
 
 function manualGraph(): { graph: WorkflowGraph; triggerId: string; logId: string } {
   resetIdCounter();
@@ -201,5 +203,39 @@ describe("id generation", () => {
     const first = createNode("log", { x: 0, y: 0 }, { existing: [] });
     const second = createNode("log", { x: 0, y: 0 }, { existing: [first.id] });
     expect(first.id).not.toBe(second.id);
+  });
+});
+
+describe("node catalog", () => {
+  it("exposes the prototype node types in their categories", () => {
+    const expected: Partial<Record<WorkflowNodeType, WorkflowNodeCategory>> = {
+      manual_trigger: "trigger",
+      webhook_trigger: "trigger",
+      schedule_trigger: "trigger",
+      http_request: "integration",
+      send_email: "action",
+      send_notification: "action",
+      data_mapping: "transform",
+      set_variables: "transform",
+      filter: "transform",
+      if_else: "condition",
+      switch: "condition",
+      merge: "condition",
+      delay: "utility",
+      log: "utility",
+    };
+    for (const [type, category] of Object.entries(expected)) {
+      expect(NODE_DEFINITIONS[type as WorkflowNodeType]?.category).toBe(category);
+      expect(ALL_NODE_TYPES).toContain(type);
+    }
+  });
+
+  it("gives every node a label, description, and default config", () => {
+    for (const type of ALL_NODE_TYPES) {
+      const definition = NODE_DEFINITIONS[type];
+      expect(definition.label.length).toBeGreaterThan(0);
+      expect(definition.description.length).toBeGreaterThan(0);
+      expect(definition.defaultConfig).toBeTypeOf("object");
+    }
   });
 });

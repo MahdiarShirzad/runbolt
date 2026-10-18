@@ -27,20 +27,29 @@ function formatLogLine(row: ExecutionLogRow): string {
   return `${row.clockLabel} [${row.level}] ${row.source}: ${row.message}`;
 }
 
-export function ExecutionLogsViewer({ logs }: { logs: ExecutionLogRow[] }) {
+export function ExecutionLogsViewer({
+  logs,
+  nodeOptions,
+}: {
+  logs: ExecutionLogRow[];
+  /** Nodes available to filter by (hidden when omitted). */
+  nodeOptions?: { value: string; label: string }[];
+}) {
   const [query, setQuery] = useState("");
   const [level, setLevel] = useState<LogLevel | "all">("all");
+  const [nodeId, setNodeId] = useState<string>("all");
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return logs.filter(
       (row) =>
         (level === "all" || row.level === level) &&
+        (nodeId === "all" || row.nodeId === nodeId) &&
         (needle === "" ||
           row.message.toLowerCase().includes(needle) ||
           row.source.toLowerCase().includes(needle)),
     );
-  }, [logs, query, level]);
+  }, [logs, query, level, nodeId]);
 
   const copyAllText = filtered.map(formatLogLine).join("\n");
 
@@ -100,6 +109,33 @@ export function ExecutionLogsViewer({ logs }: { logs: ExecutionLogRow[] }) {
           />
         </div>
 
+        {nodeOptions && nodeOptions.length > 0 && (
+          <div className="relative">
+            <label htmlFor="logs-node" className="sr-only">
+              Filter by node
+            </label>
+            <select
+              id="logs-node"
+              value={nodeId}
+              onChange={(event) => setNodeId(event.target.value)}
+              className={`${selectCls} max-w-[220px]`}
+            >
+              <option value="all">All nodes</option>
+              {nodeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDownIcon
+              width={13}
+              height={13}
+              aria-hidden
+              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-faint"
+            />
+          </div>
+        )}
+
         <div className="ml-auto flex items-center gap-2.5">
           <p className="font-mono text-[11px] text-faint">
             {filtered.length} of {logs.length} lines
@@ -122,6 +158,7 @@ export function ExecutionLogsViewer({ logs }: { logs: ExecutionLogRow[] }) {
               onClick={() => {
                 setQuery("");
                 setLevel("all");
+                setNodeId("all");
               }}
               className="inline-flex h-9 items-center justify-center rounded-md border border-line px-3.5 text-[13px] text-fg transition-colors hover:border-line-strong hover:bg-hover"
             >
@@ -154,9 +191,16 @@ export function ExecutionLogsViewer({ logs }: { logs: ExecutionLogRow[] }) {
                 <span className="shrink-0 pt-0.5 font-mono text-[11.5px] text-primary-strong">
                   {row.source}
                 </span>
-                <p className="min-w-0 flex-1 break-words text-[12.5px] leading-relaxed text-muted">
-                  {row.message}
-                </p>
+                <div className="min-w-0 flex-1">
+                  <p className="break-words text-[12.5px] leading-relaxed text-muted">
+                    {row.message}
+                  </p>
+                  {row.metadata && Object.keys(row.metadata).length > 0 && (
+                    <p className="mt-0.5 break-all font-mono text-[10.5px] leading-relaxed text-faint">
+                      {JSON.stringify(row.metadata)}
+                    </p>
+                  )}
+                </div>
                 <CopyButton
                   text={formatLogLine(row)}
                   label={`Copy log line from ${row.source}`}

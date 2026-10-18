@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { NotFoundHero } from "@/components/not-found/NotFoundHero";
 import { DebugPanel } from "@/components/not-found/DebugPanel";
 
-export const metadata: Metadata = {
-  title: "Not Found — Runbolt",
+/** The title template renders this as "Not Found — Runbolt". */
+export const metadata = pageMetadata({
+  title: "Not Found",
   description: "The page you're looking for may have been moved, deleted, or never existed.",
-};
+});
 
 export default function NotFoundPage() {
   return (

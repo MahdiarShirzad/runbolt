@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { WorkflowDetailView } from "@/components/dashboard/WorkflowDetailView";
 import type {
   WorkflowDetailData,
@@ -26,15 +27,19 @@ export async function generateMetadata({
     (candidate) => candidate.slug === slug || candidate.id === slug,
   );
   if (!workflow) {
-    return {
-      title: "Workflow — Runbolt",
+    return pageMetadata({
+      title: "Workflow",
       description: "Inspect a workflow and its run history.",
-    };
+      path: `/workflows/${slug}`,
+      noIndex: true,
+    });
   }
-  return {
-    title: `${workflow.name} — Runbolt`,
+  return pageMetadata({
+    title: workflow.name,
     description: `Inspect ${workflow.name}, its trigger, steps, and recent runs.`,
-  };
+    path: `/workflows/${slug}`,
+    noIndex: true,
+  });
 }
 
 export const dynamic = "force-dynamic";

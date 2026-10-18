@@ -1,12 +1,9 @@
 import { MarkerType } from "@xyflow/react";
 import type { Edge, EdgeChange, Node, NodeChange, XYPosition } from "@xyflow/react";
 import {
-  CATEGORY_STYLES,
-  getOutputHandles,
   isTriggerType,
   nodeLabel,
   NODE_DEFINITIONS,
-  type WorkflowEdge,
   type WorkflowGraph,
   type WorkflowNode,
   type WorkflowNodeCategory,
@@ -62,6 +59,8 @@ export function toFlowEdges(graph: WorkflowGraph, overlay: FlowOverlay = {}): Bu
     const sourceStatus = overlay.statuses?.[edge.source];
     const targetStatus = overlay.statuses?.[edge.target];
     const skipped = sourceStatus === "skipped" || targetStatus === "skipped";
+    const pending =
+      (sourceStatus === "pending" || targetStatus === "pending") && !skipped;
     const failed = sourceStatus === "failed" || targetStatus === "failed";
     const running = sourceStatus === "running" || targetStatus === "running";
 
@@ -71,9 +70,11 @@ export function toFlowEdges(graph: WorkflowGraph, overlay: FlowOverlay = {}): Bu
         ? "#c7f04e"
         : skipped
           ? "#47536e"
-          : edge.id === selected
-            ? "#c7f04e"
-            : "#35435c";
+          : pending
+            ? "#2a3446"
+            : edge.id === selected
+              ? "#c7f04e"
+              : "#35435c";
 
     return {
       id: edge.id,
@@ -89,7 +90,7 @@ export function toFlowEdges(graph: WorkflowGraph, overlay: FlowOverlay = {}): Bu
       style: {
         stroke,
         strokeWidth: edge.id === selected ? 2.4 : 1.8,
-        strokeDasharray: skipped && !failed ? "5 5" : undefined,
+        strokeDasharray: (skipped || pending) && !failed ? "5 5" : undefined,
       },
       labelStyle: { fill: "#8c97ab", fontSize: 11 },
       labelBgStyle: { fill: "#10151d" },
@@ -98,30 +99,8 @@ export function toFlowEdges(graph: WorkflowGraph, overlay: FlowOverlay = {}): Bu
 }
 
 export function categoryOf(node: WorkflowNode): WorkflowNodeCategory {
-  // Local import avoidance: category is defined on the registry keyed by type.
-  return NODE_CATEGORIES[node.type] ?? "action";
+  return NODE_DEFINITIONS[node.type]?.category ?? "action";
 }
-
-export function categoryStyle(node: WorkflowNode) {
-  return CATEGORY_STYLES[categoryOf(node)];
-}
-
-const NODE_CATEGORIES: Record<string, WorkflowNodeCategory> = {
-  manual_trigger: "trigger",
-  webhook_trigger: "trigger",
-  schedule_trigger: "trigger",
-  api_trigger: "trigger",
-  http_request: "integration",
-  integration_action: "integration",
-  action: "action",
-  data_mapping: "transform",
-  filter: "transform",
-  if_else: "condition",
-  switch: "condition",
-  loop: "condition",
-  delay: "utility",
-  log: "utility",
-};
 
 export function isExecutable(node: WorkflowNode): boolean {
   return NODE_DEFINITIONS[node.type]?.executable ?? false;
@@ -172,26 +151,4 @@ export function applyEdgeGraphChanges(
   return { ...graph, edges: graph.edges.filter((edge) => !removed.has(edge.id)) };
 }
 
-export function selectionFromNodeChanges(
-  changes: NodeChange<BuilderNode>[],
-): string | null | undefined {
-  let selected: string | null | undefined;
-  for (const change of changes) {
-    if (change.type === "select" && change.selected) selected = change.id;
-  }
-  if (selected !== undefined) return selected;
-  const deselected = changes.some((change) => change.type === "select" && !change.selected);
-  if (deselected) {
-    // Return null only if nothing else is selected — React Flow sends one change per node.
-    return changes.some((change) => change.type === "select" && change.selected) ? undefined : null;
-  }
-  return undefined;
-}
 
-export function outputHandleCount(node: WorkflowNode): number {
-  return getOutputHandles(node).length;
-}
-
-export function edgeLabel(edge: WorkflowEdge): string | undefined {
-  return edge.label;
-}
