@@ -13,6 +13,11 @@ export class WorkflowsController {
     }
 
     @Get()
+    async findAll() {
+        return this.workflowsService.findAll()
+    }
+
+    @Get(':id')
     async findById(@Param('id') id : string) {
         return this.workflowsService.findById(id)
     }

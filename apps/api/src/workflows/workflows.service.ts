@@ -38,6 +38,12 @@ export class WorkflowsService {
         }
 }
 
+  async findAll() {
+    return this.prisma.workflow.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findById(id: string) {
     const workflow = await this.prisma.workflow.findUnique({
       where: { id },
